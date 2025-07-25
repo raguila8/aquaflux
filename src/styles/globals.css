@@ -1,0 +1,206 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+@import './vendors/odometer-theme-default.css' layer(components);
+
+@theme inline {
+  --font-sans:
+    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono:
+    var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, 'Liberation Mono', 'Courier New', monospace;
+
+  --color-aqua-50: #ecfeff;
+  --color-aqua-100: #cefcff;
+  --color-aqua-200: #a4f6fd;
+  --color-aqua-300: #65edfb;
+  --color-aqua-400: #1fd9f1;
+  --color-aqua-500: #03c9e6;
+  --color-aqua-600: #0596b5;
+  --color-aqua-700: #0c7792;
+  --color-aqua-800: #146176;
+  --color-aqua-900: #155064;
+  --color-aqua-950: #073445;
+
+  --color-indigo-blue-50: #eff6ff;
+  --color-indigo-blue-100: #dde8fc;
+  --color-indigo-blue-200: #c3d8fa;
+  --color-indigo-blue-300: #99bff7;
+  --color-indigo-blue-400: #699ef1;
+  --color-indigo-blue-500: #467beb;
+  --color-indigo-blue-600: #315cdf;
+  --color-indigo-blue-700: #2c4ed6;
+  --color-indigo-blue-800: #263ca7;
+  --color-indigo-blue-900: #243784;
+  --color-indigo-blue-950: #1b2450;
+
+  --leading-extratight: 1.15;
+
+  --shadow-inner-blur:
+    inset -0.5px 0.5px 1px 0px --alpha(var(--color-aqua-100) / 12%),
+    inset 0 0 96px 0 --alpha(var(--color-indigo-blue-200) / 8%);
+  --shadow-inner-blur-light:
+    inset -0.5px 0.5px 1px 0px --alpha(var(--color-aqua-100) / 1%),
+    inset 0 0 96px 0 --alpha(var(--color-indigo-blue-200) / 8%);
+  --shadow-inner-blur-no-border: inset 0 0 96px 0
+    --alpha(var(--color-indigo-blue-200) / 1%);
+  --shadow-btn-primary:
+    inset 0px 1px 0px 0px --alpha(var(--color-white) / 10%),
+    inset 0px 0px 12px 0px --alpha(var(--color-white) / 8%),
+    inset 0px -8px 32px 0px --alpha(var(--color-indigo-blue-900) / 50%),
+    0px 0px 0px 1px --alpha(var(--color-black) / 20%),
+    0px 1px 3px 0px --alpha(var(--color-black) / 20%),
+    0px 1px 0px 0px --alpha(var(--color-black) / 20%),
+    0px 4px 25px 1px --alpha(var(--color-indigo-blue-400) / 40%);
+  --shadow-btn-primary-hover:
+    inset 0px 1px 0px 0px --alpha(var(--color-white) / 10%),
+    inset 0px 0px 12px 0px --alpha(var(--color-white) / 8%),
+    inset 0px -8px 32px 0px --alpha(var(--color-indigo-blue-900) / 50%),
+    0px 0px 0px 1px --alpha(var(--color-black) / 20%),
+    0px 1px 3px 0px --alpha(var(--color-black) / 20%),
+    0px 1px 0px 0px --alpha(var(--color-black) / 20%),
+    0px 4px 50px 3px --alpha(var(--color-indigo-blue-500) / 22%);
+  --shadow-btn-secondary:
+    inset 0px 1px 0px 0px --alpha(var(--color-white) / 10%),
+    inset 0px 0px 12px 0px --alpha(var(--color-white) / 8%),
+    inset 0px -8px 32px 0px --alpha(var(--color-indigo-blue-950) / 20%),
+    inset -0.5px 0.5px 1px 0px --alpha(var(--color-aqua-100) / 12%),
+    inset 0 0 96px 0 --alpha(var(--color-indigo-blue-100) / 8%),
+    0px 0px 0px 1px --alpha(var(--color-black) / 20%),
+    0px 1px 0px 0px --alpha(var(--color-black) / 20%);
+  --shadow-btn-secondary-hover: inset 0px 0px 12px 8px
+    --alpha(var(--color-white) / 4%);
+
+  --background-image-btn-primary:
+    linear-gradient(
+      to bottom,
+      --alpha(var(--color-black) / 0%),
+      --alpha(var(--color-aqua-50) / 8%)
+    ),
+    linear-gradient(
+      to bottom,
+      --alpha(var(--color-indigo-blue-700) / 60%),
+      --alpha(var(--color-aqua-500) / 65%)
+    );
+  --background-image-btn-primary-hover:
+    linear-gradient(
+      to bottom,
+      --alpha(var(--color-black) / 0%),
+      --alpha(var(--color-aqua-50) / 5%)
+    ),
+    linear-gradient(
+      to bottom,
+      --alpha(var(--color-indigo-blue-700) / 60%),
+      --alpha(var(--color-aqua-500) / 65%)
+    );
+
+  --margin-18: 4.5rem;
+
+  --blur-4xl: 200px;
+
+  --animate-infiniteScroll: infiniteScroll var(--_infinite-scroll-duration, 40s)
+    linear infinite;
+
+  @keyframes infiniteScroll {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+/* Additional styles */
+
+:root {
+  --scroll-progress: 0;
+  --max-translate-x: 0;
+  --max-translate-y: 0;
+}
+
+.image-container {
+  --overshoot-translate: calc(var(--initial-translate) * -1);
+  translate: 0
+    calc(
+      var(--initial-translate) * (1 - var(--scroll-progress)) +
+        var(--overshoot-translate) * var(--scroll-progress)
+    ) !important;
+  transition: translate 0.3s ease-out;
+}
+
+.images-wrapper {
+  transform: translate(
+    calc(var(--max-translate-x) * var(--scroll-progress)),
+    calc(var(--max-translate-y) * var(--scroll-progress))
+  ) !important;
+  transition: transform 0.3s ease-out;
+}
+
+code {
+  @apply [counter-increment:step_0] [counter-reset:line];
+}
+
+code .line:not(:last-child)::before {
+  @apply mr-6 inline-block w-max text-right text-[#BABED8]/30 content-[counter(line)] [counter-increment:line];
+}
+
+.splide__slide pre.shiki {
+  @apply h-full rounded-b-lg p-5 text-sm font-medium;
+}
+
+.feature.active {
+  @apply shadow-inner-blur bg-zinc-950/[.01];
+}
+
+.feature:not(.active) {
+  @apply hover:shadow-inner-blur-light hover:bg-zinc-950/[.01];
+}
+
+.feature.active > div {
+  @apply border-violet-200/[.06];
+}
+
+.feature:not(.active) > div {
+  @apply border-transparent;
+}
+
+.card::before {
+  background: radial-gradient(
+    1200px circle at var(--mouse-x) var(--mouse-y),
+    rgba(44, 78, 214, 0.2),
+    transparent 40%
+  );
+}
+.card::after {
+  background: radial-gradient(
+    800px circle at var(--mouse-x) var(--mouse-y),
+    rgba(255, 255, 255, 0.15),
+    transparent 40%
+  );
+}
+
+/* Firefox specific styles */
+@-moz-document url-prefix() {
+  .hover-gradient {
+    @apply from-[#575EFF]/10! to-[#E478FF]/10!;
+  }
+}
