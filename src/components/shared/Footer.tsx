@@ -48,7 +48,7 @@ export function Footer({ cta = true }: Props) {
       <div className='relative top-2 left-1/2 w-[350%] -translate-x-1/2 rounded-t-[100%] bg-linear-to-r from-transparent via-violet-100/15 to-transparent p-[0.5px] sm:w-[250%] md:top-4 md:w-[200%] lg:top-10 lg:w-[150%] xl:w-[125%]'>
         <div
           className={clsx(
-            'h-full w-full rounded-t-[100%] bg-[linear-gradient(rgba(24,24,27,0.9),rgba(24,24,27,0.9)),linear-gradient(#2E1065,#2E1065)] pb-16 sm:pb-18',
+            'h-full w-full rounded-t-[100%] bg-[linear-gradient(rgba(9,9,11,0.8),rgba(9,9,11,0.9)),linear-gradient(#073445,#073445)] pb-16 sm:pb-18',
             hasNavigation ? 'pt-24 sm:pt-28 md:pt-32 lg:pt-40' : 'pt-4'
           )}
         >
