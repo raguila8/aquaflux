@@ -23,10 +23,10 @@ export function FormHeader({
       <Link href='/' className='flex shrink-0' aria-label='Home'>
         <Image src={logo} className='h-auto w-12' alt='Logo' />
       </Link>
-      <h1 className='mt-4 text-center text-3xl font-bold text-violet-100'>
+      <h1 className='text-indigo-blue-100 mt-4 text-center text-3xl font-bold'>
         {title}
       </h1>
-      <p className='mt-1.5 text-center text-base leading-relaxed text-zinc-300'>
+      <p className='mt-1.5 text-center text-base leading-relaxed text-slate-300'>
         {description}
       </p>
 
@@ -36,27 +36,27 @@ export function FormHeader({
             href='/'
             variant='secondary'
             size='md'
-            className='w-full max-w-60 bg-zinc-700/25 leading-6 sm:w-1/2 sm:max-w-none'
+            className='w-full max-w-60 bg-slate-700/25 leading-6 sm:w-1/2 sm:max-w-none'
             innerClassName='justify-between'
           >
             <div className='flex items-center'>
               <GoogleIcon className='mr-2 h-4 w-4' />
               Google
             </div>
-            <ChevronRightIcon className='h-4 w-4 text-violet-100/75 duration-200 ease-in-out group-hover:text-violet-50/75' />
+            <ChevronRightIcon className='text-indigo-blue-100/75 group-hover:text-indigo-blue-50/75 h-4 w-4 duration-200 ease-in-out' />
           </Button>
           <Button
             href='/'
             variant='secondary'
             size='md'
-            className='w-full max-w-60 bg-zinc-700/25 leading-6 sm:w-1/2 sm:max-w-none'
+            className='w-full max-w-60 bg-slate-700/25 leading-6 sm:w-1/2 sm:max-w-none'
             innerClassName='justify-between'
           >
             <div className='flex items-center space-x-2'>
               <GithubIcon className='mr-2 h-4 w-4' />
               Github
             </div>
-            <ChevronRightIcon className='h-4 w-4 text-violet-100/75 duration-200 ease-in-out group-hover:text-violet-50/75' />
+            <ChevronRightIcon className='text-indigo-blue-100/75 group-hover:text-indigo-blue-50/75 h-4 w-4 duration-200 ease-in-out' />
           </Button>
         </div>
       )}

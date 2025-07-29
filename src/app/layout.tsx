@@ -23,7 +23,7 @@ export default function RootLayout({
       lang='en'
       className={clsx('scroll-smooth', GeistSans.variable, GeistMono.variable)}
     >
-      <body className='bg-zinc-950'>{children}</body>
+      <body className='bg-zinc-950 antialiased'>{children}</body>
     </html>
   )
 }

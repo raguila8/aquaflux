@@ -17,7 +17,7 @@ export default function Signup() {
   return (
     <Container className='max-w-lg py-5 sm:max-w-xl lg:max-w-6xl'>
       <div className='lg:grid lg:grid-cols-2 lg:gap-x-8 xl:gap-x-36'>
-        <div className='relative z-10 flex flex-col shadow-inner-blur'>
+        <div className='shadow-inner-blur relative z-10 flex flex-col'>
           <ContainerOutline />
 
           <FormHeader
@@ -26,15 +26,15 @@ export default function Signup() {
           />
 
           <div className='mt-8 flex w-full items-center px-10'>
-            <div className='h-px flex-1 bg-linear-to-r from-violet-200/5 to-violet-200/10'></div>
-            <h4 className='shrink-0 px-4 text-xs text-violet-100/75'>
+            <div className='from-indigo-blue-200/5 to-indigo-blue-200/10 h-px flex-1 bg-linear-to-r'></div>
+            <h4 className='text-indigo-blue-100/75 shrink-0 px-4 text-xs'>
               or sign up with
             </h4>
             <div className='h-px flex-1 bg-linear-to-r from-violet-200/10 to-violet-200/5'></div>
           </div>
           <form action='#' method='POST' className='mt-9 px-6 pb-10 sm:px-10'>
             <div className='space-y-8'>
-              <div className='space-y-8 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:space-y-0'>
+              <div className='space-y-8 sm:grid sm:grid-cols-2 sm:space-y-0 sm:gap-x-6'>
                 <TextField
                   label='First name'
                   name='first-name'
@@ -71,10 +71,10 @@ export default function Signup() {
             </div>
 
             <div className='mt-10 flex items-center justify-between space-x-4'>
-              <p className='text-sm text-violet-100/75'>
+              <p className='text-indigo-blue-100/75 text-sm'>
                 Already have an account?{' '}
                 <Link
-                  className='text-violet-300/80 underline duration-200 ease-in-out hover:text-violet-300'
+                  className='text-aqua-300/80 hover:text-aqua-300 underline duration-200 ease-in-out'
                   href='/signin'
                 >
                   Sign in
