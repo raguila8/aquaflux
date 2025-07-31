@@ -245,9 +245,9 @@ export default function Dashboard() {
         ]}
         featureCard={
           <FeaturedCardQRCode
-            title='Verify this device'
-            description='Open the app and scan the QR code below to verify this device.'
-            confirmLabel='Verify another way'
+            title='Deposit to wallet'
+            description='Open your wallet and scan the QR code below to deposit USDC on Arbitrum.'
+            confirmLabel='Fund wallet'
             onConfirm={() => {}}
             onDismiss={() => {}}
           />
@@ -264,7 +264,7 @@ export default function Dashboard() {
                     Aquaflux Dashboard
                   </p>
                   <p className='text-md text-tertiary'>
-                    Your current sales summary and activity.
+                    Lorem ipsum dolor sit amet vestibulum augue.
                   </p>
                 </div>
                 <div className='flex gap-3'>
@@ -286,8 +286,8 @@ export default function Dashboard() {
               <div className='flex min-w-0 flex-1 flex-col gap-8 lg:gap-5'>
                 <div className='flex w-full flex-col flex-wrap gap-4 lg:flex-row lg:gap-5'>
                   <MetricsSimple
-                    title='$1,280'
-                    subtitle="Today's revenue"
+                    title='12'
+                    subtitle='Flux tokens'
                     type='modern'
                     trend='positive'
                     change='10%'
@@ -295,8 +295,8 @@ export default function Dashboard() {
                     actions={false}
                   />
                   <MetricsSimple
-                    title='14'
-                    subtitle="Today's orders"
+                    title='$1,280'
+                    subtitle='Current token price'
                     type='modern'
                     trend='positive'
                     change='12%'
@@ -304,8 +304,8 @@ export default function Dashboard() {
                     actions={false}
                   />
                   <MetricsSimple
-                    title='$91.42'
-                    subtitle='Avg. order value'
+                    title='$10,911.42'
+                    subtitle='Total portfolio value'
                     type='modern'
                     trend='negative'
                     change='2%'
