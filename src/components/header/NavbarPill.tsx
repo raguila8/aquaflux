@@ -3,7 +3,7 @@
 import clsx from 'clsx'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useRef, useState, Fragment } from 'react'
+import { useEffect, useRef, useState, Fragment, useCallback } from 'react'
 import { getOffsetTop, cn } from '@/lib/utils'
 import { debounce, throttle } from 'lodash'
 import { Button } from '@/components/shared/Button'
@@ -175,16 +175,18 @@ export const NavbarPill = () => {
 
   const isLargeScreen = () => window.innerWidth > 768
 
-  const shouldShowNavCta = () =>
-    window.scrollY > mainCtaOffsetRef.current && isLargeScreen()
+  const shouldShowNavCta = useCallback(
+    () => window.scrollY > mainCtaOffsetRef.current && isLargeScreen(),
+    []
+  )
 
-  const setPillNavWidth = () => {
+  const setPillNavWidth = useCallback(() => {
     if (pillNavRef.current) {
       pillNavRef.current.style.width = shouldShowNavCta()
         ? `${pillExpandedWidthRef.current}px`
         : `${pillWidthRef.current}px`
     }
-  }
+  }, [shouldShowNavCta])
 
   const updateDimensions = () => {
     if (pillNavRef.current && navCtaContainerRef.current) {
@@ -210,32 +212,38 @@ export const NavbarPill = () => {
     }
   }
 
-  const handleResize = debounce(() => {
-    if (isLargeScreen()) {
-      setTimeout(() => {
-        updateDimensions()
-        setShowButton(shouldShowNavCta())
-        setPillNavWidth()
-        updateDropdownPosition()
-      }, 300)
-    } else {
-      setShowButton(false)
-      if (pillNavRef.current) {
-        pillNavRef.current!.style.width = '100%'
-
+  const handleResize = useCallback(
+    debounce(() => {
+      if (isLargeScreen()) {
         setTimeout(() => {
           updateDimensions()
+          setShowButton(shouldShowNavCta())
           setPillNavWidth()
+          updateDropdownPosition()
         }, 300)
-      }
-    }
-  }, 50)
+      } else {
+        setShowButton(false)
+        if (pillNavRef.current) {
+          pillNavRef.current!.style.width = '100%'
 
-  const handleScroll = throttle(() => {
-    if (window.innerWidth <= 768) return
-    setShowButton(window.scrollY > mainCtaOffsetRef.current)
-    setPillNavWidth()
-  }, 100)
+          setTimeout(() => {
+            updateDimensions()
+            setPillNavWidth()
+          }, 300)
+        }
+      }
+    }, 50),
+    [shouldShowNavCta, setPillNavWidth]
+  )
+
+  const handleScroll = useCallback(
+    throttle(() => {
+      if (window.innerWidth <= 768) return
+      setShowButton(window.scrollY > mainCtaOffsetRef.current)
+      setPillNavWidth()
+    }, 100),
+    [setPillNavWidth]
+  )
 
   const updateDropdownPosition = () => {
     const pillNav = pillNavRef.current
@@ -283,7 +291,7 @@ export const NavbarPill = () => {
       window.removeEventListener('scroll', handleScroll)
       window.removeEventListener('resize', handleResize)
     }
-  }, [])
+  }, [handleScroll, handleResize, setPillNavWidth, shouldShowNavCta])
 
   useEffect(() => {
     setTimeout(() => {
