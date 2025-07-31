@@ -1128,7 +1128,7 @@
     /* TEXT COLORS */
 
     --color-text-primary: var(--color-gray-50);
-    --color-text-tertiary: --alpha(var(--color-brand-50) / 80%);
+    --color-text-tertiary: var(--color-gray-400);
     --color-text-error-primary: var(--color-error-400);
     --color-text-warning-primary: var(--color-warning-400);
     --color-text-success-primary: var(--color-success-400);
@@ -1145,7 +1145,7 @@
     --color-text-editor-icon-fg_active: var(--color-white);
     --color-text-quaternary: var(--color-gray-400);
     --color-text-brand-primary: var(--color-gray-50);
-    --color-text-primary_on-brand: var(--color-indigo-blue-50);
+    --color-text-primary_on-brand: var(--color-gray-50);
     --color-text-secondary_on-brand: var(--color-gray-300);
     --color-text-tertiary_on-brand: var(--color-gray-400);
     --color-text-quaternary_on-brand: var(--color-gray-400);
@@ -1154,7 +1154,7 @@
     --color-text-error-primary_hover: var(--color-error-300);
 
     /* BORDER COLORS */
-    --color-border-secondary: --alpha(var(--color-indigo-blue-200) / 6%);
+    --color-border-secondary: var(--color-gray-800);
     --color-border-error_subtle: var(--color-error-500);
     --color-border-primary: var(--color-gray-700);
     --color-border-brand: var(--color-brand-400);
@@ -1205,7 +1205,7 @@
     --color-bg-secondary_hover: var(--color-gray-800);
     --color-bg-primary_hover: var(--color-gray-800);
     --color-bg-disabled: var(--color-gray-800);
-    --color-bg-active: --alpha(var(--color-white) / 5%);
+    --color-bg-active: var(--color-gray-800);
     --color-bg-brand-solid_hover: var(--color-brand-500);
     --color-bg-error-primary: var(--color-error-950);
     --color-bg-brand-secondary: var(--color-brand-600);

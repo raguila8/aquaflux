@@ -1,19 +1,23 @@
 import type { ReactNode } from 'react'
 import { SearchLg } from '@untitledui/icons'
 import { Input } from '@/components/base/input/input'
-import { UntitledLogo } from '@/components/foundations/logo/untitledui-logo'
+import { AquafluxLogo } from '@/components/foundations/logo/aquaflux-logo'
 import { cx } from '@/utils/cx'
 import { MobileNavigationHeader } from '@/components/application/app-navigation/base-components/mobile-header'
 import { NavAccountCard } from '@/components/application/app-navigation/base-components/nav-account-card'
 import { NavItemBase } from '@/components/application/app-navigation/base-components/nav-item'
 import { NavList } from '@/components/application/app-navigation/base-components/nav-list'
-import type { NavItemType } from '@/components/application/app-navigation/config'
+import { ContentDivider } from '@/components/application/content-divider/content-divider'
+import type {
+  NavItemType,
+  NavItemDividerType,
+} from '@/components/application/app-navigation/config'
 
 interface SidebarNavigationProps {
   /** URL of the currently active item. */
   activeUrl?: string
   /** List of items to display. */
-  items: NavItemType[]
+  items: (NavItemType | NavItemDividerType)[]
   /** List of footer items to display. */
   footerItems?: NavItemType[]
   /** Feature card to display. */
@@ -22,6 +26,8 @@ interface SidebarNavigationProps {
   showAccountCard?: boolean
   /** Whether to hide the right side border. */
   hideBorder?: boolean
+  /** Whether to show the search input. */
+  showSearch?: boolean
   /** Additional CSS classes to apply to the sidebar. */
   className?: string
 }
@@ -33,6 +39,7 @@ export const SidebarNavigationSimple = ({
   featureCard,
   showAccountCard = true,
   hideBorder = false,
+  showSearch = true,
   className,
 }: SidebarNavigationProps) => {
   const MAIN_SIDEBAR_WIDTH = 296
@@ -51,15 +58,24 @@ export const SidebarNavigationSimple = ({
       )}
     >
       <div className='flex flex-col gap-5 px-4 lg:px-5'>
-        <UntitledLogo className='h-8' />
-        <Input
-          shortcut
-          size='sm'
-          aria-label='Search'
-          placeholder='Search'
-          icon={SearchLg}
-        />
+        <AquafluxLogo className='h-7 pl-1.5' />
+
+        {showSearch && (
+          <Input
+            shortcut
+            size='sm'
+            aria-label='Search'
+            placeholder='Search'
+            icon={SearchLg}
+          />
+        )}
       </div>
+
+      {!showSearch && (
+        <div className='w-full px-0.5 pt-6 pb-2'>
+          <hr className='h-px border-none bg-linear-to-r from-transparent via-violet-200/15 to-transparent' />
+        </div>
+      )}
 
       <NavList activeUrl={activeUrl} items={items} />
 

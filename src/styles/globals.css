@@ -48,6 +48,10 @@
   --shadow-inner-blur:
     inset -0.5px 0.5px 1px 0px --alpha(var(--color-aqua-100) / 12%),
     inset 0 0 96px 0 --alpha(var(--color-indigo-blue-200) / 8%);
+  --shadow-inner-blur-secondary:
+    inset -0.5px 0.5px 1px 0px --alpha(var(--color-aqua-100) / 12%),
+    inset 0 0 96px 0 --alpha(var(--color-indigo-blue-200) / 8%),
+    0 4px 25px 1px --alpha(var(--color-aqua-500) / 5%);
   --shadow-inner-blur-light:
     inset -0.5px 0.5px 1px 0px --alpha(var(--color-aqua-100) / 1%),
     inset 0 0 96px 0 --alpha(var(--color-indigo-blue-200) / 8%);

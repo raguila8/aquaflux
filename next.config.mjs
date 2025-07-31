@@ -33,7 +33,12 @@ const nextConfig = {
                       },
                     },
                   },
-                  'prefixIds',
+                  {
+                    name: 'prefixIds',
+                    params: {
+                      prefixClassNames: false,
+                    },
+                  },
                 ],
               },
             },
