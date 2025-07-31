@@ -13,6 +13,7 @@
     "@heroicons/react": "^2.2.0",
     "@internationalized/date": "^3.8.2",
     "@react-aria/i18n": "^3.12.11",
+    "@react-stately/utils": "^3.10.8",
     "@splidejs/react-splide": "^0.7.12",
     "@untitledui-pro/icons": "^0.0.2",
     "@untitledui/icons": "^0.0.19",
