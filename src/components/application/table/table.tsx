@@ -74,7 +74,7 @@ const TableCardRoot = ({
       <div
         {...props}
         className={cx(
-          'bg-primary ring-secondary overflow-hidden rounded-xl shadow-xs ring-1',
+          'ring-secondary shadow-inner-blur-secondary overflow-hidden rounded-xl bg-[linear-gradient(rgba(9,9,11,0.66),rgba(9,9,11,0.66)),linear-gradient(#07344550,#07344550)] ring-1',
           className
         )}
       >
@@ -109,7 +109,7 @@ const TableCardHeader = ({
   return (
     <div
       className={cx(
-        'border-secondary bg-primary relative flex flex-col items-start gap-4 border-b px-4 md:flex-row',
+        'border-secondary relative flex flex-col items-start gap-4 border-b px-4 md:flex-row',
         size === 'sm' ? 'py-4 md:px-5' : 'py-5 md:px-6',
         className
       )}

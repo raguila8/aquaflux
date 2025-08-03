@@ -1,5 +1,6 @@
 'use client'
 
+import { TransactionsTable } from '@/components/application/table/transactions-table'
 import { parseDate } from '@internationalized/date'
 import {
   BarChartSquare02,
@@ -18,6 +19,8 @@ import {
   Cryptocurrency02,
   Cryptocurrency03,
   Cryptocurrency04,
+  SearchLg,
+  Edit01,
 } from '@untitledui/icons'
 import {
   Home03 as Home01,
@@ -25,6 +28,9 @@ import {
   PieChart02 as PieChart02,
   Stars01 as Stars01,
   HelpCircle,
+  CreditCardUp,
+  Wallet02,
+  Cryptocurrency03 as Cryptocurrency03Pro,
 } from '@untitledui-pro/icons/solid'
 import Home02 from '@/icons/untitledui/duo-tone/home-02.svg'
 import Home03 from '@/icons/untitledui/duo-tone/home-03.svg'
@@ -34,6 +40,7 @@ import PieChart01 from '@/icons/untitledui/duo-tone/pie-chart-01.svg'
 import Home from '@/icons/nucleo/home-colored.svg'
 import Transactions from '@/icons/nucleo/transactions-colored.svg'
 import PieChart from '@/icons/nucleo/pie-chart-colored.svg'
+import { ChevronRightIcon } from '@heroicons/react/16/solid'
 
 import {
   Area,
@@ -54,18 +61,12 @@ import { ChartTooltipContent } from '@/components/application/charts/charts-base
 import { ContentDivider } from '@/components/application/content-divider/content-divider'
 import { DateRangePicker } from '@/components/application/date-picker/date-range-picker'
 import { MetricsSimple } from '@/components/application/metrics/metrics'
-import { TabList, Tabs } from '@/components/application/tabs/tabs'
 import {
   BadgeWithDot,
   BadgeWithIcon,
   Badge,
 } from '@/components/base/badges/badges'
-import {
-  ButtonGroup,
-  ButtonGroupItem,
-} from '@/components/base/button-group/button-group'
 import { Button } from '@/components/base/buttons/button'
-import { Dot } from '@/components/foundations/dot-icon'
 import { useBreakpoint } from '@/hooks/use-breakpoint'
 
 const lineData = [
@@ -131,68 +132,20 @@ const lineData = [
   },
 ]
 
-const barData = [
-  {
-    date: '2025-01-01',
-    A: 300,
-    B: 350,
-  },
-  {
-    date: '2025-02-01',
-    A: 320,
-    B: 300,
-  },
-  {
-    date: '2025-03-01',
-    A: 300,
-    B: 240,
-  },
-  {
-    date: '2025-04-01',
-    A: 240,
-    B: 280,
-  },
-  {
-    date: '2025-05-01',
-    A: 320,
-    B: 100,
-  },
-  {
-    date: '2025-06-01',
-    A: 330,
-    B: 130,
-  },
-  {
-    date: '2025-07-01',
-    A: 300,
-    B: 100,
-  },
-  {
-    date: '2025-08-01',
-    A: 350,
-    B: 200,
-  },
-  {
-    date: '2025-09-01',
-    A: 300,
-    B: 100,
-  },
-  {
-    date: '2025-10-01',
-    A: 200,
-    B: 280,
-  },
-  {
-    date: '2025-11-01',
-    A: 240,
-    B: 300,
-  },
-  {
-    date: '2025-12-01',
-    A: 200,
-    B: 350,
-  },
-]
+const getBadgeColor = (category: string) => {
+  switch (category) {
+    case 'Subscriptions':
+      return 'blue'
+    case 'Food and dining':
+      return 'pink'
+    case 'Income':
+      return 'success'
+    case 'Groceries':
+      return 'indigo'
+    default:
+      return 'gray'
+  }
+}
 
 const colors: Record<string, string> = {
   A: 'text-utility-brand-500',
@@ -250,6 +203,7 @@ export default function Dashboard() {
             confirmLabel='Fund wallet'
             onConfirm={() => {}}
             onDismiss={() => {}}
+            showCloseButton={false}
           />
         }
       />
@@ -271,11 +225,11 @@ export default function Dashboard() {
                   <Button
                     size='md'
                     color='secondary'
-                    iconLeading={DownloadCloud02}
+                    iconLeading={CreditCardUp}
                   >
                     Withdraw
                   </Button>
-                  <Button size='md' iconLeading={Cryptocurrency03}>
+                  <Button size='md' iconLeading={Cryptocurrency03Pro}>
                     Deposit
                   </Button>
                 </div>
@@ -448,6 +402,9 @@ export default function Dashboard() {
                     </ResponsiveContainer>
                   </div>
                 </div>
+
+                {/* Recent transactions */}
+                <TransactionsTable />
               </div>
             </div>
           </div>

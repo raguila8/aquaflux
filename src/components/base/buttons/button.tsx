@@ -24,7 +24,7 @@ export const styles = sortCx({
       // Icon styles
       'disabled:*:data-icon:text-fg-disabled_subtle',
       // Same as `icon` but for SSR icons that cannot be passed to the client as functions.
-      '*:data-icon:pointer-events-none *:data-icon:size-4.5 *:data-icon:shrink-0 *:data-icon:transition-inherit-all',
+      '*:data-icon:pointer-events-none *:data-icon:size-4 *:data-icon:shrink-0 *:data-icon:transition-inherit-all',
     ].join(' '),
     icon: 'pointer-events-none size-5 shrink-0 transition-inherit-all z-10',
   },
