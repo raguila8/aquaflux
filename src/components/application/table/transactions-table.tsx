@@ -1,14 +1,15 @@
 import { Tooltip, TooltipTrigger } from '@/components/base/tooltip/tooltip'
-import {
-  Table,
-  TableCard,
-  TableRowActionsDropdown,
-} from '@/components/application/table/table'
-import {
-  BadgeWithDot,
-  BadgeWithIcon,
-  Badge,
-} from '@/components/base/badges/badges'
+import { useState, useEffect, useCallback } from 'react'
+import type { Key } from 'react-aria-components'
+import { Table, TableCard } from '@/components/application/table/table'
+import { PaginationPageMinimalCenter } from '@/components/application/pagination/pagination'
+import { DateRangePicker } from '@/components/application/date-picker/date-range-picker'
+import { getLocalTimeZone } from '@internationalized/date'
+import type { DateValue } from 'react-aria-components'
+import { parseDate } from '@internationalized/date'
+import { BadgeWithDot, Badge } from '@/components/base/badges/badges'
+import { DownloadCloud02 } from '@untitledui/icons'
+import { TabList, Tabs } from '@/components/application/tabs/tabs'
 import { Button } from '@/components/base/buttons/button'
 import { Avatar } from '@/components/base/avatar/avatar'
 import { cn } from '@/lib/utils'
@@ -16,189 +17,108 @@ import { ChevronRightIcon } from '@heroicons/react/16/solid'
 
 import USDC from '@/images/assets/usdc.png'
 import Flux from '@/images/assets/flux.png'
+import Link from 'next/link'
 
-const transactions = [
-  {
-    id: 'transaction-01',
-    asset: 'Flux Token',
+const assetDetails = {
+  'Flux Token': {
     assetURL: Flux.src,
     assetSymbol: 'FLUX',
     initials: 'FL',
-    amount: '- 0.0015',
-    fee: '0.0001',
-    hash: '0x1234567890123456789012345678901234567890', // TODO: replace with actual hash
-    addressURL:
-      'https://etherscan.io/address/0x1234567890123456789012345678901234567890',
-    transactionHash:
-      'f2ca1bb6c7e907d06dafe4687cf025f395b16d1b459e0c4fb8c6e0b11e467e3a',
-    transactionURL:
-      'https://blockstream.info/tx/f2ca1bb6c7e907d06dafe4687cf025f395b16d1b459e0c4fb8c6e0b11e467e3a',
-    status: 'confirmed',
-    dateTime: 'Wed 1:00pm',
   },
-  {
-    id: 'transaction-03',
-    asset: 'Flux Token',
-    assetURL: Flux.src,
-    assetSymbol: 'FLUX',
-    initials: 'FL',
-    amount: '+ 25.75',
-    fee: '0.0012',
-    hash: '0x9f2e7a5c1b8d4e6f3a9c2e5b8f1a4d7c0e3f6b9a2c5e8f1b4d7a0c3e6f9b2a5',
-    addressURL:
-      'https://etherscan.io/address/0x9f2e7a5c1b8d4e6f3a9c2e5b8f1a4d7c0e3f6b9a2c5e8f1b4d7a0c3e6f9b2a5',
-    transactionHash:
-      '0x8c7fe40715ce1b86d24b0c4c30a0b8a76a8f6e2b7e8f9d3a5c1f4e7b2d9a6e3c',
-    transactionURL:
-      'https://etherscan.io/tx/0x8c7fe40715ce1b86d24b0c4c30a0b8a76a8f6e2b7e8f9d3a5c1f4e7b2d9a6e3c',
-    status: 'confirmed',
-    dateTime: 'Wed 2:45am',
-  },
-  {
-    id: 'transaction-04',
-    asset: 'USDC',
+  USDC: {
     assetURL: USDC.src,
     assetSymbol: 'USDC',
     initials: 'US',
-    amount: '+ 1,245.75',
-    fee: '0.0018',
-    hash: '0x4d8b2a9c7e1f5b3a6d0c8f2e5a9b7c1d4e8f0a3c6b9d2e5f8a1c4d7b0e3c6f9',
-    addressURL:
-      'https://etherscan.io/address/0x4d8b2a9c7e1f5b3a6d0c8f2e5a9b7c1d4e8f0a3c6b9d2e5f8a1c4d7b0e3c6f9',
-    transactionHash:
-      '0xd5f7b2a8e9c3f6d1a4b7e2c5f8a1b4e7c0d3f6a9b2e5c8f1a4d7b0e3c6f9a2',
-    transactionURL:
-      'https://etherscan.io/tx/0xd5f7b2a8e9c3f6d1a4b7e2c5f8a1b4e7c0d3f6a9b2e5c8f1a4d7b0e3c6f9a2',
-    status: 'confirmed',
-    dateTime: 'Tue 6:10pm',
   },
+} as const
 
-  {
-    id: 'transaction-02',
-    asset: 'USDC',
-    assetURL: USDC.src,
-    assetSymbol: 'USDC',
-    initials: 'US',
-    amount: '- 0.750',
-    fee: '0.005',
-    hash: '0x8ba1f109551bD432803012645Hac136c22C501e2',
-    addressURL:
-      'https://etherscan.io/address/0x8ba1f109551bD432803012645Hac136c22C501e2',
-    transactionHash:
-      '0xa3d0bbc84b2e5ab7c7f4cb5d6e3fd8a2b9c8e7f1d4e9a6b3c5f2e8d7a4b1c9e6',
-    transactionURL:
-      'https://etherscan.io/tx/0xa3d0bbc84b2e5ab7c7f4cb5d6e3fd8a2b9c8e7f1d4e9a6b3c5f2e8d7a4b1c9e6',
-    status: 'confirmed',
-    dateTime: 'Wed 7:20am',
-  },
-  {
-    id: 'transaction-05',
-    asset: 'Flux Token',
-    assetURL: Flux.src,
-    assetSymbol: 'FLUX',
-    initials: 'FL',
-    amount: '- 8.42',
-    fee: '0.0009',
-    hash: '0x5e7a1d4b8c2f6a9e3c7f1b5a8d2e6c9f3a7d1b4e8c2f5a9d3c6f0b4e7a1d5c8',
-    addressURL:
-      'https://etherscan.io/address/0x5e7a1d4b8c2f6a9e3c7f1b5a8d2e6c9f3a7d1b4e8c2f5a9d3c6f0b4e7a1d5c8',
-    transactionHash:
-      '0xb9e4c7f2a5d8b1e4c7f0a3d6b9e2c5f8a1d4b7e0c3f6a9b2e5c8f1a4d7b0e3',
-    transactionURL:
-      'https://etherscan.io/tx/0xb9e4c7f2a5d8b1e4c7f0a3d6b9e2c5f8a1d4b7e0c3f6a9b2e5c8f1a4d7b0e3',
-    status: 'pending',
-    dateTime: 'Tue 7:52am',
-  },
-  {
-    id: 'transaction-10',
-    asset: 'USDC',
-    assetURL: USDC.src,
-    assetSymbol: 'USDC',
-    initials: 'US',
-    amount: '+ 567.25',
-    fee: '0.0013',
-    hash: '0x742d35cc6436c0532925a3b8fc9563a678f9c0c3f6a9b2c5e8f1a4d7b0e3c6f9',
-    addressURL:
-      'https://etherscan.io/address/0x742d35cc6436c0532925a3b8fc9563a678f9c0c3f6a9b2c5e8f1a4d7b0e3c6f9',
-    transactionHash:
-      '0x6e9b2f5a8c1e4d7b0f3a6c9e2f5b8a1d4e7c0f3a6b9c2f5e8b1d4a7c0f3e6b9',
-    transactionURL:
-      'https://etherscan.io/tx/0x6e9b2f5a8c1e4d7b0f3a6c9e2f5b8a1d4e7c0f3a6b9c2f5e8b1d4a7c0f3e6b9',
-    status: 'confirmed',
-    dateTime: 'Wed 2:45am',
-  },
-  {
-    id: 'transaction-07',
-    asset: 'Flux Token',
-    assetURL: Flux.src,
-    assetSymbol: 'FLUX',
-    initials: 'FL',
-    amount: '+ 12.85',
-    fee: '0.0007',
-    hash: '0x7c2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2',
-    addressURL:
-      'https://etherscan.io/address/0x7c2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2',
-    transactionHash:
-      '0xc2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2',
-    transactionURL:
-      'https://etherscan.io/tx/0xc2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2',
-    status: 'pending',
-    dateTime: 'Tue 5:40am',
-  },
-  {
-    id: 'transaction-08',
-    asset: 'USDC',
-    assetURL: USDC.src,
-    assetSymbol: 'USDC',
-    initials: 'US',
-    amount: '+ 428.90',
-    fee: '0.0014',
-    hash: '0x8a3b8f2e5c9d1a4e7b0c3f6a9b2e5c8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6',
-    addressURL:
-      'https://etherscan.io/address/0x8a3b8f2e5c9d1a4e7b0c3f6a9b2e5c8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6',
-    transactionHash:
-      '0x7a3b8f2e5c9d1a4e7b0c3f6a9b2e5c8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6',
-    transactionURL:
-      'https://etherscan.io/tx/0x7a3b8f2e5c9d1a4e7b0c3f6a9b2e5c8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6',
-    status: 'confirmed',
-    dateTime: 'Tue 6:10pm',
-  },
-  {
-    id: 'transaction-06',
-    asset: 'USDC',
-    assetURL: USDC.src,
-    assetSymbol: 'USDC',
-    initials: 'US',
-    amount: '- 2,150.00',
-    fee: '0.0021',
-    hash: '0x6f9b3e8c1a5d7f2b6a9c3e7f1b4d8a2c5e9f3a6d0c8f1b4e7a3c6f9b2d5e8a1',
-    addressURL:
-      'https://etherscan.io/address/0x6f9b3e8c1a5d7f2b6a9c3e7f1b4d8a2c5e9f3a6d0c8f1b4e7a3c6f9b2d5e8a1',
-    transactionHash:
-      '0xe8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6f9a2b5c8',
-    transactionURL:
-      'https://etherscan.io/tx/0xe8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6f9a2b5c8',
-    status: 'confirmed',
-    dateTime: 'Tue 12:15pm',
-  },
-  {
-    id: 'transaction-09',
-    asset: 'Flux Token',
-    assetURL: Flux.src,
-    assetSymbol: 'FLUX',
-    initials: 'FL',
-    amount: '- 3.45',
-    fee: '0.0015',
-    hash: '0x9f6c3a8d2b5e7f0c3a6d9b2e5f8a1c4e7b0d3f6a9c2e5f8b1d4a7c0f3e6b9c2',
-    addressURL:
-      'https://etherscan.io/address/0x9f6c3a8d2b5e7f0c3a6d9b2e5f8a1c4e7b0d3f6a9c2e5f8b1d4a7c0f3e6b9c2',
-    transactionHash:
-      '0x9f6c3a8d2b5e7f0c3a6d9b2e5f8a1c4e7b0d3f6a9c2e5f8b1d4a7c0f3e6b9c2',
-    transactionURL:
-      'https://etherscan.io/tx/0x9f6c3a8d2b5e7f0c3a6d9b2e5f8a1c4e7b0d3f6a9c2e5f8b1d4a7c0f3e6b9c2',
-    status: 'failed',
-    dateTime: 'Wed 7:20am',
-  },
+type AssetName = keyof typeof assetDetails
+
+type TransactionStatus = 'confirmed' | 'pending' | 'failed'
+
+interface Transaction {
+  asset: AssetName
+  amount: string
+  fee: string
+  hash: string
+  addressURL: string
+  transactionHash: string
+  transactionURL: string
+  status: TransactionStatus
+  dateTime: string // ISO date in UTC
+}
+
+// Helper function to format UTC dates
+const formatUTCDate = (utcDate: string): string => {
+  const date = new Date(utcDate)
+  return date.toISOString().slice(0, 16).replace('T', ' ')
+}
+
+// -----------------------------------------------------------------------------
+// Auto-generated mock transactions
+// -----------------------------------------------------------------------------
+
+const transactions: Transaction[] = Array.from({ length: 100 }, (_, idx) => {
+  const index = idx + 1 // 1-based index for clarity
+  const asset: AssetName = Math.random() < 0.5 ? 'Flux Token' : 'USDC'
+
+  // Randomized amount between 0.01 and 9,999.00 (2 decimal places)
+  const amountValue = parseFloat(
+    (Math.random() * (1500 - 0.01) + 0.01).toFixed(2)
+  )
+  const sign = Math.random() < 0.5 ? '+' : '-'
+  const amount = `${sign} ${amountValue.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`
+  const fee = (0.005 + (index % 5) * 0.001).toFixed(3)
+
+  const randomHex = (length: number) =>
+    Array.from({ length }, () =>
+      Math.floor(Math.random() * 16).toString(16)
+    ).join('')
+
+  const hash = `0x${randomHex(64)}`
+  const transactionHash = `0x${randomHex(64)}`
+
+  const addressURL = `https://etherscan.io/address/0x${randomHex(40)}`
+  const transactionURL = `https://etherscan.io/tx/${transactionHash}`
+
+  // Skewed random status: ~70% confirmed, 20% pending, 10% failed
+  const rand = Math.random()
+  const status: TransactionStatus =
+    rand < 0.7 ? 'confirmed' : rand < 0.9 ? 'pending' : 'failed'
+
+  // Random date in 2025 but before the current date
+  const startRange = Date.UTC(2025, 0, 1) // Jan 1 2025 UTC
+  const now = Date.now()
+  // Ensure the upper bound is still within 2025
+  const endOf2025 = Date.UTC(2025, 11, 31, 23, 59, 59, 999)
+  const endRange = Math.min(now, endOf2025)
+
+  const dateTime = new Date(
+    startRange + Math.random() * (endRange - startRange)
+  ).toISOString()
+
+  return {
+    asset,
+    amount,
+    fee,
+    hash,
+    addressURL,
+    transactionHash,
+    transactionURL,
+    status,
+    dateTime,
+  }
+}).sort(
+  (a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()
+)
+
+const tabs = [
+  { id: 'all', label: 'All transactions' },
+  { id: 'deposits', label: 'Deposits' },
+  { id: 'withdraws', label: 'Withdraws' },
 ]
 
 const truncateHash = (hash: string, maxLength: number = 14): string => {
@@ -211,135 +131,321 @@ const truncateHash = (hash: string, maxLength: number = 14): string => {
   return `${firstPart}...${lastPart}`
 }
 
-export function TransactionsTable() {
+interface TransactionsTableProps {
+  showTabs?: boolean
+  title?: string
+}
+
+export function TransactionsTable({
+  showTabs = false,
+  title = 'Transactions',
+}: TransactionsTableProps) {
+  const [selectedTabIndex, setSelectedTabIndex] = useState<Key>('all')
+  // Pagination state
+  const itemsPerPage = 10
+  const [currentPage, setCurrentPage] = useState<number>(1)
+
+  // Date range state used for filtering
+  const [dateRange, setDateRange] = useState<{
+    start: DateValue
+    end: DateValue
+  } | null>({
+    start: parseDate('2025-01-01'),
+    end: parseDate(new Date().toISOString().split('T')[0]),
+  })
+
+  // Reset to first page whenever the selected tab changes or date range changes so pagination stays valid
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [selectedTabIndex, dateRange])
+
+  // Use selected tab label as title when tabs are shown
+  const displayTitle = showTabs
+    ? tabs.find((tab) => tab.id === selectedTabIndex)?.label || title
+    : title
+
+  // Filter transactions based on the selected tab and date range
+  const filteredTransactions = (() => {
+    let txs = transactions
+
+    // Tab based filtering
+    if (selectedTabIndex === 'deposits') {
+      txs = txs.filter((t) => t.amount.trim().startsWith('+'))
+    } else if (selectedTabIndex === 'withdraws') {
+      txs = txs.filter((t) => t.amount.trim().startsWith('-'))
+    }
+
+    // Date range filtering (only when a range is selected and component shows tabs)
+    if (showTabs && dateRange && dateRange.start && dateRange.end) {
+      const startDate = dateRange.start.toDate(getLocalTimeZone())
+      const endDateObj = dateRange.end.toDate(getLocalTimeZone())
+      // Include the entire end day by setting time to 23:59:59.999
+      const endDate = new Date(
+        endDateObj.getFullYear(),
+        endDateObj.getMonth(),
+        endDateObj.getDate(),
+        23,
+        59,
+        59,
+        999
+      )
+
+      txs = txs.filter((t) => {
+        const txDate = new Date(t.dateTime)
+        return txDate >= startDate && txDate <= endDate
+      })
+    }
+
+    return txs
+  })()
+
+  // Determine which transactions to show based on the title / current page
+  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage)
+  const displayedTransactions =
+    displayTitle.toLowerCase() === 'recent transactions'
+      ? transactions.slice(0, itemsPerPage)
+      : filteredTransactions.slice(
+          (currentPage - 1) * itemsPerPage,
+          currentPage * itemsPerPage
+        )
+
+  // Determine count to show in badge
+  const badgeCount =
+    displayTitle.toLowerCase() === 'recent transactions'
+      ? displayedTransactions.length
+      : filteredTransactions.length
+
+  /**
+   * Generates and triggers a CSV download for the currently filtered transactions.
+   * The export respects the active tab (all / deposits / withdraws) but will ignore
+   * pagination so the user receives the full dataset that they are viewing.
+   */
+  const handleDownloadCSV = useCallback(() => {
+    if (!filteredTransactions.length) return
+
+    // CSV header
+    const header = [
+      'Asset',
+      'Amount',
+      'Fee',
+      'Hash',
+      'TransactionHash',
+      'Status',
+      'DateTime',
+    ]
+
+    // Escape double quotes by duplicating them – RFC 4180 compliant
+    const escapeCell = (cell: string | number) =>
+      `"${String(cell).replace(/"/g, '""')}"`
+
+    // Build CSV rows
+    const rows = filteredTransactions.map((t) =>
+      [
+        t.asset,
+        t.amount,
+        t.fee,
+        t.hash,
+        t.transactionHash,
+        t.status,
+        t.dateTime,
+      ]
+        .map(escapeCell)
+        .join(',')
+    )
+
+    const csvContent = [header.map(escapeCell).join(','), ...rows].join('\n')
+
+    // Create a blob and trigger the download
+    const blob = new Blob([csvContent], {
+      type: 'text/csv;charset=utf-8;',
+    })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', 'transactions.csv')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }, [filteredTransactions])
+
   return (
-    <TableCard.Root className='ring-secondary shadow-inner-blur rounded-xl bg-[linear-gradient(rgba(9,9,11,0.66),rgba(9,9,11,0.66)),linear-gradient(#07344550,#07344550)] ring-1 ring-inset'>
-      <TableCard.Header
-        title='Recent transactions'
-        badge={
-          <Badge type='modern' size='sm' className='max-xl:hidden'>
-            {transactions.length} transactions
-          </Badge>
-        }
-        contentTrailing={
-          <div className='flex gap-3'>
-            <Button size='sm' color='secondary' iconTrailing={ChevronRightIcon}>
-              View all
-            </Button>
-          </div>
-        }
-        className='px-6 pt-5 pb-6 lg:pb-5'
-      />
-      <div className='-mx-0'>
-        <Table aria-label='Recent transactions'>
-          <Table.Header className='bg-transparent'>
-            <Table.Head
-              id='transaction'
-              label='Transaction'
-              isRowHeader
-              className='w-full'
-            />
-            <Table.Head id='amount' label='Amount' />
-            <Table.Head id='fee' label='Fee' className='max-md:hidden' />
-            <Table.Head id='hash' label='Hash' />
-            <Table.Head
-              id='transactionHash'
-              label='Transaction hash'
-              className='max-xl:hidden'
-            />
-            <Table.Head id='date' label='Date' className='max-lg:hidden' />
-            <Table.Head id='status' label='Status' />
-          </Table.Header>
-          <Table.Body items={transactions}>
-            {(item) => (
-              <Table.Row id={item.id}>
-                <Table.Cell className='text-nowrap'>
-                  <div className='flex w-max items-center gap-3'>
-                    <Avatar
-                      src={item.assetURL}
-                      initials={item.initials}
-                      alt={item.asset}
-                      size='md'
-                    />
-                    <div>
-                      <p className='text-primary text-sm font-medium'>
-                        {item.asset}
-                      </p>
-                      <p className='text-tertiary text-sm'>
-                        {item.assetSymbol}
-                      </p>
-                    </div>
-                  </div>
-                </Table.Cell>
-                <Table.Cell
-                  className={cn(
-                    'text-nowrap',
-                    item.amount[0] === '+' && 'text-success-primary'
-                  )}
+    <div className='flex flex-col gap-8'>
+      {showTabs && (
+        <div className='flex items-center justify-between'>
+          <Tabs
+            selectedKey={selectedTabIndex}
+            onSelectionChange={setSelectedTabIndex}
+            className='w-max max-md:hidden'
+          >
+            <TabList size='sm' type='button-minimal' items={tabs} />
+          </Tabs>
+          <DateRangePicker
+            value={dateRange}
+            onChange={(range) => setDateRange(range)}
+          />
+        </div>
+      )}
+      <TableCard.Root className='ring-secondary shadow-inner-blur rounded-xl bg-[linear-gradient(rgba(9,9,11,0.66),rgba(9,9,11,0.66)),linear-gradient(#07344550,#07344550)] ring-1 ring-inset'>
+        <TableCard.Header
+          title={displayTitle}
+          badge={
+            <Badge type='modern' size='sm' className='max-xl:hidden'>
+              {badgeCount} transactions
+            </Badge>
+          }
+          contentTrailing={
+            displayTitle.toLowerCase() === 'recent transactions' ? (
+              <div className='flex gap-3'>
+                <Button
+                  size='sm'
+                  color='secondary'
+                  iconTrailing={ChevronRightIcon}
                 >
-                  {item.amount} {item.assetSymbol}
-                </Table.Cell>
-                <Table.Cell className='text-nowrap max-md:hidden'>
-                  {item.fee} {item.assetSymbol}
-                </Table.Cell>
-                <Table.Cell className='text-nowrap'>
-                  <Tooltip
-                    arrow
-                    title={item.hash}
-                    className='max-w-sm font-mono'
-                  >
-                    <TooltipTrigger>
-                      <a
-                        href={item.addressURL}
-                        className='text-indigo-blue-300 hover:text-indigo-blue-200 flex cursor-pointer items-center font-mono text-sm leading-4 font-semibold duration-200 ease-in-out'
+                  <Link href='/dashboard/transactions'>View all</Link>
+                </Button>
+              </div>
+            ) : (
+              <Button
+                size='sm'
+                color='secondary'
+                iconLeading={DownloadCloud02}
+                onClick={handleDownloadCSV}
+              >
+                Download CSV
+              </Button>
+            )
+          }
+          className='px-6 pt-5 pb-6 lg:pb-5'
+        />
+        <div className='-mx-0'>
+          <Table aria-label='Transactions'>
+            <Table.Header className='bg-transparent'>
+              <Table.Head
+                id='transaction'
+                label='Transaction'
+                isRowHeader
+                className='w-full'
+              />
+              <Table.Head id='amount' label='Amount' />
+              <Table.Head id='fee' label='Fee' className='max-md:hidden' />
+              <Table.Head id='hash' label='Hash' />
+              <Table.Head
+                id='transactionHash'
+                label='Transaction hash'
+                className='max-xl:hidden'
+              />
+              <Table.Head
+                id='date'
+                label='Date & time (UTC)'
+                className='max-lg:hidden'
+              />
+              <Table.Head id='status' label='Status' />
+            </Table.Header>
+            <Table.Body items={displayedTransactions}>
+              {(item) => {
+                const meta = assetDetails[item.asset]
+
+                return (
+                  <Table.Row id={item.hash}>
+                    <Table.Cell className='text-nowrap'>
+                      <div className='flex w-max items-center gap-3'>
+                        <Avatar
+                          src={meta.assetURL}
+                          initials={meta.initials}
+                          alt={item.asset}
+                          size='md'
+                        />
+                        <div>
+                          <p className='text-primary text-sm font-medium'>
+                            {item.asset}
+                          </p>
+                          <p className='text-tertiary text-sm'>
+                            {meta.assetSymbol}
+                          </p>
+                        </div>
+                      </div>
+                    </Table.Cell>
+                    <Table.Cell
+                      className={cn(
+                        'text-nowrap',
+                        item.amount[0] === '+' && 'text-success-primary'
+                      )}
+                    >
+                      {item.amount} {meta.assetSymbol}
+                    </Table.Cell>
+                    <Table.Cell className='text-nowrap max-md:hidden'>
+                      {item.fee} {meta.assetSymbol}
+                    </Table.Cell>
+                    <Table.Cell className='text-nowrap'>
+                      <Tooltip
+                        arrow
+                        title={item.hash}
+                        className='max-w-sm font-mono'
                       >
-                        <span className='absolute inset-x-0 -top-px bottom-0 sm:hidden' />
-                        {truncateHash(item.hash)}
-                      </a>
-                    </TooltipTrigger>
-                  </Tooltip>
-                </Table.Cell>
-                <Table.Cell className='text-nowrap max-xl:hidden'>
-                  <Tooltip
-                    arrow
-                    title={item.transactionHash}
-                    className='max-w-sm font-mono'
-                  >
-                    <TooltipTrigger>
-                      <a
-                        href={item.transactionURL}
-                        className='text-indigo-blue-300 hover:text-indigo-blue-200 flex cursor-pointer items-center font-mono text-sm leading-4 font-semibold duration-200 ease-in-out'
+                        <TooltipTrigger>
+                          <a
+                            href={item.addressURL}
+                            className='text-indigo-blue-300 hover:text-indigo-blue-200 flex cursor-pointer items-center font-mono text-sm leading-4 font-semibold duration-200 ease-in-out'
+                          >
+                            <span className='absolute inset-x-0 -top-px bottom-0 sm:hidden' />
+                            {truncateHash(item.hash)}
+                          </a>
+                        </TooltipTrigger>
+                      </Tooltip>
+                    </Table.Cell>
+                    <Table.Cell className='text-nowrap max-xl:hidden'>
+                      <Tooltip
+                        arrow
+                        title={item.transactionHash}
+                        className='max-w-sm font-mono'
                       >
-                        <span className='absolute inset-x-0 -top-px bottom-0 sm:hidden' />
-                        {truncateHash(item.transactionHash)}
-                      </a>
-                    </TooltipTrigger>
-                  </Tooltip>
-                </Table.Cell>
-                <Table.Cell className='text-nowrap max-lg:hidden'>
-                  {item.dateTime}
-                </Table.Cell>
-                <Table.Cell>
-                  <BadgeWithDot
-                    color={
-                      item.status === 'confirmed'
-                        ? 'success'
-                        : item.status === 'failed'
-                          ? 'error'
-                          : 'gray'
-                    }
-                    type='modern'
-                    size='sm'
-                    className='capitalize'
-                  >
-                    {item.status}
-                  </BadgeWithDot>
-                </Table.Cell>
-              </Table.Row>
+                        <TooltipTrigger>
+                          <a
+                            href={item.transactionURL}
+                            className='text-indigo-blue-300 hover:text-indigo-blue-200 flex cursor-pointer items-center font-mono text-sm leading-4 font-semibold duration-200 ease-in-out'
+                          >
+                            <span className='absolute inset-x-0 -top-px bottom-0 sm:hidden' />
+                            {truncateHash(item.transactionHash)}
+                          </a>
+                        </TooltipTrigger>
+                      </Tooltip>
+                    </Table.Cell>
+                    <Table.Cell className='text-nowrap max-lg:hidden'>
+                      {formatUTCDate(item.dateTime)}
+                    </Table.Cell>
+                    <Table.Cell>
+                      <BadgeWithDot
+                        color={
+                          item.status === 'confirmed'
+                            ? 'success'
+                            : item.status === 'failed'
+                              ? 'error'
+                              : 'gray'
+                        }
+                        type='modern'
+                        size='sm'
+                        className='capitalize'
+                      >
+                        {item.status}
+                      </BadgeWithDot>
+                    </Table.Cell>
+                  </Table.Row>
+                )
+              }}
+            </Table.Body>
+          </Table>
+          {displayTitle.toLowerCase() !== 'recent transactions' &&
+            filteredTransactions.length > itemsPerPage && (
+              <PaginationPageMinimalCenter
+                page={currentPage}
+                total={totalPages}
+                onPageChange={setCurrentPage}
+                className='px-4 py-3 md:px-6 md:pt-3 md:pb-4'
+              />
             )}
-          </Table.Body>
-        </Table>
-      </div>
-    </TableCard.Root>
+        </div>
+      </TableCard.Root>
+    </div>
   )
 }
