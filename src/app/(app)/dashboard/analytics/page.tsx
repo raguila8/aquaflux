@@ -1,73 +1,31 @@
 'use client'
 
-import { TransactionsTable } from '@/components/application/table/transactions-table'
 import { parseDate } from '@internationalized/date'
-import {
-  BarChartSquare02,
-  CheckDone01,
-  DownloadCloud02,
-  FilterLines,
-  HomeLine,
-  LayoutAlt01,
-  MessageChatCircle,
-  PieChart03,
-  Plus,
-  Settings01,
-  Users01,
-  ArrowUp,
-  Cryptocurrency01,
-  Cryptocurrency02,
-  Cryptocurrency03,
-  Cryptocurrency04,
-  SearchLg,
-  Edit01,
-} from '@untitledui/icons'
-import {
-  Home03 as Home01,
-  Rows01 as Rows03,
-  PieChart02 as PieChart02,
-  Stars01 as Stars01,
-  HelpCircle,
-  CreditCardUp,
-  Wallet02,
-  Cryptocurrency03 as Cryptocurrency03Pro,
-} from '@untitledui-pro/icons/solid'
-import Home02 from '@/icons/untitledui/duo-tone/home-02.svg'
-import Home03 from '@/icons/untitledui/duo-tone/home-03.svg'
-import Rows01 from '@/icons/untitledui/duo-tone/rows-01.svg'
-import Rows02 from '@/icons/untitledui/duo-tone/rows-02.svg'
-import PieChart01 from '@/icons/untitledui/duo-tone/pie-chart-01.svg'
-import Home from '@/icons/nucleo/home-colored.svg'
-import Transactions from '@/icons/nucleo/transactions-colored.svg'
-import PieChart from '@/icons/nucleo/pie-chart-colored.svg'
-import { ChevronRightIcon } from '@heroicons/react/16/solid'
+import { ArrowUp } from '@untitledui/icons'
+import { CreditCardUp, Cryptocurrency03 } from '@untitledui-pro/icons/solid'
 
 import {
   Area,
   AreaChart,
-  Bar,
-  BarChart,
   CartesianGrid,
   Label as RechartsLabel,
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
   XAxis,
+  Pie,
+  PieChart,
+  Legend,
 } from 'recharts'
-
-import { SidebarNavigationSimple } from '@/components/application/app-navigation/sidebar-navigation/sidebar-simple'
-import { SidebarNavigationSectionDividers } from '@/components/application/app-navigation/sidebar-navigation/sidebar-section-dividers'
-import { FeaturedCardQRCode } from '@/components/application/app-navigation/base-components/featured-cards'
-import { ChartTooltipContent } from '@/components/application/charts/charts-base'
-import { ContentDivider } from '@/components/application/content-divider/content-divider'
-import { DateRangePicker } from '@/components/application/date-picker/date-range-picker'
-import { MetricsSimple } from '@/components/application/metrics/metrics'
+import { TableRowActionsDropdown } from '@/components/application/table/table'
+import { MetricChangeIndicator } from '@/components/application/metrics/metrics'
 import {
-  BadgeWithDot,
-  BadgeWithIcon,
-  Badge,
-} from '@/components/base/badges/badges'
+  ChartTooltipContent,
+  ChartLegendContent,
+} from '@/components/application/charts/charts-base'
+import { DateRangePicker } from '@/components/application/date-picker/date-range-picker'
+import { BadgeWithIcon } from '@/components/base/badges/badges'
 import { Button } from '@/components/base/buttons/button'
-import { useBreakpoint } from '@/hooks/use-breakpoint'
+import { cx } from '@/utils/cx'
 
 const lineData = [
   {
@@ -132,29 +90,137 @@ const lineData = [
   },
 ]
 
-const getBadgeColor = (category: string) => {
-  switch (category) {
-    case 'Subscriptions':
-      return 'blue'
-    case 'Food and dining':
-      return 'pink'
-    case 'Income':
-      return 'success'
-    case 'Groceries':
-      return 'indigo'
-    default:
-      return 'gray'
-  }
-}
+const pieChartData1 = [
+  {
+    name: 'Uniswap v3',
+    value: 9184.25,
+    className: 'text-brand-200 bg-brand-300',
+  },
+  {
+    name: 'USDC',
+    value: 2587.11,
+    className: 'text-brand-500 bg-brand-500',
+  },
+  {
+    name: 'ETH (Arbitrum)',
+    value: 1034.84,
+    className: 'text-brand-700 bg-brand-600',
+  },
+  {
+    name: 'GRT',
+    value: 129.36,
+    className: 'text-brand-900 bg-brand-800',
+  },
+]
 
-const colors: Record<string, string> = {
-  A: 'text-utility-brand-500',
-  B: 'text-utility-gray-200',
-}
+const pieChartData2 = [
+  {
+    name: 'USDC/ARB',
+    value: 5143.18,
+    className: 'text-indigo-blue-300 bg-indigo-blue-300',
+  },
+  {
+    name: 'ETH/USDC',
+    value: 2204.22,
+    className: 'text-indigo-blue-500 bg-indigo-blue-400',
+  },
+  {
+    name: 'USDC/USDT',
+    value: 1836.85,
+    className: 'text-indigo-blue-700 bg-indigo-blue-500',
+  },
+]
 
-export default function Dashboard() {
-  const isDesktop = useBreakpoint('lg')
+const AccountCard = ({
+  data,
+  title,
+  totalLabel,
+  value,
+  change,
+  className,
+}: {
+  data: Array<{ name: string; value: number; className: string }>
+  title: string
+  totalLabel: string
+  value: string
+  change: string
+  className?: string
+}) => (
+  <div
+    className={cx(
+      'shadow-inner-blur ring-secondary relative rounded-xl bg-[linear-gradient(rgba(9,9,11,0.66),rgba(9,9,11,0.66)),linear-gradient(#07344550,#07344550)] ring-1 ring-inset',
+      className
+    )}
+  >
+    <div className='flex flex-col flex-wrap gap-6 p-5 lg:p-6'>
+      <div className='flex flex-col flex-wrap gap-x-6 gap-y-6 min-[500px]:flex-row min-[500px]:items-center'>
+        <div className='size-30'>
+          <ResponsiveContainer>
+            <PieChart>
+              <RechartsTooltip
+                content={<ChartTooltipContent isPieChart />}
+                formatter={(value) => `$${value.toLocaleString()}`}
+              />
+              <Pie
+                isAnimationActive={false}
+                startAngle={-270}
+                endAngle={-630}
+                stroke='none'
+                data={data}
+                dataKey='value'
+                nameKey='name'
+                fill='currentColor'
+                innerRadius={35}
+                outerRadius={60}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        <div className='flex w-full flex-1 flex-col gap-6 min-[500px]:w-auto'>
+          <p className='text-md text-primary hidden font-semibold lg:block'>
+            {title}
+          </p>
+          <div className='flex flex-col gap-2'>
+            <p className='text-tertiary text-sm font-medium'>{totalLabel}</p>
+            <div className='flex items-end justify-between gap-4'>
+              <p className='text-display-sm text-primary font-semibold'>
+                {value}
+              </p>
+              <MetricChangeIndicator
+                trend='positive'
+                type='trend'
+                value={change}
+                className='mb-0.5'
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className='w-full px-0.5'>
+        <hr className='h-px border-none bg-linear-to-r from-transparent via-violet-200/15 to-transparent' />
+      </div>
+      <dl className='flex w-full flex-wrap items-center gap-6 min-[500px]:px-4 sm:gap-x-7'>
+        {data.map((item) => (
+          <div className='flex gap-2'>
+            <span
+              className={cx('mt-1 size-2 rounded-full', item.className)}
+            ></span>
+            <div className='flex flex-col gap-1'>
+              <dt className='text-tertiary text-[13px] font-medium'>
+                {item.name}
+              </dt>
+              <dd className='text-primary text-[15px] font-semibold'>
+                ${item.value.toLocaleString()}
+              </dd>
+            </div>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </div>
+)
 
+export default function Analytics() {
   return (
     <>
       <div className='flex flex-col gap-5'>
@@ -162,7 +228,7 @@ export default function Dashboard() {
         <div className='flex flex-col justify-between gap-4 lg:flex-row'>
           <div className='flex flex-col gap-0.5 lg:gap-1'>
             <p className='text-primary lg:text-display-xs text-xl font-semibold'>
-              Aquaflux Dashboard
+              Aquaflux Analytics
             </p>
             <p className='text-md text-tertiary'>
               Lorem ipsum dolor sit amet vestibulum augue.
@@ -172,7 +238,7 @@ export default function Dashboard() {
             <Button size='md' color='secondary' iconLeading={CreditCardUp}>
               Withdraw
             </Button>
-            <Button size='md' iconLeading={Cryptocurrency03Pro}>
+            <Button size='md' iconLeading={Cryptocurrency03}>
               Deposit
             </Button>
           </div>
@@ -181,36 +247,6 @@ export default function Dashboard() {
 
       <div className='flex flex-col gap-10 lg:flex-row'>
         <div className='flex min-w-0 flex-1 flex-col gap-8 lg:gap-5'>
-          <div className='flex w-full flex-col flex-wrap gap-4 lg:flex-row lg:gap-5'>
-            <MetricsSimple
-              title='4350.67'
-              subtitle='Flux tokens'
-              type='modern'
-              trend='positive'
-              change='10%'
-              className='flex-1 lg:min-w-[320px]'
-              actions={false}
-            />
-            <MetricsSimple
-              title='$0.37'
-              subtitle='Current token price'
-              type='modern'
-              trend='positive'
-              change='12%'
-              className='flex-1 lg:min-w-[320px]'
-              actions={false}
-            />
-            <MetricsSimple
-              title='+147%'
-              subtitle='Total portfolio performance'
-              type='modern'
-              trend='negative'
-              change='2%'
-              className='flex-1 lg:min-w-[320px]'
-              actions={false}
-            />
-          </div>
-
           <div className='ring-secondary lg:shadow-inner-blur flex flex-col gap-6 rounded-xl ring-inset lg:gap-5 lg:bg-[linear-gradient(rgba(9,9,11,0.66),rgba(9,9,11,0.66)),linear-gradient(#07344550,#07344550)] lg:p-6 lg:ring-1'>
             <div className='flex flex-col gap-4 lg:gap-2'>
               <div className='flex items-center justify-between gap-4'>
@@ -238,7 +274,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className='flex h-50 flex-col gap-2'>
+            <div className='flex h-80 flex-col gap-2'>
               <ResponsiveContainer className='h-full'>
                 <AreaChart
                   data={lineData}
@@ -340,8 +376,24 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Recent transactions */}
-          <TransactionsTable />
+          <div className='flex flex-col gap-x-6 gap-y-5 md:flex-row md:flex-wrap'>
+            <AccountCard
+              data={pieChartData1}
+              title='Portfolio allocation'
+              totalLabel='Total portfolio'
+              value='$12,935.56'
+              change='3.4%'
+              className='flex-1 md:min-w-[448px]'
+            />
+            <AccountCard
+              data={pieChartData2}
+              title='Uniswap v3 allocation'
+              totalLabel='Total Uniswap v3 liquidity'
+              value='$9,184.25'
+              change='2.0%'
+              className='flex-1 md:min-w-[448px]'
+            />
+          </div>
         </div>
       </div>
     </>

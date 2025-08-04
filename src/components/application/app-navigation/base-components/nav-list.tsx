@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { cx } from '@/utils/cx'
 import type { NavItemDividerType, NavItemType } from '../config'
 import { NavItemBase } from './nav-item'
@@ -22,6 +22,12 @@ export const NavList = ({ activeUrl, items, className }: NavListProps) => {
       item.items?.some((subItem) => subItem.href === activeUrl)
   )
   const [currentItem, setCurrentItem] = useState(activeItem)
+
+  // Keep the current item in sync with the active URL so that
+  // the highlighted (active) state updates after client-side navigation.
+  useEffect(() => {
+    setCurrentItem(activeItem)
+  }, [activeItem])
 
   return (
     <ul className={cx('mt-4 flex flex-col px-2 lg:px-4', className)}>

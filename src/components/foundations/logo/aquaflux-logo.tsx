@@ -2,7 +2,6 @@
 
 import type { HTMLAttributes } from 'react'
 import { cx } from '@/utils/cx'
-import { AquafluxLogoMinimal } from './aquaflux-logo-minimal'
 
 export const AquafluxLogo = (props: HTMLAttributes<HTMLOrSVGElement>) => {
   return (
@@ -78,8 +77,8 @@ export const AquafluxLogo = (props: HTMLAttributes<HTMLOrSVGElement>) => {
             y2='22.5117'
             gradientUnits='userSpaceOnUse'
           >
-            <stop stop-color='#03C9E6' />
-            <stop offset='1' stop-color='#2C4ED6' />
+            <stop stopColor='#03C9E6' />
+            <stop offset='1' stopColor='#2C4ED6' />
           </linearGradient>
           <linearGradient
             id='paint1_linear_3630_4094'
@@ -89,8 +88,8 @@ export const AquafluxLogo = (props: HTMLAttributes<HTMLOrSVGElement>) => {
             y2='34.5836'
             gradientUnits='userSpaceOnUse'
           >
-            <stop stop-color='#03C9E6' />
-            <stop offset='1' stop-color='#2C4ED6' />
+            <stop stopColor='#03C9E6' />
+            <stop offset='1' stopColor='#2C4ED6' />
           </linearGradient>
           <linearGradient
             id='paint2_linear_3630_4094'
@@ -100,8 +99,8 @@ export const AquafluxLogo = (props: HTMLAttributes<HTMLOrSVGElement>) => {
             y2='20.8253'
             gradientUnits='userSpaceOnUse'
           >
-            <stop stop-color='#03C9E6' />
-            <stop offset='1' stop-color='#2C4ED6' />
+            <stop stopColor='#03C9E6' />
+            <stop offset='1' stopColor='#2C4ED6' />
           </linearGradient>
           <linearGradient
             id='paint3_linear_3630_4094'
@@ -111,8 +110,8 @@ export const AquafluxLogo = (props: HTMLAttributes<HTMLOrSVGElement>) => {
             y2='34.7726'
             gradientUnits='userSpaceOnUse'
           >
-            <stop stop-color='#03C9E6' />
-            <stop offset='1' stop-color='#2C4ED6' />
+            <stop stopColor='#03C9E6' />
+            <stop offset='1' stopColor='#2C4ED6' />
           </linearGradient>
         </defs>
       </svg>

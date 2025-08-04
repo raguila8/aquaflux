@@ -1,3 +1,5 @@
+'use client'
+
 import type { ReactNode } from 'react'
 import { SearchLg } from '@untitledui/icons'
 import { Input } from '@/components/base/input/input'
