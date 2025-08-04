@@ -14,27 +14,19 @@ import { Avatar } from '@/components/base/avatar/avatar'
 import { cn } from '@/lib/utils'
 import { ChevronRightIcon } from '@heroicons/react/16/solid'
 
-import Avalanche from '@/images/assets/avalanche.png'
-import Cardano from '@/images/assets/cardano.png'
-import Dogecoin from '@/images/assets/dogecoin.png'
-import Ethereum from '@/images/assets/ethereum.png'
-import Litecoin from '@/images/assets/litecoin.png'
-import Neo from '@/images/assets/neo.png'
-import ShibaInu from '@/images/assets/shiba-inu.png'
-import Tether from '@/images/assets/tether.png'
-import Tron from '@/images/assets/tron.png'
-import Bitcoin from '@/images/assets/bitcoin.png'
+import USDC from '@/images/assets/usdc.png'
+import Flux from '@/images/assets/flux.png'
 
 const transactions = [
   {
     id: 'transaction-01',
-    asset: 'Bitcoin',
-    assetURL: Bitcoin.src,
-    assetSymbol: 'BTC',
-    initials: 'BT',
+    asset: 'Flux Token',
+    assetURL: Flux.src,
+    assetSymbol: 'FLUX',
+    initials: 'FL',
     amount: '- 0.0015',
     fee: '0.0001',
-    address: '0x1234567890123456789012345678901234567890',
+    hash: '0x1234567890123456789012345678901234567890', // TODO: replace with actual hash
     addressURL:
       'https://etherscan.io/address/0x1234567890123456789012345678901234567890',
     transactionHash:
@@ -45,14 +37,51 @@ const transactions = [
     dateTime: 'Wed 1:00pm',
   },
   {
+    id: 'transaction-03',
+    asset: 'Flux Token',
+    assetURL: Flux.src,
+    assetSymbol: 'FLUX',
+    initials: 'FL',
+    amount: '+ 25.75',
+    fee: '0.0012',
+    hash: '0x9f2e7a5c1b8d4e6f3a9c2e5b8f1a4d7c0e3f6b9a2c5e8f1b4d7a0c3e6f9b2a5',
+    addressURL:
+      'https://etherscan.io/address/0x9f2e7a5c1b8d4e6f3a9c2e5b8f1a4d7c0e3f6b9a2c5e8f1b4d7a0c3e6f9b2a5',
+    transactionHash:
+      '0x8c7fe40715ce1b86d24b0c4c30a0b8a76a8f6e2b7e8f9d3a5c1f4e7b2d9a6e3c',
+    transactionURL:
+      'https://etherscan.io/tx/0x8c7fe40715ce1b86d24b0c4c30a0b8a76a8f6e2b7e8f9d3a5c1f4e7b2d9a6e3c',
+    status: 'confirmed',
+    dateTime: 'Wed 2:45am',
+  },
+  {
+    id: 'transaction-04',
+    asset: 'USDC',
+    assetURL: USDC.src,
+    assetSymbol: 'USDC',
+    initials: 'US',
+    amount: '+ 1,245.75',
+    fee: '0.0018',
+    hash: '0x4d8b2a9c7e1f5b3a6d0c8f2e5a9b7c1d4e8f0a3c6b9d2e5f8a1c4d7b0e3c6f9',
+    addressURL:
+      'https://etherscan.io/address/0x4d8b2a9c7e1f5b3a6d0c8f2e5a9b7c1d4e8f0a3c6b9d2e5f8a1c4d7b0e3c6f9',
+    transactionHash:
+      '0xd5f7b2a8e9c3f6d1a4b7e2c5f8a1b4e7c0d3f6a9b2e5c8f1a4d7b0e3c6f9a2',
+    transactionURL:
+      'https://etherscan.io/tx/0xd5f7b2a8e9c3f6d1a4b7e2c5f8a1b4e7c0d3f6a9b2e5c8f1a4d7b0e3c6f9a2',
+    status: 'confirmed',
+    dateTime: 'Tue 6:10pm',
+  },
+
+  {
     id: 'transaction-02',
-    asset: 'Ethereum',
-    assetURL: Ethereum.src,
-    assetSymbol: 'ETH',
-    initials: 'ET',
+    asset: 'USDC',
+    assetURL: USDC.src,
+    assetSymbol: 'USDC',
+    initials: 'US',
     amount: '- 0.750',
     fee: '0.005',
-    address: '0x8ba1f109551bD432803012645Hac136c22C501e2',
+    hash: '0x8ba1f109551bD432803012645Hac136c22C501e2',
     addressURL:
       'https://etherscan.io/address/0x8ba1f109551bD432803012645Hac136c22C501e2',
     transactionHash:
@@ -63,159 +92,122 @@ const transactions = [
     dateTime: 'Wed 7:20am',
   },
   {
-    id: 'transaction-03',
-    asset: 'Cardano',
-    assetURL: Cardano.src,
-    assetSymbol: 'ADA',
-    initials: 'CA',
-    amount: '+ 125.50',
-    fee: '0.17',
-    address:
-      'addr1qx2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn493lzs9srxdxhhre',
-    addressURL:
-      'https://cardanoscan.io/address/addr1qx2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn493lzs9srxdxhhre',
-    transactionHash:
-      '8c7fe40715ce1b86d24b0c4c30a0b8a76a8f6e2b7e8f9d3a5c1f4e7b2d9a6e3c',
-    transactionURL:
-      'https://cardanoscan.io/transaction/8c7fe40715ce1b86d24b0c4c30a0b8a76a8f6e2b7e8f9d3a5c1f4e7b2d9a6e3c',
-    status: 'confirmed',
-    dateTime: 'Wed 2:45am',
-  },
-  {
-    id: 'transaction-04',
-    asset: 'Dogecoin',
-    assetURL: Dogecoin.src,
-    assetSymbol: 'DOGE',
-    initials: 'DO',
-    amount: '- 245.75',
-    fee: '1.0',
-    address: 'DH5yaieqoZN36fDVciNyRueRGvGLR3mr7L',
-    addressURL:
-      'https://dogechain.info/address/DH5yaieqoZN36fDVciNyRueRGvGLR3mr7L',
-    transactionHash:
-      'd5f7b2a8e9c3f6d1a4b7e2c5f8a1b4e7c0d3f6a9b2e5c8f1a4d7b0e3c6f9a2',
-    transactionURL:
-      'https://dogechain.info/tx/d5f7b2a8e9c3f6d1a4b7e2c5f8a1b4e7c0d3f6a9b2e5c8f1a4d7b0e3c6f9a2',
-    status: 'confirmed',
-    dateTime: 'Tue 6:10pm',
-  },
-  {
     id: 'transaction-05',
-    asset: 'Tether',
-    assetURL: Tether.src,
-    assetSymbol: 'USDT',
-    initials: 'TE',
-    amount: '- 12.50',
-    fee: '1.2',
-    address: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+    asset: 'Flux Token',
+    assetURL: Flux.src,
+    assetSymbol: 'FLUX',
+    initials: 'FL',
+    amount: '- 8.42',
+    fee: '0.0009',
+    hash: '0x5e7a1d4b8c2f6a9e3c7f1b5a8d2e6c9f3a7d1b4e8c2f5a9d3c6f0b4e7a1d5c8',
     addressURL:
-      'https://tronscan.org/#/address/TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+      'https://etherscan.io/address/0x5e7a1d4b8c2f6a9e3c7f1b5a8d2e6c9f3a7d1b4e8c2f5a9d3c6f0b4e7a1d5c8',
     transactionHash:
-      'b9e4c7f2a5d8b1e4c7f0a3d6b9e2c5f8a1d4b7e0c3f6a9b2e5c8f1a4d7b0e3',
+      '0xb9e4c7f2a5d8b1e4c7f0a3d6b9e2c5f8a1d4b7e0c3f6a9b2e5c8f1a4d7b0e3',
     transactionURL:
-      'https://tronscan.org/#/transaction/b9e4c7f2a5d8b1e4c7f0a3d6b9e2c5f8a1d4b7e0c3f6a9b2e5c8f1a4d7b0e3',
+      'https://etherscan.io/tx/0xb9e4c7f2a5d8b1e4c7f0a3d6b9e2c5f8a1d4b7e0c3f6a9b2e5c8f1a4d7b0e3',
     status: 'pending',
     dateTime: 'Tue 7:52am',
   },
   {
-    id: 'transaction-06',
-    asset: 'Tron',
-    assetURL: Tron.src,
-    assetSymbol: 'TRX',
-    initials: 'TR',
-    amount: '- 1,850.00',
-    fee: '5.2',
-    address: 'TLyqzVGLV1srkB7dToTAEqgDSfPtXRJZYH',
+    id: 'transaction-10',
+    asset: 'USDC',
+    assetURL: USDC.src,
+    assetSymbol: 'USDC',
+    initials: 'US',
+    amount: '+ 567.25',
+    fee: '0.0013',
+    hash: '0x742d35cc6436c0532925a3b8fc9563a678f9c0c3f6a9b2c5e8f1a4d7b0e3c6f9',
     addressURL:
-      'https://tronscan.org/#/address/TLyqzVGLV1srkB7dToTAEqgDSfPtXRJZYH',
+      'https://etherscan.io/address/0x742d35cc6436c0532925a3b8fc9563a678f9c0c3f6a9b2c5e8f1a4d7b0e3c6f9',
     transactionHash:
-      'e8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6f9a2b5c8',
+      '0x6e9b2f5a8c1e4d7b0f3a6c9e2f5b8a1d4e7c0f3a6b9c2f5e8b1d4a7c0f3e6b9',
     transactionURL:
-      'https://tronscan.org/#/transaction/e8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6f9a2b5c8',
+      'https://etherscan.io/tx/0x6e9b2f5a8c1e4d7b0f3a6c9e2f5b8a1d4e7c0f3a6b9c2f5e8b1d4a7c0f3e6b9',
     status: 'confirmed',
-    dateTime: 'Tue 12:15pm',
+    dateTime: 'Wed 2:45am',
   },
   {
     id: 'transaction-07',
-    asset: 'Litecoin',
-    assetURL: Litecoin.src,
-    assetSymbol: 'LTC',
-    initials: 'LT',
-    amount: '+ 1.25',
-    fee: '0.003',
-    address: 'LhK2YNvMZbLQe3y1sMxr4j8Q7TGfnrhqrL',
+    asset: 'Flux Token',
+    assetURL: Flux.src,
+    assetSymbol: 'FLUX',
+    initials: 'FL',
+    amount: '+ 12.85',
+    fee: '0.0007',
+    hash: '0x7c2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2',
     addressURL:
-      'https://litecoin.com/en/explorer/address/LhK2YNvMZbLQe3y1sMxr4j8Q7TGfnrhqrL',
+      'https://etherscan.io/address/0x7c2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2',
     transactionHash:
-      'c2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2',
+      '0xc2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2',
     transactionURL:
-      'https://blockchair.com/litecoin/transaction/c2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2',
+      'https://etherscan.io/tx/0xc2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2f5e8b1d4a7c0f3e6b9c2',
     status: 'pending',
     dateTime: 'Tue 5:40am',
   },
   {
     id: 'transaction-08',
-    asset: 'Neo',
-    assetURL: Neo.src,
-    assetSymbol: 'NEO',
-    initials: 'NE',
-    amount: '- 2.80',
-    fee: '0.0',
-    address: 'AK2nJJpJr6o664CWJKi1QRXjqeic2zRp8y',
+    asset: 'USDC',
+    assetURL: USDC.src,
+    assetSymbol: 'USDC',
+    initials: 'US',
+    amount: '+ 428.90',
+    fee: '0.0014',
+    hash: '0x8a3b8f2e5c9d1a4e7b0c3f6a9b2e5c8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6',
     addressURL:
-      'https://neo.org/explorer/address/AK2nJJpJr6o664CWJKi1QRXjqeic2zRp8y',
+      'https://etherscan.io/address/0x8a3b8f2e5c9d1a4e7b0c3f6a9b2e5c8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6',
     transactionHash:
       '0x7a3b8f2e5c9d1a4e7b0c3f6a9b2e5c8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6',
     transactionURL:
-      'https://neoscan.io/transaction/0x7a3b8f2e5c9d1a4e7b0c3f6a9b2e5c8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6',
+      'https://etherscan.io/tx/0x7a3b8f2e5c9d1a4e7b0c3f6a9b2e5c8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6',
     status: 'confirmed',
     dateTime: 'Tue 6:10pm',
   },
   {
-    id: 'transaction-09',
-    asset: 'Bitcoin',
-    assetURL: Bitcoin.src,
-    assetSymbol: 'BTC',
-    initials: 'BT',
-    amount: '- 0.0045',
-    fee: '0.00015',
-    address: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+    id: 'transaction-06',
+    asset: 'USDC',
+    assetURL: USDC.src,
+    assetSymbol: 'USDC',
+    initials: 'US',
+    amount: '- 2,150.00',
+    fee: '0.0021',
+    hash: '0x6f9b3e8c1a5d7f2b6a9c3e7f1b4d8a2c5e9f3a6d0c8f1b4e7a3c6f9b2d5e8a1',
     addressURL:
-      'https://blockstream.info/address/bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+      'https://etherscan.io/address/0x6f9b3e8c1a5d7f2b6a9c3e7f1b4d8a2c5e9f3a6d0c8f1b4e7a3c6f9b2d5e8a1',
     transactionHash:
-      '9f6c3a8d2b5e7f0c3a6d9b2e5f8a1c4e7b0d3f6a9c2e5f8b1d4a7c0f3e6b9c2',
+      '0xe8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6f9a2b5c8',
     transactionURL:
-      'https://blockstream.info/tx/9f6c3a8d2b5e7f0c3a6d9b2e5f8a1c4e7b0d3f6a9c2e5f8b1d4a7c0f3e6b9c2',
+      'https://etherscan.io/tx/0xe8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6f9a2b5c8f1a4d7b0e3c6f9a2b5c8',
+    status: 'confirmed',
+    dateTime: 'Tue 12:15pm',
+  },
+  {
+    id: 'transaction-09',
+    asset: 'Flux Token',
+    assetURL: Flux.src,
+    assetSymbol: 'FLUX',
+    initials: 'FL',
+    amount: '- 3.45',
+    fee: '0.0015',
+    hash: '0x9f6c3a8d2b5e7f0c3a6d9b2e5f8a1c4e7b0d3f6a9c2e5f8b1d4a7c0f3e6b9c2',
+    addressURL:
+      'https://etherscan.io/address/0x9f6c3a8d2b5e7f0c3a6d9b2e5f8a1c4e7b0d3f6a9c2e5f8b1d4a7c0f3e6b9c2',
+    transactionHash:
+      '0x9f6c3a8d2b5e7f0c3a6d9b2e5f8a1c4e7b0d3f6a9c2e5f8b1d4a7c0f3e6b9c2',
+    transactionURL:
+      'https://etherscan.io/tx/0x9f6c3a8d2b5e7f0c3a6d9b2e5f8a1c4e7b0d3f6a9c2e5f8b1d4a7c0f3e6b9c2',
     status: 'failed',
     dateTime: 'Wed 7:20am',
   },
-  {
-    id: 'transaction-10',
-    asset: 'Avalanche',
-    assetURL: Avalanche.src,
-    assetSymbol: 'AVAX',
-    initials: 'AV',
-    amount: '+ 3.25',
-    fee: '0.008',
-    address: '0x742d35cc6436c0532925a3b8fc9563a678f9c0c3',
-    addressURL:
-      'https://etherscan.io/address/0x742d35cc6436c0532925a3b8fc9563a678f9c0c3',
-    transactionHash:
-      '0x6e9b2f5a8c1e4d7b0f3a6c9e2f5b8a1d4e7c0f3a6b9c2f5e8b1d4a7c0f3e6b9',
-    transactionURL:
-      'https://snowtrace.io/tx/0x6e9b2f5a8c1e4d7b0f3a6c9e2f5b8a1d4e7c0f3a6b9c2f5e8b1d4a7c0f3e6b9',
-    status: 'confirmed',
-    dateTime: 'Wed 2:45am',
-  },
 ]
 
-const truncateAddress = (address: string, maxLength: number = 14): string => {
-  if (address.length <= maxLength) {
-    return address
+const truncateHash = (hash: string, maxLength: number = 14): string => {
+  if (hash.length <= maxLength) {
+    return hash
   }
 
-  const firstPart = address.slice(0, 7)
-  const lastPart = address.slice(-7)
+  const firstPart = hash.slice(0, 7)
+  const lastPart = hash.slice(-7)
   return `${firstPart}...${lastPart}`
 }
 
@@ -249,7 +241,7 @@ export function TransactionsTable() {
             />
             <Table.Head id='amount' label='Amount' />
             <Table.Head id='fee' label='Fee' className='max-md:hidden' />
-            <Table.Head id='address' label='Address' />
+            <Table.Head id='hash' label='Hash' />
             <Table.Head
               id='transactionHash'
               label='Transaction hash'
@@ -293,7 +285,7 @@ export function TransactionsTable() {
                 <Table.Cell className='text-nowrap'>
                   <Tooltip
                     arrow
-                    title={item.address}
+                    title={item.hash}
                     className='max-w-sm font-mono'
                   >
                     <TooltipTrigger>
@@ -302,7 +294,7 @@ export function TransactionsTable() {
                         className='text-indigo-blue-300 hover:text-indigo-blue-200 flex cursor-pointer items-center font-mono text-sm leading-4 font-semibold duration-200 ease-in-out'
                       >
                         <span className='absolute inset-x-0 -top-px bottom-0 sm:hidden' />
-                        {truncateAddress(item.address)}
+                        {truncateHash(item.hash)}
                       </a>
                     </TooltipTrigger>
                   </Tooltip>
@@ -319,7 +311,7 @@ export function TransactionsTable() {
                         className='text-indigo-blue-300 hover:text-indigo-blue-200 flex cursor-pointer items-center font-mono text-sm leading-4 font-semibold duration-200 ease-in-out'
                       >
                         <span className='absolute inset-x-0 -top-px bottom-0 sm:hidden' />
-                        {truncateAddress(item.transactionHash)}
+                        {truncateHash(item.transactionHash)}
                       </a>
                     </TooltipTrigger>
                   </Tooltip>

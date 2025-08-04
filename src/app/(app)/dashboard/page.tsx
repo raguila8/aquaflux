@@ -240,7 +240,7 @@ export default function Dashboard() {
               <div className='flex min-w-0 flex-1 flex-col gap-8 lg:gap-5'>
                 <div className='flex w-full flex-col flex-wrap gap-4 lg:flex-row lg:gap-5'>
                   <MetricsSimple
-                    title='12'
+                    title='4350.67'
                     subtitle='Flux tokens'
                     type='modern'
                     trend='positive'
@@ -249,7 +249,7 @@ export default function Dashboard() {
                     actions={false}
                   />
                   <MetricsSimple
-                    title='$1,280'
+                    title='$0.37'
                     subtitle='Current token price'
                     type='modern'
                     trend='positive'
@@ -258,8 +258,8 @@ export default function Dashboard() {
                     actions={false}
                   />
                   <MetricsSimple
-                    title='$10,911.42'
-                    subtitle='Total portfolio value'
+                    title='+147%'
+                    subtitle='Total portfolio performance'
                     type='modern'
                     trend='negative'
                     change='2%'
@@ -283,7 +283,7 @@ export default function Dashboard() {
                     </div>
                     <div className='flex items-center gap-4'>
                       <p className='text-display-sm text-primary font-semibold'>
-                        $107,843.82
+                        $1609.75
                       </p>
                       <BadgeWithIcon
                         type='modern'
