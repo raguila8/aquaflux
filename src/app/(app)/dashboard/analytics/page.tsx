@@ -201,7 +201,7 @@ const AccountCard = ({
       </div>
       <dl className='flex w-full flex-wrap items-center gap-6 min-[500px]:px-4 sm:gap-x-7'>
         {data.map((item) => (
-          <div className='flex gap-2'>
+          <div className='flex gap-2' key={item.name}>
             <span
               className={cx('mt-1 size-2 rounded-full', item.className)}
             ></span>
