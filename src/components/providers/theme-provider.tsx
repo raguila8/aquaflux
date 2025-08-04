@@ -8,7 +8,10 @@ export function ThemeProvider({ children }: PropsWithChildren) {
     <NextThemeProvider
       disableTransitionOnChange
       attribute='class'
-      value={{ light: 'light-mode', dark: 'dark-mode' }}
+      defaultTheme='dark'
+      enableSystem={false}
+      forcedTheme='dark'
+      value={{ dark: 'dark-mode' }}
     >
       {children}
     </NextThemeProvider>
