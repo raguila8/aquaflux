@@ -11,6 +11,7 @@ import {
   PieChart02,
   Stars01,
   HelpCircle,
+  CoinsSwap01,
 } from '@untitledui-pro/icons/solid'
 
 export const AquafluxSidebar = () => {
@@ -37,6 +38,16 @@ export const AquafluxSidebar = () => {
           label: 'Flux Analytics',
           href: '/dashboard/analytics',
           icon: PieChart02,
+        },
+        {
+          label: 'Swap',
+          href: '#',
+          icon: CoinsSwap01,
+          badge: (
+            <Badge size='sm' type='modern'>
+              Coming soon
+            </Badge>
+          ),
         },
       ]}
       footerItems={[

@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@plugin '@tailwindcss/forms';
 @plugin "tailwindcss-animate";
 @plugin "tailwindcss-react-aria-components";
 @import './vendors/odometer-theme-default.css' layer(components);

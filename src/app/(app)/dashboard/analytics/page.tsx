@@ -1,7 +1,5 @@
 'use client'
 
-import { CreditCardUp, Cryptocurrency03 } from '@untitledui-pro/icons/solid'
-
 import {
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
@@ -10,7 +8,6 @@ import {
 } from 'recharts'
 import { MetricChangeIndicator } from '@/components/application/metrics/metrics'
 import { ChartTooltipContent } from '@/components/application/charts/charts-base'
-import { Button } from '@/components/base/buttons/button'
 import { cx } from '@/utils/cx'
 import { FluxChart } from '@/components/application/charts/flux-chart'
 
@@ -146,53 +143,29 @@ const AccountCard = ({
 
 export default function Analytics() {
   return (
-    <>
-      <div className='flex flex-col gap-5'>
-        {/* Page header */}
-        <div className='flex flex-col justify-between gap-4 lg:flex-row'>
-          <div className='flex flex-col gap-0.5 lg:gap-1'>
-            <p className='text-primary lg:text-display-xs text-xl font-semibold'>
-              Aquaflux Analytics
-            </p>
-            <p className='text-md text-tertiary'>
-              Lorem ipsum dolor sit amet vestibulum augue.
-            </p>
-          </div>
-          <div className='flex gap-3'>
-            <Button size='md' color='secondary' iconLeading={CreditCardUp}>
-              Withdraw
-            </Button>
-            <Button size='md' iconLeading={Cryptocurrency03}>
-              Deposit
-            </Button>
-          </div>
+    <div className='flex flex-col gap-10 lg:flex-row'>
+      <div className='flex min-w-0 flex-1 flex-col gap-8 lg:gap-5'>
+        <FluxChart height='h-80' />
+
+        <div className='flex flex-col gap-x-6 gap-y-5 md:flex-row md:flex-wrap'>
+          <AccountCard
+            data={pieChartData1}
+            title='Portfolio allocation'
+            totalLabel='Total portfolio'
+            value='$12,935.56'
+            change='3.4%'
+            className='flex-1 md:min-w-[448px]'
+          />
+          <AccountCard
+            data={pieChartData2}
+            title='Uniswap v3 allocation'
+            totalLabel='Total Uniswap v3 liquidity'
+            value='$9,184.25'
+            change='2.0%'
+            className='flex-1 md:min-w-[448px]'
+          />
         </div>
       </div>
-
-      <div className='flex flex-col gap-10 lg:flex-row'>
-        <div className='flex min-w-0 flex-1 flex-col gap-8 lg:gap-5'>
-          <FluxChart height='h-80' />
-
-          <div className='flex flex-col gap-x-6 gap-y-5 md:flex-row md:flex-wrap'>
-            <AccountCard
-              data={pieChartData1}
-              title='Portfolio allocation'
-              totalLabel='Total portfolio'
-              value='$12,935.56'
-              change='3.4%'
-              className='flex-1 md:min-w-[448px]'
-            />
-            <AccountCard
-              data={pieChartData2}
-              title='Uniswap v3 allocation'
-              totalLabel='Total Uniswap v3 liquidity'
-              value='$9,184.25'
-              change='2.0%'
-              className='flex-1 md:min-w-[448px]'
-            />
-          </div>
-        </div>
-      </div>
-    </>
+    </div>
   )
 }

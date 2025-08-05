@@ -40,7 +40,7 @@ export const FeaturedCardQRCode = ({
         <p className='text-tertiary text-sm'>{description}</p>
       </div>
       <div className='relative flex w-full items-center justify-center'>
-        <QRCode value='https://www.untitledui.com/' size='md' />
+        <QRCode value='https://www.tailawesome.com/' size='md' />
         <GradientScan />
       </div>
       <Button color='secondary' size='sm' onClick={onConfirm}>

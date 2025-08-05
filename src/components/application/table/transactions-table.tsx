@@ -12,7 +12,7 @@ import { DownloadCloud02 } from '@untitledui/icons'
 import { TabList, Tabs } from '@/components/application/tabs/tabs'
 import { Button } from '@/components/base/buttons/button'
 import { Avatar } from '@/components/base/avatar/avatar'
-import { cn } from '@/lib/utils'
+import { cn, truncateHash } from '@/lib/utils'
 import { ChevronRightIcon } from '@heroicons/react/16/solid'
 
 import USDC from '@/images/assets/usdc.png'
@@ -114,16 +114,6 @@ const tabs = [
   { id: 'deposits', label: 'Deposits' },
   { id: 'withdraws', label: 'Withdraws' },
 ]
-
-const truncateHash = (hash: string, maxLength: number = 14): string => {
-  if (hash.length <= maxLength) {
-    return hash
-  }
-
-  const firstPart = hash.slice(0, 7)
-  const lastPart = hash.slice(-7)
-  return `${firstPart}...${lastPart}`
-}
 
 interface TransactionsTableProps {
   showTabs?: boolean

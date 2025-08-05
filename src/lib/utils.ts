@@ -13,3 +13,13 @@ export function getOffsetTop(element: HTMLElement | null) {
   }
   return offsetTop
 }
+
+export const truncateHash = (hash: string, maxLength: number = 14): string => {
+  if (hash.length <= maxLength) {
+    return hash
+  }
+
+  const firstPart = hash.slice(0, 7)
+  const lastPart = hash.slice(-7)
+  return `${firstPart}...${lastPart}`
+}

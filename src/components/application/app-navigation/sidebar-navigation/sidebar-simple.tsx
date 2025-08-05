@@ -14,6 +14,7 @@ import type {
   NavItemType,
   NavItemDividerType,
 } from '@/components/application/app-navigation/config'
+import Link from 'next/link'
 
 interface SidebarNavigationProps {
   /** URL of the currently active item. */
@@ -60,7 +61,9 @@ export const SidebarNavigationSimple = ({
       )}
     >
       <div className='flex flex-col gap-5 px-4 lg:px-5'>
-        <AquafluxLogo className='h-7 pl-1.5' />
+        <Link href='/dashboard'>
+          <AquafluxLogo className='h-7 pl-1.5' />
+        </Link>
 
         {showSearch && (
           <Input
