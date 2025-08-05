@@ -131,7 +131,7 @@ export const TWOFACodeModal = ({
                     })
                   }}
                 >
-                  Confirm
+                  Done
                 </Button>
               </div>
             </div>
