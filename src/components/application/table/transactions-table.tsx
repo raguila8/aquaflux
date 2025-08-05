@@ -40,8 +40,6 @@ interface Transaction {
   asset: AssetName
   amount: string
   fee: string
-  hash: string
-  addressURL: string
   transactionHash: string
   transactionURL: string
   status: TransactionStatus
@@ -78,10 +76,8 @@ const transactions: Transaction[] = Array.from({ length: 100 }, (_, idx) => {
       Math.floor(Math.random() * 16).toString(16)
     ).join('')
 
-  const hash = `0x${randomHex(64)}`
   const transactionHash = `0x${randomHex(64)}`
 
-  const addressURL = `https://etherscan.io/address/0x${randomHex(40)}`
   const transactionURL = `https://etherscan.io/tx/${transactionHash}`
 
   // Skewed random status: ~70% confirmed, 20% pending, 10% failed
@@ -104,8 +100,6 @@ const transactions: Transaction[] = Array.from({ length: 100 }, (_, idx) => {
     asset,
     amount,
     fee,
-    hash,
-    addressURL,
     transactionHash,
     transactionURL,
     status,
@@ -228,7 +222,6 @@ export function TransactionsTable({
       'Asset',
       'Amount',
       'Fee',
-      'Hash',
       'TransactionHash',
       'Status',
       'DateTime',
@@ -240,15 +233,7 @@ export function TransactionsTable({
 
     // Build CSV rows
     const rows = filteredTransactions.map((t) =>
-      [
-        t.asset,
-        t.amount,
-        t.fee,
-        t.hash,
-        t.transactionHash,
-        t.status,
-        t.dateTime,
-      ]
+      [t.asset, t.amount, t.fee, t.transactionHash, t.status, t.dateTime]
         .map(escapeCell)
         .join(',')
     )
@@ -329,7 +314,6 @@ export function TransactionsTable({
               />
               <Table.Head id='amount' label='Amount' />
               <Table.Head id='fee' label='Fee' className='max-md:hidden' />
-              <Table.Head id='hash' label='Hash' />
               <Table.Head
                 id='transactionHash'
                 label='Transaction hash'
@@ -347,7 +331,7 @@ export function TransactionsTable({
                 const meta = assetDetails[item.asset]
 
                 return (
-                  <Table.Row id={item.hash}>
+                  <Table.Row id={item.transactionHash}>
                     <Table.Cell className='text-nowrap'>
                       <div className='flex w-max items-center gap-3'>
                         <Avatar
@@ -376,23 +360,6 @@ export function TransactionsTable({
                     </Table.Cell>
                     <Table.Cell className='text-nowrap max-md:hidden'>
                       {item.fee} {meta.assetSymbol}
-                    </Table.Cell>
-                    <Table.Cell className='text-nowrap'>
-                      <Tooltip
-                        arrow
-                        title={item.hash}
-                        className='max-w-sm font-mono'
-                      >
-                        <TooltipTrigger>
-                          <a
-                            href={item.addressURL}
-                            className='text-indigo-blue-300 hover:text-indigo-blue-200 flex cursor-pointer items-center font-mono text-sm leading-4 font-semibold duration-200 ease-in-out'
-                          >
-                            <span className='absolute inset-x-0 -top-px bottom-0 sm:hidden' />
-                            {truncateHash(item.hash)}
-                          </a>
-                        </TooltipTrigger>
-                      </Tooltip>
                     </Table.Cell>
                     <Table.Cell className='text-nowrap max-xl:hidden'>
                       <Tooltip
