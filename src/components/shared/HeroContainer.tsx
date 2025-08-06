@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { Header } from '@/components/header/Header'
 import { StarField } from '@/components/shared/StarField'
 import { cn } from '@/lib/utils'
-import spaceWavesPng from '@/images/hero-space-waves.png'
+const spaceWavesPng = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/hero-space-waves.avif'
 
 interface HeroContainerProps {
   starField?: boolean

@@ -6,17 +6,17 @@ import { Button } from '@/components/shared/Button'
 import { StarField } from '@/components/shared/StarField'
 import { ChevronRightIcon } from '@heroicons/react/16/solid'
 
-import spaceSpotlight from '@/images/space-spotlight-2.png'
+const spaceSpotlight = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/space-spotlight-2.avif'
 
-import bitget from '@/images/logos/icons/bitget.png'
-import coinbase from '@/images/logos/icons/coinbase.png'
-import metamask from '@/images/logos/icons/metamask.png'
-import myetherwallet from '@/images/logos/icons/myetherwallet.png'
-import phantum from '@/images/logos/icons/phantum.png'
-import rabby from '@/images/logos/icons/rabby.png'
-import safepal from '@/images/logos/icons/safe-pal.png'
-import trustwallet from '@/images/logos/icons/trust-wallet.png'
-import zerion from '@/images/logos/icons/zerion.png'
+const bitget = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/icons/bitget.avif'
+const coinbase = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/icons/coinbase.avif'
+const metamask = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/icons/metamask.avif'
+const myetherwallet = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/icons/myetherwallet.avif'
+const phantum = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/icons/phantum.avif'
+const rabby = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/icons/rabby.avif'
+const safepal = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/icons/safe-pal.avif'
+const trustwallet = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/icons/trust-wallet.avif'
+const zerion = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/icons/zerion.avif'
 
 const integrations = [
   [

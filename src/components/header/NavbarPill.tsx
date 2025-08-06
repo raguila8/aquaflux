@@ -23,8 +23,8 @@ import {
   DisclosurePanel,
 } from '@headlessui/react'
 
-import logo from '@/images/aquaflux-logo.png'
-import logoIcon from '@/images/aquaflux-logo-icon.png'
+const logo = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/aquaflux-logo.avif'
+const logoIcon = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/aquaflux-logo-icon.avif'
 
 type NavLink = {
   label: string

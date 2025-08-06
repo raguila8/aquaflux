@@ -6,8 +6,8 @@ import { StarField } from '@/components/shared/StarField'
 import { ContentPill } from '@/components/shared/ContentPill'
 import { SOCIALS } from '@/config'
 
-import logo from '@/images/aquaflux-logo.png'
-import logoIcon from '@/images/aquaflux-logo-icon.png'
+const logo = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/aquaflux-logo.avif'
+const logoIcon = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/aquaflux-logo-icon.avif'
 
 type Props = {
   cta?: boolean

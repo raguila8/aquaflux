@@ -6,7 +6,7 @@ import { Button } from '@/components/shared/Button'
 import { useWallet } from '@/contexts/WalletContext'
 import { useRouter } from 'next/navigation'
 
-import spaceSpotlight from '@/images/space-spotlight.png'
+const spaceSpotlight = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/space-spotlight.avif'
 
 export function FooterCTA() {
   const { isConnected, connect } = useWallet();

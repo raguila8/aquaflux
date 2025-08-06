@@ -20,8 +20,8 @@ import { useWallet } from '@/contexts/WalletContext'
 import { fetchVaultTransactions, getWalletTransactions, getNewTransactionsForWallet, type VaultTransaction } from '@/services/vaultTransactionServiceVercel'
 import { toast } from 'sonner'
 
-import USDC from '@/images/assets/usdc.png'
-import Flux from '@/images/assets/flux.png'
+const USDC = { src: 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/assets/usdc.avif' }
+const Flux = { src: 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/assets/flux.avif' }
 
 const assetDetails = {
   'Flux Token': {

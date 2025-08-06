@@ -10,8 +10,8 @@ import { useWallet } from '@/contexts/WalletContext'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
-import appScreenshot from '@/images/app-screenshot.png'
-import cosmicButterfly from '@/images/cosmic-butterfly.png'
+const appScreenshot = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/app-screenshot.avif'
+const cosmicButterfly = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/cosmic-butterfly.avif'
 
 export const HomeHero = () => {
   const { isConnected, connect } = useWallet();
@@ -55,7 +55,7 @@ export const HomeHero = () => {
               {' '}
               {isConnected ? 'Go to Dashboard' : 'Get started'}{' '}
             </Button>
-            <Button variant='tertiary' href='https://t.me/+gbjAAlcYhL9kMzZk' target='_blank' rel='noopener noreferrer' className='group overflow-hidden'>
+            <Button variant='tertiary' href='https://t.me/aquaflux_tech' target='_blank' rel='noopener noreferrer' className='group overflow-hidden'>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 width={24}

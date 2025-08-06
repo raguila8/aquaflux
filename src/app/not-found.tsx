@@ -7,7 +7,7 @@ import { ContentPill } from '@/components/shared/ContentPill'
 import { ChevronRightIcon } from '@heroicons/react/16/solid'
 import type { Metadata } from 'next'
 
-import spaceSpotlight from '@/images/space-spotlight.png'
+const spaceSpotlight = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/space-spotlight.avif'
 import UFOIcon from '@/icons/nucleo/ufo-18.svg'
 
 export const metadata: Metadata = {

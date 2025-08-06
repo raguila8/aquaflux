@@ -1,6 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  images: {
+    domains: ['04mu1lnp8qyyyqvs.public.blob.vercel-storage.com'],
+    formats: ['image/avif', 'image/webp'],
+  },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
+  swcMinify: true,
+  compress: true,
   webpack(config) {
     // Grab the existing rule that handles SVG imports
     const fileLoaderRule = config.module.rules.find((rule) =>

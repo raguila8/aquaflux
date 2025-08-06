@@ -8,7 +8,7 @@ import { Container } from '@/components/shared/Container'
 import { Button } from '@/components/shared/Button'
 import { useWallet } from '@/contexts/WalletContext'
 
-import logo from '@/images/aquaflux-logo.png'
+const logo = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/aquaflux-logo.avif'
 
 export const Header = () => {
   const { isConnected, connect, disconnect } = useWallet();

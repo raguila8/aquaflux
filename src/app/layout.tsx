@@ -44,6 +44,12 @@ export default async function RootLayout({
       lang='en'
       className={clsx('scroll-smooth', GeistSans.variable, GeistMono.variable)}
     >
+      <head>
+        <link rel="preconnect" href="https://base-mainnet.g.alchemy.com" />
+        <link rel="dns-prefetch" href="https://base-mainnet.g.alchemy.com" />
+        <link rel="preconnect" href="https://base-sepolia.g.alchemy.com" />
+        <link rel="dns-prefetch" href="https://base-sepolia.g.alchemy.com" />
+      </head>
       <body className='bg-zinc-950 antialiased'>
         <ReownProvider cookies={cookies} initialState={initialState}>
           <WalletProvider>

@@ -102,7 +102,7 @@ export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
         footerItems={[
           {
             label: 'Changelog',
-            href: '/changelog',
+            href: '#',
             icon: Stars01,
             badge: (
               <Badge size='sm' type='modern'>

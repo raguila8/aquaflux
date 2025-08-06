@@ -48,26 +48,21 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
         getFluxBalance(address),
         getUsdcBalance(address),
       ]);
-      
-      setFluxBalance(parseFloat(flux).toFixed(2));
-      setUsdcBalance(parseFloat(usdc).toFixed(2));
+      setFluxBalance(flux);
+      setUsdcBalance(usdc);
     } catch (error) {
       console.error('Error fetching balances:', error);
-      setFluxBalance('0');
-      setUsdcBalance('0');
     } finally {
       setIsLoading(false);
     }
   }, [address]);
 
   useEffect(() => {
-    if (address) {
+    if (address && mounted) {
       refreshBalances();
       
-      const unsubscribe = subscribeToNewTransactions((tx) => {
-        if (tx.from === address || tx.to === address) {
-          setTimeout(refreshBalances, 2000);
-        }
+      const unsubscribe = subscribeToNewTransactions(address, () => {
+        refreshBalances();
       });
       
       const interval = setInterval(refreshBalances, 30000);
@@ -88,10 +83,8 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       if (currentPath.startsWith('/dashboard')) {
         router.push('/');
       }
-      // Clear the redirect flag when disconnected
       sessionStorage.removeItem('wallet_connection_redirected');
     } else if (isConnected && mounted) {
-      // Redirect to dashboard after successful connection (only once per session)
       const hasRedirected = sessionStorage.getItem('wallet_connection_redirected');
       if (!hasRedirected) {
         sessionStorage.setItem('wallet_connection_redirected', 'true');
@@ -112,7 +105,6 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       await wagmiDisconnect();
       setFluxBalance('0');
       setUsdcBalance('0');
-      // Only redirect if currently on dashboard pages
       const currentPath = window.location.pathname;
       if (currentPath.startsWith('/dashboard')) {
         router.push('/');
@@ -150,7 +142,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
         usdcBalance,
         connect,
         disconnect,
-        isLoading: isConnecting || isLoading,
+        isLoading: isLoading || isConnecting,
         refreshBalances,
       }}
     >
@@ -161,7 +153,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
 
 export function useWallet() {
   const context = useContext(WalletContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useWallet must be used within a WalletProvider');
   }
   return context;

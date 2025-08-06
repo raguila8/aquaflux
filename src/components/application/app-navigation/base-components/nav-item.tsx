@@ -107,6 +107,15 @@ export const NavItemBase = ({
   }
 
   if (type === 'collapsible-child') {
+    const handleChildClick = (e: React.MouseEvent) => {
+      if (href === '#') {
+        e.preventDefault()
+      }
+      if (onClick) {
+        onClick(e)
+      }
+    }
+
     return (
       <Link
         href={href!}
@@ -115,16 +124,28 @@ export const NavItemBase = ({
         className={cx(
           'py-2 pr-3 pl-10',
           styles.root,
-          current && styles.rootSelected
+          current && styles.rootSelected,
+          href === '#' && 'cursor-not-allowed opacity-75'
         )}
-        onClick={onClick}
+        onClick={handleChildClick}
         aria-current={current ? 'page' : undefined}
+        aria-disabled={href === '#'}
       >
         {labelElement}
         {externalIcon}
         {badgeElement}
       </Link>
     )
+  }
+
+  // Handle hash links or disabled items
+  const handleClick = (e: React.MouseEvent) => {
+    if (href === '#') {
+      e.preventDefault()
+    }
+    if (onClick) {
+      onClick(e)
+    }
   }
 
   return (
@@ -137,10 +158,12 @@ export const NavItemBase = ({
         styles.root,
         current
           ? styles.rootSelected
-          : 'hover:shadow-inner-blur-no-border hover:bg-secondary_subtle/90'
+          : 'hover:shadow-inner-blur-no-border hover:bg-secondary_subtle/90',
+        href === '#' && 'cursor-not-allowed opacity-75'
       )}
-      onClick={onClick}
+      onClick={handleClick}
       aria-current={current ? 'page' : undefined}
+      aria-disabled={href === '#'}
     >
       {iconElement}
       {labelElement}

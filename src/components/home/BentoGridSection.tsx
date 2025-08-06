@@ -13,14 +13,14 @@ import {
   BoltIcon,
 } from '@heroicons/react/16/solid'
 
-import globe from '@/images/globe.svg?url'
-import globeGlow from '@/images/globe-glow.svg?url'
-import binaryCodeBg from '@/images/binary-code-bg.svg?url'
-import encryptionIcon from '@/images/encryption-icon.svg?url'
+const globe = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/globe.svg'
+const globeGlow = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/globe-glow.svg'
+const binaryCodeBg = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/binary-code-bg.svg'
+const encryptionIcon = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/encryption-icon.svg'
 
-import spaceSpotlight from '@/images/space-spotlight-3.png'
-import encryptionGradient from '@/images/encryption-gradient.png'
-import teamIntegrations from '@/images/team-integrations.png'
+const spaceSpotlight = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/space-spotlight-3.avif'
+const encryptionGradient = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/encryption-gradient.avif'
+const teamIntegrations = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/team-integrations.avif'
 
 export const BentoGridSection = () => {
   const handleCardMouseMove = (event: MouseEvent) => {
