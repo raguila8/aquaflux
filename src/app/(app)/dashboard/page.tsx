@@ -20,6 +20,7 @@ const FluxChart = dynamic(
 
 
 import { MetricsSimple } from '@/components/application/metrics/metrics'
+import { MetricSkeleton, ChartSkeleton, TableSkeleton } from '@/components/shared/SkeletonLoader'
 import { useWallet } from '@/contexts/WalletContext'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useMemo } from 'react'
@@ -34,7 +35,10 @@ export default function Dashboard() {
   const router = useRouter();
   const [fluxChange, setFluxChange] = useState({ percentage: '0', trend: 'neutral' as 'positive' | 'negative' | 'neutral' });
   const [priceData, setPriceData] = useState<FluxPriceData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [priceLoading, setPriceLoading] = useState(true);
+  const [balanceLoading, setBalanceLoading] = useState(true);
+  const [chartLoading, setChartLoading] = useState(true);
+  const [transactionsLoading, setTransactionsLoading] = useState(true);
   
   // Fetch FLUX price data
   useEffect(() => {
@@ -45,7 +49,7 @@ export default function Dashboard() {
       } catch (error) {
         console.error('Error fetching FLUX price:', error);
       } finally {
-        setLoading(false);
+        setPriceLoading(false);
       }
     };
     
@@ -66,6 +70,7 @@ export default function Dashboard() {
       if (!address) return;
       
       try {
+        setTransactionsLoading(true);
         const transactions = await getWalletTransactions(address);
         const now = Date.now();
         const twentyFourHoursAgo = now - (24 * 60 * 60 * 1000);
@@ -102,6 +107,8 @@ export default function Dashboard() {
         }
       } catch (error) {
         console.error('Error calculating daily change:', error);
+      } finally {
+        setTransactionsLoading(false);
       }
     };
     
@@ -117,8 +124,20 @@ export default function Dashboard() {
       setTimeout(() => {
         connect();
       }, 100);
+    } else {
+      // Set balance loading to false once wallet is connected and we have balance data
+      if (fluxBalance !== undefined) {
+        setBalanceLoading(false);
+      }
     }
-  }, [isConnected, router, connect]);
+  }, [isConnected, router, connect, fluxBalance]);
+  
+  // Simulate chart loading (in real implementation, this would be controlled by the chart component)
+  useEffect(() => {
+    if (!chartLoading) return;
+    const timer = setTimeout(() => setChartLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, [chartLoading]);
   
   const trend = fluxChange.trend === 'neutral' ? 'positive' : fluxChange.trend;
   const priceTrend = (priceData?.priceChangePercentage24h || 0) >= 0 ? 'positive' : 'negative';
@@ -128,38 +147,52 @@ export default function Dashboard() {
     <div className='flex flex-col gap-10 lg:flex-row'>
       <div className='flex min-w-0 flex-1 flex-col gap-8 lg:gap-5'>
         <div className='flex w-full flex-col flex-wrap gap-4 lg:flex-row lg:gap-5'>
-          <MetricsSimple
-            title={fluxBalance || '0'}
-            subtitle='Flux tokens'
-            type='modern'
-            trend={trend}
-            change={`${fluxChange.percentage}%`}
-            className='flex-1 lg:min-w-[320px]'
-            actions={false}
-          />
-          <MetricsSimple
-            title={`$${priceData?.price?.toFixed(4) || '0.3700'}`}
-            subtitle='Current token price'
-            type='modern'
-            trend={priceTrend}
-            change={`${priceChangeDisplay}%`}
-            className='flex-1 lg:min-w-[320px]'
-            actions={false}
-          />
-          <MetricsSimple
-            title={`$${portfolioValue}`}
-            subtitle='Total portfolio value'
-            type='modern'
-            trend={trend}
-            change={`${fluxChange.percentage}%`}
-            className='flex-1 lg:min-w-[320px]'
-            actions={false}
-          />
+          {balanceLoading || transactionsLoading ? (
+            <MetricSkeleton />
+          ) : (
+            <MetricsSimple
+              title={fluxBalance || '0'}
+              subtitle='Flux tokens'
+              type='modern'
+              trend={trend}
+              change={`${fluxChange.percentage}%`}
+              className='flex-1 lg:min-w-[320px]'
+              actions={false}
+            />
+          )}
+          
+          {priceLoading ? (
+            <MetricSkeleton />
+          ) : (
+            <MetricsSimple
+              title={`$${priceData?.price?.toFixed(4) || '0.3700'}`}
+              subtitle='Current token price'
+              type='modern'
+              trend={priceTrend}
+              change={`${priceChangeDisplay}%`}
+              className='flex-1 lg:min-w-[320px]'
+              actions={false}
+            />
+          )}
+          
+          {balanceLoading || priceLoading ? (
+            <MetricSkeleton />
+          ) : (
+            <MetricsSimple
+              title={`$${portfolioValue}`}
+              subtitle='Total portfolio value'
+              type='modern'
+              trend={trend}
+              change={`${fluxChange.percentage}%`}
+              className='flex-1 lg:min-w-[320px]'
+              actions={false}
+            />
+          )}
         </div>
 
-        <FluxChart />
+        {chartLoading ? <ChartSkeleton /> : <FluxChart />}
         
-        <TransactionsTable title='Recent transactions' />
+        {transactionsLoading ? <TableSkeleton /> : <TransactionsTable title='Recent transactions' />}
       </div>
     </div>
   )

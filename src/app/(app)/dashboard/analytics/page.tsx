@@ -12,6 +12,8 @@ import { MetricChangeIndicator } from '@/components/application/metrics/metrics'
 import { ChartTooltipContent } from '@/components/application/charts/charts-base'
 import { cx } from '@/utils/cx'
 import { FluxChart } from '@/components/application/charts/flux-chart'
+import { ChartSkeleton } from '@/components/shared/SkeletonLoader'
+import { PieChartSkeleton } from '@/components/shared/PieChartSkeleton'
 import { useWallet } from '@/contexts/WalletContext'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -32,6 +34,8 @@ export default function Analytics() {
       { name: 'USDC/USDT', value: 1836.85 }
     ]
   });
+  const [portfolioLoading, setPortfolioLoading] = useState(true);
+  const [chartLoading, setChartLoading] = useState(true);
   
   useEffect(() => {
     if (!isConnected) {
@@ -46,6 +50,7 @@ export default function Analytics() {
   useEffect(() => {
     const fetchRealData = async () => {
       try {
+        setPortfolioLoading(true);
         const [tokenBalances, balancerValue, balancerPositions] = await Promise.all([
           getWalletTokenBalances(VAULT_ADDRESS),
           getUserBalancerTotalValue(VAULT_ADDRESS),
@@ -73,6 +78,8 @@ export default function Analytics() {
         });
       } catch (error) {
         console.error('Error fetching real portfolio data:', error);
+      } finally {
+        setPortfolioLoading(false);
       }
     };
 
@@ -80,6 +87,13 @@ export default function Analytics() {
       fetchRealData();
     }
   }, [isConnected]);
+  
+  // Simulate chart loading
+  useEffect(() => {
+    if (!chartLoading) return;
+    const timer = setTimeout(() => setChartLoading(false), 1200);
+    return () => clearTimeout(timer);
+  }, [chartLoading]);
 
   const pieChartData1 = [
     {
@@ -196,25 +210,34 @@ export default function Analytics() {
   return (
     <div className='flex flex-col gap-10 lg:flex-row'>
       <div className='flex min-w-0 flex-1 flex-col gap-8 lg:gap-5'>
-        <FluxChart height='h-80' />
+        {chartLoading ? <ChartSkeleton /> : <FluxChart height='h-80' />}
 
         <div className='flex flex-col gap-x-6 gap-y-5 md:flex-row md:flex-wrap'>
-          <PieChartCard
-            data={pieChartData1}
-            title='Portfolio allocation'
-            totalLabel='Total portfolio'
-            value={`$${portfolioData.totalValue.toLocaleString()}`}
-            change='3.4%'
-            className='flex-1 md:min-w-[448px]'
-          />
-          <PieChartCard
-            data={pieChartData2}
-            title='Balancer v3 allocation'
-            totalLabel='Total Balancer v3 liquidity'
-            value={`$${portfolioData.balancerValue.toLocaleString()}`}
-            change='2.0%'
-            className='flex-1 md:min-w-[448px]'
-          />
+          {portfolioLoading ? (
+            <PieChartSkeleton className='flex-1 md:min-w-[448px]' />
+          ) : (
+            <PieChartCard
+              data={pieChartData1}
+              title='Portfolio allocation'
+              totalLabel='Total portfolio'
+              value={`$${portfolioData.totalValue.toLocaleString()}`}
+              change='3.4%'
+              className='flex-1 md:min-w-[448px]'
+            />
+          )}
+          
+          {portfolioLoading ? (
+            <PieChartSkeleton className='flex-1 md:min-w-[448px]' />
+          ) : (
+            <PieChartCard
+              data={pieChartData2}
+              title='Balancer v3 allocation'
+              totalLabel='Total Balancer v3 liquidity'
+              value={`$${portfolioData.balancerValue.toLocaleString()}`}
+              change='2.0%'
+              className='flex-1 md:min-w-[448px]'
+            />
+          )}
         </div>
       </div>
     </div>
