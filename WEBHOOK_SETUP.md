@@ -24,21 +24,22 @@ Your webhook is already configured in Alchemy dashboard with:
 
 ### 2. Environment Variables
 
-Add the webhook signing secret to your environment variables:
+Add the webhook authentication credentials to your environment variables:
 
 ```env
 # In .env.local (for local development)
-ALCHEMY_WEBHOOK_SECRET=your_webhook_signing_secret_here
+ALCHEMY_WEBHOOK_AUTH_TOKEN=aVE1M8SRiGG7UPyndM2lX4gD2RI2meze
+ALCHEMY_WEBHOOK_SECRET=whsec_9ACZNvSrIjKBdrQPRkqNNCe5
 
 # In Vercel (for production)
-Add ALCHEMY_WEBHOOK_SECRET in your Vercel project settings
+Add both environment variables in your Vercel project settings:
+- ALCHEMY_WEBHOOK_AUTH_TOKEN
+- ALCHEMY_WEBHOOK_SECRET
 ```
 
-To get your webhook signing secret:
-1. Go to Alchemy Dashboard
-2. Navigate to Notify → Webhooks
-3. Click on your webhook (`wh_81tkm8du66434a6w`)
-4. Copy the signing secret
+**Important**: These credentials are already configured:
+- Auth Token: `aVE1M8SRiGG7UPyndM2lX4gD2RI2meze`
+- Signing Key: `whsec_9ACZNvSrIjKBdrQPRkqNNCe5`
 
 ### 3. Update Production URL
 

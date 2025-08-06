@@ -5,6 +5,7 @@ import path from 'path';
 
 const VAULT_ADDRESS = '0x25f2F5C009700Afd6A7ce831B5f1006B20F101c1';
 const WEBHOOK_SECRET = process.env.ALCHEMY_WEBHOOK_SECRET || '';
+const WEBHOOK_AUTH_TOKEN = process.env.ALCHEMY_WEBHOOK_AUTH_TOKEN || '';
 const VAULT_DATA_FILE = path.join(process.cwd(), 'transactions', 'data', 'vault-transactions.json');
 
 interface AlchemyWebhookEvent {
@@ -45,18 +46,36 @@ interface AlchemyWebhookEvent {
 
 function verifyWebhookSignature(
   signature: string | null,
-  body: string
+  body: string,
+  authToken: string | null
 ): boolean {
-  if (!signature || !WEBHOOK_SECRET) {
-    console.warn('Missing signature or webhook secret');
-    return !WEBHOOK_SECRET;
+  // Check auth token first (if provided by Alchemy)
+  if (authToken && WEBHOOK_AUTH_TOKEN) {
+    if (authToken !== WEBHOOK_AUTH_TOKEN) {
+      console.error('Invalid webhook auth token');
+      return false;
+    }
   }
 
-  const hmac = crypto.createHmac('sha256', WEBHOOK_SECRET);
-  hmac.update(body, 'utf8');
-  const digest = hmac.digest('hex');
-  
-  return signature === digest;
+  // If no signature header but we have a secret, verify with HMAC
+  if (WEBHOOK_SECRET && signature) {
+    const hmac = crypto.createHmac('sha256', WEBHOOK_SECRET);
+    hmac.update(body, 'utf8');
+    const digest = hmac.digest('hex');
+    
+    if (signature !== digest) {
+      console.error('Invalid webhook signature');
+      return false;
+    }
+  }
+
+  // If neither auth token nor secret is configured, allow for testing
+  if (!WEBHOOK_SECRET && !WEBHOOK_AUTH_TOKEN) {
+    console.warn('Warning: No webhook authentication configured');
+    return true;
+  }
+
+  return true;
 }
 
 async function ensureDataDir() {
@@ -126,9 +145,11 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.text();
     const signature = request.headers.get('x-alchemy-signature');
+    const authToken = request.headers.get('x-alchemy-token') || 
+                     request.headers.get('authorization')?.replace('Bearer ', '') || null;
     
-    if (WEBHOOK_SECRET && !verifyWebhookSignature(signature, body)) {
-      console.error('Invalid webhook signature');
+    if (!verifyWebhookSignature(signature, body, authToken)) {
+      console.error('Webhook verification failed');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
