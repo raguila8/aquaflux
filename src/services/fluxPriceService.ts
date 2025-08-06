@@ -1,11 +1,6 @@
-import { Alchemy, Network } from 'alchemy-sdk';
-
-const settings = {
-  apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
-  network: process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? Network.BASE_SEPOLIA : Network.BASE_MAINNET,
-};
-
-const alchemy = new Alchemy(settings);
+const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY;
+const NETWORK = process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? 'base-sepolia' : 'base-mainnet';
+const ALCHEMY_RPC_URL = `https://${NETWORK}.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
 
 interface TokenBalance {
   symbol: string;
@@ -33,15 +28,15 @@ interface FluxPriceData {
  */
 export async function getTokenPrices(addresses: string[]): Promise<Record<string, number>> {
   try {
-    const response = await fetch(`https://api.g.alchemy.com/prices/v1/${settings.network}/tokens/by-address`, {
+    const response = await fetch(`https://api.g.alchemy.com/prices/v1/${NETWORK}/tokens/by-address`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${settings.apiKey}`,
+        'Authorization': `Bearer ${ALCHEMY_API_KEY}`,
       },
       body: JSON.stringify({
         addresses: addresses.map(addr => ({
-          network: settings.network,
+          network: NETWORK,
           address: addr
         }))
       })
@@ -72,16 +67,27 @@ export async function getWalletTokenBalances(address: string): Promise<TokenBala
   try {
     const balances: TokenBalance[] = [];
     
-    // Get ETH balance
-    const ethBalance = await alchemy.core.getBalance(address);
-    const ethValue = parseFloat(ethBalance.toString()) / 1e18;
+    // Get ETH balance using JSON-RPC
+    const ethBalanceResponse = await fetch(ALCHEMY_RPC_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'eth_getBalance',
+        params: [address, 'latest'],
+        id: 1
+      })
+    });
+    
+    const ethBalanceData = await ethBalanceResponse.json();
+    const ethValue = parseInt(ethBalanceData.result, 16) / 1e18;
     
     // Get ETH price
     const ethPriceResponse = await fetch('https://api.g.alchemy.com/prices/v1/tokens/by-symbol', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${settings.apiKey}`,
+        'Authorization': `Bearer ${ALCHEMY_API_KEY}`,
       },
       body: JSON.stringify({
         symbols: ['ETH']
@@ -97,28 +103,53 @@ export async function getWalletTokenBalances(address: string): Promise<TokenBala
       valueInUSD: ethValue * ethPrice
     });
     
-    // Get ERC20 token balances
-    const tokenBalances = await alchemy.core.getTokenBalances(address);
+    // Get ERC20 token balances using alchemy_getTokenBalances
+    const tokenBalancesResponse = await fetch(ALCHEMY_RPC_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'alchemy_getTokenBalances',
+        params: [address],
+        id: 2
+      })
+    });
     
-    if (tokenBalances.tokenBalances.length > 0) {
+    const tokenBalancesData = await tokenBalancesResponse.json();
+    const tokenBalances = tokenBalancesData.result?.tokenBalances || [];
+    
+    if (tokenBalances.length > 0) {
       // Get token metadata and prices
-      const tokenAddresses = tokenBalances.tokenBalances
-        .filter(tb => parseInt(tb.tokenBalance || '0') > 0)
-        .map(tb => tb.contractAddress);
+      const tokenAddresses = tokenBalances
+        .filter((tb: any) => parseInt(tb.tokenBalance || '0', 16) > 0)
+        .map((tb: any) => tb.contractAddress);
       
       if (tokenAddresses.length > 0) {
         const prices = await getTokenPrices(tokenAddresses);
         
-        for (const tokenBalance of tokenBalances.tokenBalances) {
-          if (parseInt(tokenBalance.tokenBalance || '0') === 0) continue;
+        for (const tokenBalance of tokenBalances) {
+          if (parseInt(tokenBalance.tokenBalance || '0', 16) === 0) continue;
           
           try {
-            const metadata = await alchemy.core.getTokenMetadata(tokenBalance.contractAddress);
-            const balance = parseInt(tokenBalance.tokenBalance || '0') / Math.pow(10, metadata.decimals || 18);
+            // Get token metadata
+            const metadataResponse = await fetch(ALCHEMY_RPC_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                jsonrpc: '2.0',
+                method: 'alchemy_getTokenMetadata',
+                params: [tokenBalance.contractAddress],
+                id: 3
+              })
+            });
+            
+            const metadataData = await metadataResponse.json();
+            const metadata = metadataData.result;
+            const balance = parseInt(tokenBalance.tokenBalance || '0', 16) / Math.pow(10, metadata?.decimals || 18);
             const price = prices[tokenBalance.contractAddress.toLowerCase()] || 0;
             
             balances.push({
-              symbol: metadata.symbol || 'UNKNOWN',
+              symbol: metadata?.symbol || 'UNKNOWN',
               balance,
               valueInUSD: balance * price
             });
