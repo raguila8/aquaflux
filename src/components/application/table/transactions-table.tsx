@@ -17,7 +17,7 @@ import { Avatar } from '@/components/base/avatar/avatar'
 import { cn, truncateHash } from '@/lib/utils'
 import { ChevronRightIcon } from '@heroicons/react/16/solid'
 import { useWallet } from '@/contexts/WalletContext'
-import { fetchVaultTransactions, getWalletTransactions, getNewTransactionsForWallet, type VaultTransaction } from '@/services/vaultTransactionService'
+import { fetchVaultTransactions, getWalletTransactions, getNewTransactionsForWallet, type VaultTransaction } from '@/services/vaultTransactionServiceVercel'
 import { toast } from 'sonner'
 
 import USDC from '@/images/assets/usdc.png'

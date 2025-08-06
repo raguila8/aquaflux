@@ -41,6 +41,3 @@ next-env.d.ts
 
 # npmrc
 .npmrc
-
-# transaction data
-/transactions/data/
