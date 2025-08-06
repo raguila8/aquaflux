@@ -5,6 +5,7 @@ import { ChevronDown, Share04 } from '@untitledui/icons'
 import Link from 'next/link'
 import { Badge } from '@/components/base/badges/badges'
 import { cx, sortCx } from '@/utils/cx'
+import { useMobileModal } from './mobile-header'
 
 const styles = sortCx({
   root: 'group relative flex w-full cursor-pointer items-center rounded-md bg-transparent outline-focus-ring transition duration-100 ease-linear select-none focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2',
@@ -45,6 +46,7 @@ export const NavItemBase = ({
   truncate = true,
   onClick,
 }: NavItemBaseProps) => {
+  const closeMobileModal = useMobileModal();
   const iconElement = Icon && (
     <Icon
       aria-hidden='true'
@@ -114,6 +116,11 @@ export const NavItemBase = ({
       if (onClick) {
         onClick(e)
       }
+      // Close mobile modal when navigation item is clicked
+      if (closeMobileModal && href && href !== '#') {
+        // Small delay to allow navigation to start
+        setTimeout(() => closeMobileModal(), 100)
+      }
     }
 
     return (
@@ -145,6 +152,11 @@ export const NavItemBase = ({
     }
     if (onClick) {
       onClick(e)
+    }
+    // Close mobile modal when navigation item is clicked
+    if (closeMobileModal && href && href !== '#') {
+      // Small delay to allow navigation to start
+      setTimeout(() => closeMobileModal(), 100)
     }
   }
 

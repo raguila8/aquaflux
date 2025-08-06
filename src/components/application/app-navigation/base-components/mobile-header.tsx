@@ -1,6 +1,7 @@
 "use client";
 
 import type { PropsWithChildren } from "react";
+import { createContext, useContext } from "react";
 import { X as CloseIcon, Menu02 } from "@untitledui/icons";
 import {
     Button as AriaButton,
@@ -12,11 +13,18 @@ import {
 import { AquafluxLogoMinimal } from "@/components/foundations/logo/aquaflux-logo-minimal";
 import { cx } from "@/utils/cx";
 
+// Context to share modal close function with navigation items
+const MobileModalContext = createContext<(() => void) | null>(null);
+
+export const useMobileModal = () => {
+    return useContext(MobileModalContext);
+};
+
 export const MobileNavigationHeader = ({ children }: PropsWithChildren) => {
     return (
         <AriaDialogTrigger>
             <header className="flex h-16 items-center justify-between border-b border-secondary bg-primary py-3 pr-2 pl-4 lg:hidden">
-                <AquafluxLogoMinimal className="h-8 w-auto" />
+                <AquafluxLogoMinimal className="h-8 w-auto shrink-0" />
 
                 <AriaButton
                     aria-label="Expand navigation menu"
@@ -48,7 +56,11 @@ export const MobileNavigationHeader = ({ children }: PropsWithChildren) => {
                         </AriaButton>
 
                         <AriaModal className="w-full cursor-auto will-change-transform">
-                            <AriaDialog className="h-dvh outline-hidden focus:outline-hidden">{children}</AriaDialog>
+                            <AriaDialog className="h-dvh outline-hidden focus:outline-hidden">
+                                <MobileModalContext.Provider value={() => state.close()}>
+                                    {children}
+                                </MobileModalContext.Provider>
+                            </AriaDialog>
                         </AriaModal>
                     </>
                 )}

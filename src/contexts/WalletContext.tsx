@@ -103,29 +103,47 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!mounted || !isHydrated) return;
 
-    // Only process redirects after hydration is complete and wallet state is stable
-    const timeout = setTimeout(() => {
-      if (!isConnected && !isConnecting) {
-        const currentPath = window.location.pathname;
-        if (currentPath.startsWith('/dashboard')) {
-          console.log('Wallet not connected, redirecting to homepage');
-          router.push('/');
-        }
-        sessionStorage.removeItem('wallet_connection_redirected');
-      } else if (isConnected) {
-        const hasRedirected = sessionStorage.getItem('wallet_connection_redirected');
-        if (!hasRedirected) {
-          sessionStorage.setItem('wallet_connection_redirected', 'true');
-          const currentPath = window.location.pathname;
-          if (currentPath === '/' || currentPath === '') {
-            console.log('Wallet connected, redirecting to dashboard');
-            router.push('/dashboard');
+    const currentPath = window.location.pathname;
+    
+    // Be very conservative with dashboard redirects - only redirect if we're certain
+    if (currentPath.startsWith('/dashboard')) {
+      // For dashboard pages, wait much longer and only redirect if absolutely certain user isn't connected
+      const dashboardTimeout = setTimeout(() => {
+        if (!isConnected && !isConnecting) {
+          // Additional check - see if there's any sign of previous wallet connection
+          const hasWalletData = sessionStorage.getItem('wallet_connection_redirected') ||
+                               localStorage.getItem('wagmi.store') ||
+                               localStorage.getItem('wagmi.cache') ||
+                               document.cookie.includes('wagmi');
+          
+          if (!hasWalletData) {
+            console.log('No wallet connection detected after extended wait, redirecting to homepage');
+            router.push('/');
+          } else {
+            console.log('Wallet data found, staying on dashboard');
           }
         }
-      }
-    }, 1000); // Additional 1 second wait after hydration
+        sessionStorage.removeItem('wallet_connection_redirected');
+      }, 5000); // Wait 5 seconds for dashboard pages
 
-    return () => clearTimeout(timeout);
+      return () => clearTimeout(dashboardTimeout);
+    } else {
+      // For homepage, redirect to dashboard if connected (shorter timeout)
+      const homepageTimeout = setTimeout(() => {
+        if (isConnected) {
+          const hasRedirected = sessionStorage.getItem('wallet_connection_redirected');
+          if (!hasRedirected) {
+            sessionStorage.setItem('wallet_connection_redirected', 'true');
+            if (currentPath === '/' || currentPath === '') {
+              console.log('Wallet connected, redirecting to dashboard');
+              router.push('/dashboard');
+            }
+          }
+        }
+      }, 1000);
+
+      return () => clearTimeout(homepageTimeout);
+    }
   }, [isConnected, isConnecting, mounted, isHydrated, router]);
 
   const connect = useCallback(() => {
