@@ -2,7 +2,6 @@ import { AlchemyAccountsUIConfig, createConfig } from "@account-kit/react";
 import { base, alchemy } from "@account-kit/infra";
 import { QueryClient } from "@tanstack/react-query";
 
-// Simple wallet connect only configuration
 const uiConfig: AlchemyAccountsUIConfig = {
   illustrationStyle: "outline",
   auth: {
@@ -27,6 +26,7 @@ export const config = createConfig(
     }),
     chain: base,
     ssr: true,
+    enablePopupOauth: true,
   },
   uiConfig
 );

@@ -11,7 +11,8 @@
       "Bash(npx tsc:*)",
       "WebFetch(domain:accountkit.alchemy.com)",
       "WebFetch(domain:www.alchemy.com)",
-      "Bash(pnpm add:*)"
+      "Bash(pnpm add:*)",
+      "Bash(pnpm run:*)"
     ],
     "deny": []
   }
