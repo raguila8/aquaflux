@@ -69,12 +69,16 @@ const formatTransactionData = (tx: VaultTransaction): Transaction => {
   const feeValue = isDeposit ? amountValue * 0.01 : 0;
   const fee = feeValue.toFixed(4);
   
+  // Use correct network for Basescan URL
+  const network = process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? 'sepolia.' : '';
+  const transactionURL = `https://${network}basescan.org/tx/${tx.hash}`;
+  
   return {
     asset,
     amount,
     fee,
     transactionHash: tx.hash,
-    transactionURL: `https://basescan.org/tx/${tx.hash}`,
+    transactionURL,
     status: 'confirmed' as TransactionStatus,
     dateTime: new Date(tx.timestamp).toISOString(),
   };
@@ -141,7 +145,10 @@ export function TransactionsTable({
               {
                 action: {
                   label: 'View',
-                  onClick: () => window.open(`https://basescan.org/tx/${tx.hash}`, '_blank')
+                  onClick: () => {
+                    const network = process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? 'sepolia.' : '';
+                    window.open(`https://${network}basescan.org/tx/${tx.hash}`, '_blank');
+                  }
                 },
               }
             );
@@ -154,7 +161,10 @@ export function TransactionsTable({
               {
                 action: {
                   label: 'View',
-                  onClick: () => window.open(`https://basescan.org/tx/${tx.hash}`, '_blank')
+                  onClick: () => {
+                    const network = process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? 'sepolia.' : '';
+                    window.open(`https://${network}basescan.org/tx/${tx.hash}`, '_blank');
+                  }
                 },
               }
             );
@@ -174,7 +184,10 @@ export function TransactionsTable({
               {
                 action: {
                   label: 'View',
-                  onClick: () => window.open(`https://basescan.org/tx/${tx.hash}`, '_blank')
+                  onClick: () => {
+                    const network = process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? 'sepolia.' : '';
+                    window.open(`https://${network}basescan.org/tx/${tx.hash}`, '_blank');
+                  }
                 },
               }
             );
@@ -187,7 +200,10 @@ export function TransactionsTable({
               {
                 action: {
                   label: 'View',
-                  onClick: () => window.open(`https://basescan.org/tx/${tx.hash}`, '_blank')
+                  onClick: () => {
+                    const network = process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? 'sepolia.' : '';
+                    window.open(`https://${network}basescan.org/tx/${tx.hash}`, '_blank');
+                  }
                 },
               }
             );
@@ -498,10 +514,13 @@ export function TransactionsTable({
                         <TooltipTrigger>
                           <a
                             href={item.transactionURL}
-                            className='text-indigo-blue-300 hover:text-indigo-blue-200 flex cursor-pointer items-center font-mono text-sm leading-4 font-semibold duration-200 ease-in-out'
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className='text-indigo-blue-300 hover:text-indigo-blue-200 flex cursor-pointer items-center gap-1 font-mono text-sm leading-4 font-semibold duration-200 ease-in-out'
                           >
                             <span className='absolute inset-x-0 -top-px bottom-0 sm:hidden' />
                             {truncateHash(item.transactionHash)}
+                            <span className='text-xs'>↗</span>
                           </a>
                         </TooltipTrigger>
                       </Tooltip>

@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { useAccount, useDisconnect, useBalance } from 'wagmi';
 import { useAppKit } from '@reown/appkit/react';
 import { getFluxBalance, getUsdcBalance } from '@/services/alchemyTokenService';
-import { subscribeToNewTransactions } from '@/services/alchemyTransactionService';
+import { subscribeToPendingTransactions, subscribeToMinedTransactions } from '@/services/alchemyRealtimeService';
 import { useRouter } from 'next/navigation';
 
 interface WalletContextType {
@@ -61,14 +61,29 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     if (address && mounted) {
       refreshBalances();
       
-      const unsubscribe = subscribeToNewTransactions(() => {
-        refreshBalances();
-      });
+      let unsubscribePending: (() => void) | undefined;
+      let unsubscribeMined: (() => void) | undefined;
+      
+      // Subscribe to real-time transactions
+      const setupSubscriptions = async () => {
+        unsubscribePending = await subscribeToPendingTransactions(address, () => {
+          // Refresh balances when new transaction is detected
+          setTimeout(refreshBalances, 1000);
+        });
+        
+        unsubscribeMined = await subscribeToMinedTransactions(address, () => {
+          // Refresh balances when transaction is confirmed
+          refreshBalances();
+        });
+      };
+      
+      setupSubscriptions();
       
       const interval = setInterval(refreshBalances, 30000);
       
       return () => {
-        unsubscribe();
+        unsubscribePending?.();
+        unsubscribeMined?.();
         clearInterval(interval);
       };
     } else {
