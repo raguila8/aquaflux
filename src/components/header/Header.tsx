@@ -1,12 +1,27 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { NavbarPill } from '@/components/header/NavbarPill'
 import { Container } from '@/components/shared/Container'
 import { Button } from '@/components/shared/Button'
+import { useWallet } from '@/contexts/WalletContext'
 
 import logo from '@/images/aquaflux-logo.png'
 
 export const Header = () => {
+  const { isConnected, connect, disconnect } = useWallet();
+  const router = useRouter();
+
+  const handleAuthClick = () => {
+    if (isConnected) {
+      router.push('/dashboard');
+    } else {
+      connect();
+    }
+  };
+
   return (
     <header className='relative h-20'>
       <Container className='flex h-full items-center'>
@@ -25,18 +40,9 @@ export const Header = () => {
           <NavbarPill />
 
           <div className='hidden items-center md:flex lg:space-x-3 xl:space-x-4'>
-            <Button
-              href='/signin'
-              variant='tertiary'
-              size='md'
-              className='hidden overflow-hidden'
-            >
-              Sign in
-            </Button>
-
             {/* Call to action */}
-            <Button href='#' size='md'>
-              Sign in
+            <Button onClick={handleAuthClick} size='md'>
+              {isConnected ? 'Go to Dashboard' : 'Sign in'}
             </Button>
           </div>
         </nav>
