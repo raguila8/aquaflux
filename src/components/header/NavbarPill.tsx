@@ -8,7 +8,8 @@ import { getOffsetTop, cn } from '@/lib/utils'
 import { debounce, throttle } from 'lodash'
 import { Button } from '@/components/shared/Button'
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/16/solid'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { useWallet } from '@/contexts/WalletContext'
 import {
   Popover,
   PopoverButton,
@@ -158,6 +159,8 @@ function DropDownMenu({
 
 export const NavbarPill = () => {
   const pathname = usePathname()
+  const router = useRouter()
+  const { isConnected, connect } = useWallet()
   // Initialize to true in order to dynamically get width of the cta button
   const [showButton, setShowButton] = useState(true)
   const [dropdownGap, setDropdownGap] = useState<number>(0)
@@ -174,6 +177,14 @@ export const NavbarPill = () => {
   const hasLinks = links && links.length > 0
 
   const isLargeScreen = () => window.innerWidth > 768
+
+  const handleAuthClick = () => {
+    if (isConnected) {
+      router.push('/dashboard')
+    } else {
+      connect()
+    }
+  }
 
   const shouldShowNavCta = useCallback(
     () => window.scrollY > mainCtaOffsetRef.current && isLargeScreen(),
@@ -371,20 +382,20 @@ export const NavbarPill = () => {
 
             <div className='relative z-20 ml-1 flex items-center sm:ml-3 md:hidden'>
               <Button
-                href='/signin'
+                onClick={handleAuthClick}
                 variant='tertiary'
                 size='sm'
                 className='hidden overflow-hidden'
               >
-                Sign in
+                {isConnected ? 'Dashboard' : 'Sign in'}
               </Button>
 
               <Button
                 className='-mr-px rounded-full after:rounded-full'
-                href='#'
+                onClick={handleAuthClick}
                 size='sm'
               >
-                Sign in
+                {isConnected ? 'Dashboard' : 'Sign in'}
               </Button>
 
               {hasLinks && <Hamburger />}
@@ -400,10 +411,10 @@ export const NavbarPill = () => {
                   className={cn(
                     'z-20 -mr-px ml-3 rounded-full transition-all duration-500 after:rounded-full data-closed:translate-x-full data-closed:opacity-0 data-enter:ease-out data-leave:ease-in'
                   )}
-                  href='/signup'
+                  onClick={handleAuthClick}
                   size='sm'
                 >
-                  Get started
+                  {isConnected ? 'Dashboard' : 'Get started'}
                 </Button>
               </Transition>
             </div>
