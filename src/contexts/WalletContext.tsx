@@ -15,6 +15,7 @@ interface WalletContextType {
   connect: () => void;
   disconnect: () => void;
   isLoading: boolean;
+  isHydrated: boolean;
   refreshBalances: () => Promise<void>;
 }
 
@@ -22,6 +23,7 @@ const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
 export function WalletProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
   const { address, isConnected, isConnecting } = useAccount();
   const { disconnect: wagmiDisconnect } = useDisconnect();
   const { open } = useAppKit();
@@ -33,6 +35,12 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   
   useEffect(() => {
     setMounted(true);
+    // Allow time for proper hydration and wallet state initialization
+    const hydrationTimer = setTimeout(() => {
+      setIsHydrated(true);
+    }, 2000); // Wait 2 seconds for full hydration
+    
+    return () => clearTimeout(hydrationTimer);
   }, []);
 
   const refreshBalances = useCallback(async () => {
@@ -93,13 +101,14 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   }, [address, mounted, refreshBalances]);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !isHydrated) return;
 
-    // Don't redirect immediately on mount - wait for wallet state to stabilize
+    // Only process redirects after hydration is complete and wallet state is stable
     const timeout = setTimeout(() => {
       if (!isConnected && !isConnecting) {
         const currentPath = window.location.pathname;
         if (currentPath.startsWith('/dashboard')) {
+          console.log('Wallet not connected, redirecting to homepage');
           router.push('/');
         }
         sessionStorage.removeItem('wallet_connection_redirected');
@@ -109,14 +118,15 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
           sessionStorage.setItem('wallet_connection_redirected', 'true');
           const currentPath = window.location.pathname;
           if (currentPath === '/' || currentPath === '') {
+            console.log('Wallet connected, redirecting to dashboard');
             router.push('/dashboard');
           }
         }
       }
-    }, 500); // Wait 500ms for wallet state to stabilize
+    }, 1000); // Additional 1 second wait after hydration
 
     return () => clearTimeout(timeout);
-  }, [isConnected, isConnecting, mounted, router]);
+  }, [isConnected, isConnecting, mounted, isHydrated, router]);
 
   const connect = useCallback(() => {
     open();
@@ -146,7 +156,8 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
           usdcBalance: '0',
           connect: () => {},
           disconnect: async () => {},
-          isLoading: false,
+          isLoading: true,
+          isHydrated: false,
           refreshBalances: async () => {},
         }}
       >
@@ -164,7 +175,8 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
         usdcBalance,
         connect,
         disconnect,
-        isLoading: isLoading || isConnecting,
+        isLoading: isLoading || isConnecting || !isHydrated,
+        isHydrated,
         refreshBalances,
       }}
     >
