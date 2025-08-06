@@ -41,7 +41,7 @@ export function Integrations() {
     <section className='overflow-hidden bg-[linear-gradient(rgba(9,9,11,0.75),rgba(9,9,11,0.75)),linear-gradient(#07344550,#07344550)]'>
       <Container className='relative'>
         <div className='mx-auto w-full max-w-xl md:mx-0 md:grid md:max-w-none md:grid-cols-11'>
-          <div className='flex items-center py-14 md:col-span-5 md:py-20 lg:col-span-5 lg:py-32'>
+          <div className='flex items-center py-14 sm:py-20 md:col-span-5 md:py-32 lg:col-span-5 lg:py-40'>
             <div className='relative z-10 flex flex-col'>
               <h1 className='leading-extratight sm:leading-extratight text-indigo-blue-100 text-4xl font-bold tracking-wide sm:text-[2.75rem] lg:text-5xl lg:leading-tight'>
                 Connect your favorite wallet today

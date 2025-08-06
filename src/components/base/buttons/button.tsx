@@ -9,7 +9,8 @@ import type {
 } from 'react'
 import React, { isValidElement } from 'react'
 import type { ButtonProps as AriaButtonProps } from 'react-aria-components'
-import { Button as AriaButton, Link as AriaLink } from 'react-aria-components'
+import { Button as AriaButton } from 'react-aria-components'
+import Link from 'next/link'
 import { cx, sortCx } from '@/utils/cx'
 import { isReactComponent } from '@/utils/is-react-component'
 
@@ -198,7 +199,7 @@ export const Button = ({
   ...otherProps
 }: Props) => {
   const href = 'href' in otherProps ? otherProps.href : undefined
-  const Component = href ? AriaLink : AriaButton
+  const Component: any = href ? Link : AriaButton
 
   const isIcon = (IconLeading || IconTrailing) && !children
   const isLinkType = ['link-gray', 'link-color', 'link-destructive'].includes(
@@ -212,13 +213,8 @@ export const Button = ({
   if (href) {
     props = {
       ...otherProps,
-
-      href: disabled ? undefined : href,
-
-      // Since anchor elements do not support the `disabled` attribute and state,
-      // we need to specify `data-rac` and `data-disabled` in order to be able
-      // to use the `disabled:` selector in classes.
-      ...(disabled ? { 'data-rac': true, 'data-disabled': true } : {}),
+      // Preserve the href regardless of disabled state for compatibility with Next.js Link
+      ...(disabled ? { 'data-disabled': true } : {}),
     }
   } else {
     props = {

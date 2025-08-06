@@ -2,7 +2,7 @@
 
 import type { FC, HTMLAttributes, MouseEventHandler, ReactNode } from 'react'
 import { ChevronDown, Share04 } from '@untitledui/icons'
-import { Link as AriaLink } from 'react-aria-components'
+import Link from 'next/link'
 import { Badge } from '@/components/base/badges/badges'
 import { cx, sortCx } from '@/utils/cx'
 
@@ -108,7 +108,7 @@ export const NavItemBase = ({
 
   if (type === 'collapsible-child') {
     return (
-      <AriaLink
+      <Link
         href={href!}
         target={isExternal ? '_blank' : '_self'}
         rel='noopener noreferrer'
@@ -123,12 +123,12 @@ export const NavItemBase = ({
         {labelElement}
         {externalIcon}
         {badgeElement}
-      </AriaLink>
+      </Link>
     )
   }
 
   return (
-    <AriaLink
+    <Link
       href={href!}
       target={isExternal ? '_blank' : '_self'}
       rel='noopener noreferrer'
@@ -146,6 +146,6 @@ export const NavItemBase = ({
       {labelElement}
       {externalIcon}
       {badgeElement}
-    </AriaLink>
+    </Link>
   )
 }

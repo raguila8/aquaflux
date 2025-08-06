@@ -17,7 +17,6 @@ import { ChevronRightIcon } from '@heroicons/react/16/solid'
 
 import USDC from '@/images/assets/usdc.png'
 import Flux from '@/images/assets/flux.png'
-import Link from 'next/link'
 
 const assetDetails = {
   'Flux Token': {
@@ -276,8 +275,9 @@ export function TransactionsTable({
                   size='sm'
                   color='secondary'
                   iconTrailing={ChevronRightIcon}
+                  href='/dashboard/transactions'
                 >
-                  <Link href='/dashboard/transactions'>View all</Link>
+                  View all
                 </Button>
               </div>
             ) : (
