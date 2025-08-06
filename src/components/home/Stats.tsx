@@ -2,39 +2,55 @@
 
 import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
+import { calculateFluxPrice, getFluxTotalSupply } from '@/services/fluxPriceService'
+import { getFluxHoldersCount } from '@/services/fluxHoldersService'
+import { VAULT_ADDRESS } from '@/config/constants'
 
 const Odometer = dynamic(() => import('react-odometerjs'), { ssr: false })
 
 export const Stats = () => {
   const [stats, setStats] = useState({
-    activeWallets: 1420,
-    priceOfFlux: 10310,
-    telegramUsers: 244,
+    activeWallets: 0,
+    currentPrice: 0.37, // Current price
+    totalSupply: 0,
+    isLoading: true
   })
 
   const statsRef = useRef(stats)
   statsRef.current = stats
 
   const statsSectionRef = useRef<HTMLDListElement | null>(null)
+  const LAUNCH_PRICE = 0.37 // Launch price in USD
 
   useEffect(() => {
-    const fetchMockStats = (): Promise<typeof statsRef.current> => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            activeWallets:
-              statsRef.current.activeWallets + Math.floor(Math.random() * 5),
-            priceOfFlux:
-              statsRef.current.priceOfFlux + Math.floor(Math.random() * 5),
-            telegramUsers:
-              statsRef.current.telegramUsers + Math.floor(Math.random() * 3),
-          })
-        }, 500)
-      })
+    const fetchRealStats = async (): Promise<typeof statsRef.current> => {
+      try {
+        // Get current FLUX price and total supply
+        const [priceData, totalSupply] = await Promise.all([
+          calculateFluxPrice(VAULT_ADDRESS),
+          getFluxTotalSupply()
+        ]);
+        
+        // Get number of wallets holding FLUX tokens
+        const activeWallets = await getFluxHoldersCount();
+        
+        return {
+          activeWallets,
+          currentPrice: priceData.price,
+          totalSupply,
+          isLoading: false
+        };
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+        return {
+          ...statsRef.current,
+          isLoading: false
+        };
+      }
     }
 
     const updateStats = () => {
-      fetchMockStats().then((data) => {
+      fetchRealStats().then((data) => {
         setStats(data)
       })
     }
@@ -72,50 +88,88 @@ export const Stats = () => {
     >
       <div className='flex flex-col items-center justify-center'>
         <dt className='text-aqua-50/80 text-center text-xs font-extrabold tracking-widest uppercase'>
-          Active wallets connected
+          Wallets Holding FLUX
         </dt>
         <dd className='odometer text-indigo-blue-50 mt-4 font-mono! text-3xl font-bold'>
-          <Odometer value={stats.activeWallets} />
+          {stats.isLoading ? (
+            <div className="animate-pulse bg-gray-300 dark:bg-gray-700 h-8 w-16 rounded"></div>
+          ) : (
+            <Odometer value={stats.activeWallets} />
+          )}
         </dd>
       </div>
 
       <div className='flex flex-col items-center justify-center'>
         <dt className='text-aqua-50/80 text-center text-xs font-extrabold tracking-widest uppercase'>
-          Flux Price Since Launch
+          FLUX Price Since Launch
         </dt>
         <dd className='odometer text-indigo-blue-50 mt-4 flex items-center text-center font-mono! text-3xl font-bold'>
-          $<Odometer value={stats.priceOfFlux} />
-          <div className='ml-3 flex gap-2'>
-            <div className='flex items-center gap-1'>
-              <svg
-                viewBox='0 0 24 24'
-                width='24'
-                height='24'
-                stroke='currentColor'
-                strokeWidth='2'
-                fill='none'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                aria-hidden='true'
-                className='size-4 stroke-[3px] text-green-400'
-              >
-                <path d='m22 7-7.869 7.869c-.396.396-.594.594-.822.668a1 1 0 0 1-.618 0c-.228-.074-.426-.272-.822-.668L9.13 12.13c-.396-.396-.594-.594-.822-.668a1 1 0 0 0-.618 0c-.228.074-.426.272-.822.668L2 17M22 7h-7m7 0v7'></path>
-              </svg>
-              <span className='text-sm font-medium text-green-400'>70%</span>
-            </div>
-            <span className='text-tertiary hidden text-sm font-medium'>
-              vs last month
-            </span>
-          </div>
+          {stats.isLoading ? (
+            <div className="animate-pulse bg-gray-300 dark:bg-gray-700 h-8 w-24 rounded"></div>
+          ) : (
+            <>
+              ${(stats.currentPrice).toFixed(4)}
+              <div className='ml-3 flex gap-2'>
+                <div className='flex items-center gap-1'>
+                  {stats.currentPrice >= LAUNCH_PRICE ? (
+                    <svg
+                      viewBox='0 0 24 24'
+                      width='24'
+                      height='24'
+                      stroke='currentColor'
+                      strokeWidth='2'
+                      fill='none'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      aria-hidden='true'
+                      className='size-4 stroke-[3px] text-green-400'
+                    >
+                      <path d='m22 7-7.869 7.869c-.396.396-.594.594-.822.668a1 1 0 0 1-.618 0c-.228-.074-.426-.272-.822-.668L9.13 12.13c-.396-.396-.594-.594-.822-.668a1 1 0 0 0-.618 0c-.228.074-.426.272-.822.668L2 17M22 7h-7m7 0v7'></path>
+                    </svg>
+                  ) : (
+                    <svg
+                      viewBox='0 0 24 24'
+                      width='24'
+                      height='24'
+                      stroke='currentColor'
+                      strokeWidth='2'
+                      fill='none'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      aria-hidden='true'
+                      className='size-4 stroke-[3px] text-red-400'
+                    >
+                      <path d='m22 17-7.869-7.869c-.396-.396-.594-.594-.822-.668a1 1 0 0 0-.618 0c-.228.074-.426.272-.822.668L9.13 11.87c-.396.396-.594.594-.822.668a1 1 0 0 1-.618 0c-.228-.074-.426-.272-.822-.668L2 7M22 17h-7m7 0v-7'></path>
+                    </svg>
+                  )}
+                  <span className={`text-sm font-medium ${
+                    stats.currentPrice >= LAUNCH_PRICE ? 'text-green-400' : 'text-red-400'
+                  }`}>
+                    {stats.currentPrice > 0 ? 
+                      (((stats.currentPrice - LAUNCH_PRICE) / LAUNCH_PRICE) * 100).toFixed(1)
+                      : '0'
+                    }%
+                  </span>
+                </div>
+                <span className='text-tertiary hidden text-sm font-medium'>
+                  since launch
+                </span>
+              </div>
+            </>
+          )}
         </dd>
       </div>
 
       <div className='flex flex-col items-center justify-center'>
         <dt className='text-aqua-50/80 text-center text-xs font-extrabold tracking-widest uppercase'>
-          Telegram users joined
+          Total FLUX in Circulation
         </dt>
         <dd className='odometer text-indigo-blue-50 mt-4 text-center font-mono! text-3xl font-bold'>
-          <Odometer value={stats.telegramUsers} />
+          {stats.isLoading ? (
+            <div className="animate-pulse bg-gray-300 dark:bg-gray-700 h-8 w-20 rounded"></div>
+          ) : (
+            <Odometer value={Math.floor(stats.totalSupply)} />
+          )}
         </dd>
       </div>
     </dl>
