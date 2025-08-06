@@ -26,9 +26,6 @@ importers:
       '@splidejs/react-splide':
         specifier: ^0.7.12
         version: 0.7.12
-      '@untitledui-pro/icons':
-        specifier: ^0.0.2
-        version: 0.0.2(react@19.1.0)
       '@untitledui/icons':
         specifier: ^0.0.19
         version: 0.0.19(react@19.1.0)
@@ -2083,11 +2080,6 @@ packages:
     resolution: {integrity: sha512-lrW200hZdbfRtztbygyaq/6jP6AKE8qQN2KvPcJ+x7wiD038YtnYtZ82IMNJ69GJibV7bwL3y9FgK+5w/pYt6g==}
     cpu: [x64]
     os: [win32]
-
-  '@untitledui-pro/icons@0.0.2':
-    resolution: {integrity: sha512-dHtDxmAWiZfQlH6x4urFnQSQgIqLFJXRzQcVSbxjMTDcxBccrs2cKQa9o9vhaXd0BIJ/Vmq5DGQG9NJFvgFAiQ==, tarball: https://pkg.untitledui.com/@untitledui-pro/icons/tarball/0.0.2}
-    peerDependencies:
-      react: '>= 16'
 
   '@untitledui/icons@0.0.19':
     resolution: {integrity: sha512-cZA7BBE5+piNpzO9CiXypbmGYSDqnT3WwHn6/TU7cUuYl7oUlwIn0AwW/kYDDkmJMPu/wRlnJDR1/OiXd4nqew==}
@@ -6412,10 +6404,6 @@ snapshots:
 
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
-
-  '@untitledui-pro/icons@0.0.2(react@19.1.0)':
-    dependencies:
-      react: 19.1.0
 
   '@untitledui/icons@0.0.19(react@19.1.0)':
     dependencies:

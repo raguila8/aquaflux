@@ -4,7 +4,8 @@ import { notify } from '@/lib/notify'
 import { useState } from 'react'
 import { useClipboard } from '@/hooks/use-clipboard'
 import { Copy01, Check } from '@untitledui/icons'
-import { CreditCardUp, Cryptocurrency03 } from '@untitledui-pro/icons/solid'
+import CreditCardUp from '@/icons/untitledui/pro/credit-card-up.svg'
+import Cryptocurrency03 from '@/icons/untitledui/pro/cryptocurrency-03.svg'
 import {
   DialogTrigger as AriaDialogTrigger,
   Heading as AriaHeading,

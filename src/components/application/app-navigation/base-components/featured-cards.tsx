@@ -4,7 +4,6 @@ import type { ReactNode } from 'react'
 import { Button } from '@/components/base/buttons/button'
 import { CloseButton } from '@/components/base/buttons/close-button'
 import { GradientScan, QRCode } from '@/components/shared-assets/qr-code'
-import { Cryptocurrency03 } from '@untitledui-pro/icons/solid'
 
 interface FeaturedCardCommonProps {
   title: string

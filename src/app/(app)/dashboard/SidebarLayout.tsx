@@ -7,17 +7,16 @@ import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { QRCodeModal } from '@/components/application/modals/qr-code-modal'
 import { Button } from '@/components/base/buttons/button'
-import { CreditCardUp, Cryptocurrency03 } from '@untitledui-pro/icons/solid'
 import { Toaster } from '@/components/application/notifications/toaster'
 
-import {
-  Home03,
-  Rows01,
-  PieChart02,
-  Stars01,
-  HelpCircle,
-  CoinsSwap01,
-} from '@untitledui-pro/icons/solid'
+import Home03 from '@/icons/untitledui/pro/home-03.svg'
+import Rows01 from '@/icons/untitledui/pro/rows-01.svg'
+import PieChart02 from '@/icons/untitledui/pro/pie-chart-02.svg'
+import Stars01 from '@/icons/untitledui/pro/stars-01.svg'
+import HelpCircle from '@/icons/untitledui/pro/help-circle.svg'
+import CoinsSwap01 from '@/icons/untitledui/pro/coin-swap-01.svg'
+import CreditCardUp from '@/icons/untitledui/pro/credit-card-up.svg'
+import Cryptocurrency03 from '@/icons/untitledui/pro/cryptocurrency-03.svg'
 
 export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname()

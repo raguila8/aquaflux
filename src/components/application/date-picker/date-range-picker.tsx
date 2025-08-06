@@ -10,8 +10,7 @@ import {
   today,
 } from '@internationalized/date'
 import { useControlledState } from '@react-stately/utils'
-import { Calendar as CalendarIcon1 } from '@untitledui/icons'
-import { CalendarMinus01 as CalendarIcon } from '@untitledui-pro/icons/solid'
+import CalendarIcon from '@/icons/untitledui/pro/calendar-minus-01.svg'
 import { useDateFormatter } from 'react-aria'
 import type {
   DateRangePickerProps as AriaDateRangePickerProps,
