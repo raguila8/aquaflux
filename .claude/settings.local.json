@@ -17,7 +17,8 @@
       "WebFetch(domain:github.com)",
       "Bash(pnpm remove:*)",
       "Bash(mv:*)",
-      "WebFetch(domain:docs.balancer.fi)"
+      "WebFetch(domain:docs.balancer.fi)",
+      "Bash(git show:*)"
     ],
     "deny": []
   }

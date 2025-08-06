@@ -18,13 +18,6 @@ const FluxChart = dynamic(
   }
 )
 
-const FluxPriceCard = dynamic(
-  () => import('@/components/application/FluxPriceCard').then(mod => ({ default: mod.FluxPriceCard })),
-  { 
-    loading: () => <div className="h-64 animate-pulse bg-zinc-800/50 rounded-lg" />,
-    ssr: false 
-  }
-)
 
 import { MetricsSimple } from '@/components/application/metrics/metrics'
 import { useWallet } from '@/contexts/WalletContext'
@@ -164,14 +157,7 @@ export default function Dashboard() {
           />
         </div>
 
-        <div className='grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-5'>
-          <div className='lg:col-span-2'>
-            <FluxChart />
-          </div>
-          <div className='lg:col-span-1'>
-            <FluxPriceCard />
-          </div>
-        </div>
+        <FluxChart />
         
         <TransactionsTable title='Recent transactions' />
       </div>
