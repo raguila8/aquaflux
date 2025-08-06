@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAccount, useSignMessage, useAuthModal, useLogout } from '@account-kit/react';
 import { ethers } from 'ethers';
-import { FLUX_TOKEN_ADDRESS, ALCHEMY_RPC_URL } from '@/config/alchemy';
+import { FLUX_TOKEN_ADDRESS, ALCHEMY_RPC_URL, config } from '@/config/alchemy';
 
 interface WalletContextType {
   isConnected: boolean;
@@ -23,9 +23,9 @@ const FLUX_ABI = [
 ];
 
 export function WalletProvider({ children }: { children: React.ReactNode }) {
-  const { address, isLoadingAccount } = useAccount();
+  const { address, isLoadingAccount } = useAccount({ config });
   const { openAuthModal } = useAuthModal();
-  const { logout } = useLogout();
+  const { logout } = useLogout({ config });
   const [fluxBalance, setFluxBalance] = useState<string>('0');
   const [isLoading, setIsLoading] = useState(false);
 

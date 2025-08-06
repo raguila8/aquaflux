@@ -115,7 +115,7 @@ export function TransactionsTable({
     });
   };
   
-  const analyzeTransactionPattern = (walletTxs: VaultTransaction[]) => {
+  const analyzeTransactionPattern = useCallback((walletTxs: VaultTransaction[]) => {
     const newTxs = getNewTransactionsForWallet(address!, previousTxIds.current);
     
     if (!isFirstLoad.current && newTxs.length > 0) {
@@ -197,7 +197,7 @@ export function TransactionsTable({
     
     previousTxIds.current = new Set(walletTxs.map(tx => tx.id));
     isFirstLoad.current = false;
-  };
+  }, [address]);
   
   useEffect(() => {
     if (!address) {
@@ -238,7 +238,7 @@ export function TransactionsTable({
       isMounted = false;
       if (interval) clearInterval(interval);
     };
-  }, [address]);
+  }, [address, analyzeTransactionPattern]);
 
   // Date range state used for filtering
   const [dateRange, setDateRange] = useState<{
