@@ -1,9 +1,6 @@
 import { ethers } from 'ethers';
-import { FLUX_TOKEN_ADDRESS, ALCHEMY_RPC_URL } from '@/config/alchemy';
+import { FLUX_TOKEN_ADDRESS, ALCHEMY_RPC_URL, VAULT_ADDRESS, USDC_ADDRESS } from '@/config/constants';
 import { memoryCache } from './memoryTransactionCache';
-
-const VAULT_ADDRESS = '0x25f2F5C009700Afd6A7ce831B5f1006B20F101c1';
-const USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const MAX_BLOCKS_PER_FETCH = 2000;
 
 const ERC20_ABI = [

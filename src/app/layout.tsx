@@ -1,9 +1,13 @@
 import clsx from 'clsx'
 import type { Metadata } from 'next'
+import { headers } from 'next/headers'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import "@/styles/globals.css";
-import { AlchemyProviders } from '@/components/providers/AlchemyProviders';
+import { ReownProvider } from '@/components/providers/ReownProvider';
+import { WalletProvider } from '@/contexts/WalletContext';
+import { cookieToInitialState } from 'wagmi';
+import { config } from '@/config/reown';
 
 export const metadata: Metadata = {
   title: {
@@ -26,20 +30,26 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const headersList = await headers()
+  const cookies = headersList.get('cookie')
+  const initialState = cookieToInitialState(config, cookies)
+
   return (
     <html
       lang='en'
       className={clsx('scroll-smooth', GeistSans.variable, GeistMono.variable)}
     >
       <body className='bg-zinc-950 antialiased'>
-        <AlchemyProviders>
-          {children}
-        </AlchemyProviders>
+        <ReownProvider cookies={cookies} initialState={initialState}>
+          <WalletProvider>
+            {children}
+          </WalletProvider>
+        </ReownProvider>
       </body>
     </html>
   )

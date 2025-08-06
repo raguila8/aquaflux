@@ -1,11 +1,18 @@
-import { withAccountKitUi, createColorSet } from "@account-kit/react/tailwind";
+import type { Config } from 'tailwindcss'
 
-export default withAccountKitUi({
-  // Empty config for Tailwind v4 as most options are configured via CSS
-}, {
-  colors: {
-    "btn-primary": createColorSet("#E82594", "#FF66CC"),
-    "fg-accent-brand": createColorSet("#E82594", "#FF66CC"),
+const config: Config = {
+  content: [
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        "btn-primary": "#E82594",
+        "fg-accent-brand": "#E82594",
+      },
+    },
   },
-  borderRadius: "md",
-})
+  plugins: [],
+}
+
+export default config

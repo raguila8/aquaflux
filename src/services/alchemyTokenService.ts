@@ -1,4 +1,4 @@
-import { ALCHEMY_RPC_URL, FLUX_TOKEN_ADDRESS, USDC_ADDRESS } from '@/config/alchemy';
+import { ALCHEMY_RPC_URL, FLUX_TOKEN_ADDRESS, USDC_ADDRESS } from '@/config/constants';
 
 interface TokenBalance {
   contractAddress: string;

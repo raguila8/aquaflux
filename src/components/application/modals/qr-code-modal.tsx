@@ -6,6 +6,7 @@ import { useClipboard } from '@/hooks/use-clipboard'
 import { Copy01, Check } from '@untitledui/icons'
 import CreditCardUp from '@/icons/untitledui/pro/credit-card-up.svg'
 import Cryptocurrency03 from '@/icons/untitledui/pro/cryptocurrency-03.svg'
+import { VAULT_ADDRESS } from '@/config/constants'
 import {
   DialogTrigger as AriaDialogTrigger,
   Heading as AriaHeading,
@@ -36,17 +37,13 @@ export const QRCodeModal = ({
   mode = 'deposit',
   tokenSymbol = 'USDC',
 }: TwoFACodeModalProps) => {
-  const [value, setValue] = useState(
-    '0x05d242f6686122ae37e003be9f11e3a9f7bb6390f8e43de216c89f44c28f4595'
-  )
   const { copy, copied } = useClipboard()
 
   const titleText = mode === 'deposit' ? 'Deposit' : 'Withdraw'
-  const labelText = `${tokenSymbol} deposit address`
-  const alertTitle = `Only deposit ${tokenSymbol} on the ARB (Arbitrium) network.`
+  const labelText = `${tokenSymbol} deposit address on Base`
+  const alertTitle = `Only deposit ${tokenSymbol} on the Base network.`
   const successTitle = `${titleText} successful`
-  const address =
-    '0x9749a2817894a0f8aff9977efc5d0aaaad6133a94247b1ee3ab707c2bfe7d1d1'
+  const address = VAULT_ADDRESS
 
   return (
     <AriaDialogTrigger isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -110,15 +107,15 @@ export const QRCodeModal = ({
                   isReadOnly
                   size='md'
                   label={labelText}
-                  value={value}
-                  onChange={setValue}
+                  value={address}
+                  onChange={() => {}}
                   className='font-mono'
                   inputClassName='shadow-inner-blur rounded-lg'
                 />
                 <Button
                   size='lg'
                   color='tertiary'
-                  onClick={() => copy(value)}
+                  onClick={() => copy(address)}
                   iconLeading={copied ? Check : Copy01}
                 />
               </div>
@@ -146,8 +143,7 @@ export const QRCodeModal = ({
                     onOpenChange(false)
                     notify.success({
                       title: successTitle,
-                      description:
-                        'Lorem ipsum dolor sit amet hac erat vestibulum nunc fames.',
+                      description: `${tokenSymbol} ${mode} initiated. Transaction will appear once confirmed on the blockchain.`,
                     })
                   }}
                 >

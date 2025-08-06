@@ -1,9 +1,11 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { useAccount, useSignMessage, useAuthModal, useLogout } from '@account-kit/react';
+import { useAccount, useDisconnect, useBalance } from 'wagmi';
+import { useAppKit } from '@reown/appkit/react';
 import { getFluxBalance, getUsdcBalance } from '@/services/alchemyTokenService';
 import { subscribeToNewTransactions } from '@/services/alchemyTransactionService';
+import { useRouter } from 'next/navigation';
 
 interface WalletContextType {
   isConnected: boolean;
@@ -20,9 +22,11 @@ const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
 export function WalletProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
-  const { address, isLoadingAccount } = useAccount({ type: "LightAccount" });
-  const { openAuthModal } = useAuthModal();
-  const { logout } = useLogout();
+  const { address, isConnected, isConnecting } = useAccount();
+  const { disconnect: wagmiDisconnect } = useDisconnect();
+  const { open } = useAppKit();
+  const router = useRouter();
+  
   const [fluxBalance, setFluxBalance] = useState<string>('0');
   const [usdcBalance, setUsdcBalance] = useState<string>('0');
   const [isLoading, setIsLoading] = useState(false);
@@ -60,16 +64,12 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     if (address) {
       refreshBalances();
       
-      // Subscribe to new transactions
       const unsubscribe = subscribeToNewTransactions((tx) => {
-        // Check if transaction involves the user's wallet
         if (tx.from === address || tx.to === address) {
-          // Refresh balances when new transaction is detected
-          setTimeout(refreshBalances, 2000); // Wait 2 seconds for confirmation
+          setTimeout(refreshBalances, 2000);
         }
       });
       
-      // Set up periodic refresh every 30 seconds
       const interval = setInterval(refreshBalances, 30000);
       
       return () => {
@@ -82,21 +82,30 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     }
   }, [address, refreshBalances]);
 
-  const connect = () => {
-    openAuthModal();
-  };
+  useEffect(() => {
+    if (!isConnected && mounted) {
+      const currentPath = window.location.pathname;
+      if (currentPath.startsWith('/dashboard')) {
+        router.push('/');
+      }
+    }
+  }, [isConnected, mounted, router]);
 
-  const disconnect = async () => {
+  const connect = useCallback(() => {
+    open();
+  }, [open]);
+
+  const disconnect = useCallback(async () => {
     try {
-      await logout();
+      await wagmiDisconnect();
       setFluxBalance('0');
       setUsdcBalance('0');
+      router.push('/');
     } catch (error) {
       console.error('Error disconnecting wallet:', error);
     }
-  };
+  }, [wagmiDisconnect, router]);
 
-  // Return default values during SSR
   if (!mounted) {
     return (
       <WalletContext.Provider
@@ -119,34 +128,14 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   return (
     <WalletContext.Provider
       value={{
-        isConnected: !!address,
+        isConnected,
         address: address || null,
         fluxBalance,
         usdcBalance,
         connect,
         disconnect,
-        isLoading: isLoadingAccount || isLoading,
+        isLoading: isConnecting || isLoading,
         refreshBalances,
-      }}
-    >
-      {children}
-    </WalletContext.Provider>
-  );
-}
-
-// SSR Provider for server-side rendering
-export function SSRWalletProvider({ children }: { children: React.ReactNode }) {
-  return (
-    <WalletContext.Provider
-      value={{
-        isConnected: false,
-        address: null,
-        fluxBalance: '0',
-        usdcBalance: '0',
-        connect: () => {},
-        disconnect: async () => {},
-        isLoading: false,
-        refreshBalances: async () => {},
       }}
     >
       {children}
