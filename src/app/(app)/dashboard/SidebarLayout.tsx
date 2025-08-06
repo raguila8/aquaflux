@@ -4,10 +4,12 @@ import { SidebarNavigationSimple } from '@/components/application/app-navigation
 import { Badge } from '@/components/base/badges/badges'
 import { FeaturedCardQRCode } from '@/components/application/app-navigation/base-components/featured-cards'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { QRCodeModal } from '@/components/application/modals/qr-code-modal'
 import { Button } from '@/components/base/buttons/button'
 import { Toaster } from '@/components/application/notifications/toaster'
+import { useWallet } from '@/contexts/WalletContext'
+import { useRouter } from 'next/navigation'
 
 import Home03 from '@/icons/untitledui/pro/home-03.svg'
 import Rows01 from '@/icons/untitledui/pro/rows-01.svg'
@@ -20,11 +22,18 @@ import Cryptocurrency03 from '@/icons/untitledui/pro/cryptocurrency-03.svg'
 
 export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname()
+  const router = useRouter()
+  const { isConnected, address, disconnect } = useWallet()
   const [open2FA, setOpen2FA] = useState(false)
   const [transferMode, setTransferMode] = useState<'deposit' | 'withdraw'>(
     'deposit'
   )
   const [tokenSymbol, setTokenSymbol] = useState('USDC')
+  
+  const handleSignOut = async () => {
+    await disconnect();
+    router.push('/');
+  };
 
   // Dynamic title based on pathname
   const getPageTitle = (path: string): string => {
@@ -134,7 +143,13 @@ export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
                   </p>
                   <p className='text-md text-tertiary'>{subtitle}</p>
                 </div>
-                <div className='flex gap-3'>
+                <div className='flex flex-col items-end gap-2'>
+                  {address && (
+                    <p className='text-sm text-tertiary'>
+                      {address.slice(0, 6)}...{address.slice(-4)}
+                    </p>
+                  )}
+                  <div className='flex gap-3'>
                   <Button
                     size='md'
                     color='secondary'
@@ -158,6 +173,14 @@ export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
                   >
                     Deposit
                   </Button>
+                  <Button
+                    size='md'
+                    color='secondary'
+                    onClick={handleSignOut}
+                  >
+                    Sign Out
+                  </Button>
+                  </div>
                 </div>
               </div>
             </div>

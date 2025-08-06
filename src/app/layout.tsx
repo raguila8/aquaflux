@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import "@/styles/globals.css";
+import { AlchemyProviders } from '@/components/providers/AlchemyProviders';
 
 export const metadata: Metadata = {
   title: {
@@ -35,7 +36,11 @@ export default function RootLayout({
       lang='en'
       className={clsx('scroll-smooth', GeistSans.variable, GeistMono.variable)}
     >
-      <body className='bg-zinc-950 antialiased'>{children}</body>
+      <body className='bg-zinc-950 antialiased'>
+        <AlchemyProviders>
+          {children}
+        </AlchemyProviders>
+      </body>
     </html>
   )
 }

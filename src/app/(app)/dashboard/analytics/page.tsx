@@ -10,6 +10,9 @@ import { MetricChangeIndicator } from '@/components/application/metrics/metrics'
 import { ChartTooltipContent } from '@/components/application/charts/charts-base'
 import { cx } from '@/utils/cx'
 import { FluxChart } from '@/components/application/charts/flux-chart'
+import { useWallet } from '@/contexts/WalletContext'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 const pieChartData1 = [
   {
@@ -142,6 +145,17 @@ const PieChartCard = ({
 )
 
 export default function Analytics() {
+  const { isConnected, connect } = useWallet();
+  const router = useRouter();
+  
+  useEffect(() => {
+    if (!isConnected) {
+      router.push('/');
+      setTimeout(() => {
+        connect();
+      }, 100);
+    }
+  }, [isConnected, router, connect]);
   return (
     <div className='flex flex-col gap-10 lg:flex-row'>
       <div className='flex min-w-0 flex-1 flex-col gap-8 lg:gap-5'>

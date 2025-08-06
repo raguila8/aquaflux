@@ -9,14 +9,19 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@account-kit/react": "^4.5.1",
+    "@account-kit/infra": "^4.5.1",
+    "@account-kit/core": "^4.5.1",
     "@headlessui/react": "^2.2.5",
     "@heroicons/react": "^2.2.0",
     "@internationalized/date": "^3.8.2",
     "@react-aria/i18n": "^3.12.11",
     "@react-stately/utils": "^3.10.8",
     "@splidejs/react-splide": "^0.7.12",
+    "@tanstack/react-query": "^5.62.10",
     "@untitledui/icons": "^0.0.19",
     "clsx": "^2.1.1",
+    "ethers": "^6.13.4",
     "geist": "^1.3.1",
     "input-otp": "^1.4.2",
     "lodash": "^4.17.21",
@@ -31,7 +36,8 @@
     "recharts": "^3.1.0",
     "sonner": "^2.0.7",
     "tailwindcss-animate": "^1.0.7",
-    "tailwindcss-react-aria-components": "^2.0.0"
+    "tailwindcss-react-aria-components": "^2.0.0",
+    "viem": "^2.21.58"
   },
   "devDependencies": {
     "@react-types/overlays": "^3.9.0",

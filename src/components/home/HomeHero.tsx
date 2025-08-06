@@ -1,14 +1,35 @@
+'use client'
+
 import Image from 'next/image'
 import { Container } from '@/components/shared/Container'
 import { Button } from '@/components/shared/Button'
 import { ContentPill } from '@/components/shared/ContentPill'
 import { SparklesIcon } from '@heroicons/react/16/solid'
 import { CLIENTS } from '@/config'
+import { useWallet } from '@/contexts/WalletContext'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 import appScreenshot from '@/images/app-screenshot.png'
 import cosmicButterfly from '@/images/cosmic-butterfly.png'
 
 export const HomeHero = () => {
+  const { isConnected, connect } = useWallet();
+  const router = useRouter();
+  
+  const handleGetStarted = () => {
+    if (isConnected) {
+      router.push('/dashboard');
+    } else {
+      connect();
+    }
+  };
+  
+  useEffect(() => {
+    if (isConnected) {
+      router.push('/dashboard');
+    }
+  }, [isConnected, router]);
   return (
     <Container className='gap-16 pt-20 pb-16 sm:pb-20 lg:pt-28'>
       {/* Text content */}
@@ -36,11 +57,11 @@ export const HomeHero = () => {
             in any market condition.
           </p>
           <div className='mt-8 flex items-center justify-center space-x-3 sm:space-x-5'>
-            <Button id='top-cta' href='#'>
+            <Button id='top-cta' onClick={handleGetStarted}>
               {' '}
-              Get started{' '}
+              {isConnected ? 'Go to Dashboard' : 'Get started'}{' '}
             </Button>
-            <Button variant='tertiary' href='https://t.me/+gbjAAlcYhL9kMzZk' className='group overflow-hidden'>
+            <Button variant='tertiary' href='https://t.me/+gbjAAlcYhL9kMzZk' target='_blank' rel='noopener noreferrer' className='group overflow-hidden'>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 width={24}

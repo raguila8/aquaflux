@@ -129,6 +129,8 @@ export function Footer({ cta = true }: Props) {
                         key={`footer-social-${social.name}`}
                         href={social.href}
                         aria-label={social.ariaLabel}
+                        target={social.name === 'telegram' ? '_blank' : undefined}
+                        rel={social.name === 'telegram' ? 'noopener noreferrer' : undefined}
                         className='group text-indigo-blue-50/90 flex items-center space-x-2 text-sm font-semibold drop-shadow-[-2px_-4px_6px_rgba(221,232,252,0.2)]'
                         style={{
                           display: (social.name === 'twitter' || social.name === 'discord') ? 'none' : 'flex'

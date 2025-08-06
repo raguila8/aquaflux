@@ -1,10 +1,24 @@
+'use client'
+
 import Image from 'next/image'
 import { Container } from '@/components/shared/Container'
 import { Button } from '@/components/shared/Button'
+import { useWallet } from '@/contexts/WalletContext'
+import { useRouter } from 'next/navigation'
 
 import spaceSpotlight from '@/images/space-spotlight.png'
 
 export function FooterCTA() {
+  const { isConnected, connect } = useWallet();
+  const router = useRouter();
+  
+  const handleGetStarted = () => {
+    if (isConnected) {
+      router.push('/dashboard');
+    } else {
+      connect();
+    }
+  };
   return (
     <>
       <Container className='py-16 sm:py-20 lg:py-24'>
@@ -29,7 +43,9 @@ export function FooterCTA() {
             value of every token.
           </p>
           <div className='mt-8 flex items-center justify-center space-x-3 sm:space-x-5'>
-            <Button href='/signup'> Get started </Button>
+            <Button onClick={handleGetStarted}> 
+              {isConnected ? 'Go to Dashboard' : 'Get started'} 
+            </Button>
           </div>
         </div>
       </Container>

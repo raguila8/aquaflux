@@ -1,5 +1,7 @@
+'use client'
+
 import { Tooltip, TooltipTrigger } from '@/components/base/tooltip/tooltip'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type { Key } from 'react-aria-components'
 import { Table, TableCard } from '@/components/application/table/table'
 import { PaginationPageMinimalCenter } from '@/components/application/pagination/pagination'
@@ -14,6 +16,9 @@ import { Button } from '@/components/base/buttons/button'
 import { Avatar } from '@/components/base/avatar/avatar'
 import { cn, truncateHash } from '@/lib/utils'
 import { ChevronRightIcon } from '@heroicons/react/16/solid'
+import { useWallet } from '@/contexts/WalletContext'
+import { fetchVaultTransactions, getWalletTransactions, getNewTransactionsForWallet, type VaultTransaction } from '@/services/vaultTransactionService'
+import { toast } from 'sonner'
 
 import USDC from '@/images/assets/usdc.png'
 import Flux from '@/images/assets/flux.png'
@@ -51,62 +56,29 @@ const formatUTCDate = (utcDate: string): string => {
   return date.toISOString().slice(0, 16).replace('T', ' ')
 }
 
-// -----------------------------------------------------------------------------
-// Auto-generated mock transactions
-// -----------------------------------------------------------------------------
-
-const transactions: Transaction[] = Array.from({ length: 100 }, (_, idx) => {
-  const index = idx + 1 // 1-based index for clarity
-  const asset: AssetName = Math.random() < 0.5 ? 'Flux Token' : 'USDC'
-
-  // Randomized amount between 0.01 and 9,999.00 (2 decimal places)
-  const amountValue = parseFloat(
-    (Math.random() * (1500 - 0.01) + 0.01).toFixed(2)
-  )
-  const sign = Math.random() < 0.5 ? '+' : '-'
+const formatTransactionData = (tx: VaultTransaction): Transaction => {
+  const asset: AssetName = tx.token === 'FLUX' ? 'Flux Token' : 'USDC';
+  const isDeposit = tx.to === '0x25f2F5C009700Afd6A7ce831B5f1006B20F101c1'.toLowerCase();
+  const sign = isDeposit ? '-' : '+';
+  const amountValue = parseFloat(tx.value);
   const amount = `${sign} ${amountValue.toLocaleString('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  })}`
-  const fee = (0.005 + (index % 5) * 0.001).toFixed(3)
-
-  const randomHex = (length: number) =>
-    Array.from({ length }, () =>
-      Math.floor(Math.random() * 16).toString(16)
-    ).join('')
-
-  const transactionHash = `0x${randomHex(64)}`
-
-  const transactionURL = `https://etherscan.io/tx/${transactionHash}`
-
-  // Skewed random status: ~70% confirmed, 20% pending, 10% failed
-  const rand = Math.random()
-  const status: TransactionStatus =
-    rand < 0.7 ? 'confirmed' : rand < 0.9 ? 'pending' : 'failed'
-
-  // Random date in 2025 but before the current date
-  const startRange = Date.UTC(2025, 0, 1) // Jan 1 2025 UTC
-  const now = Date.now()
-  // Ensure the upper bound is still within 2025
-  const endOf2025 = Date.UTC(2025, 11, 31, 23, 59, 59, 999)
-  const endRange = Math.min(now, endOf2025)
-
-  const dateTime = new Date(
-    startRange + Math.random() * (endRange - startRange)
-  ).toISOString()
-
+  })}`;
+  
+  const feeValue = isDeposit ? amountValue * 0.01 : 0;
+  const fee = feeValue.toFixed(4);
+  
   return {
     asset,
     amount,
     fee,
-    transactionHash,
-    transactionURL,
-    status,
-    dateTime,
-  }
-}).sort(
-  (a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()
-)
+    transactionHash: tx.hash,
+    transactionURL: `https://basescan.org/tx/${tx.hash}`,
+    status: 'confirmed' as TransactionStatus,
+    dateTime: new Date(tx.timestamp).toISOString(),
+  };
+};
 
 const tabs = [
   { id: 'all', label: 'All transactions' },
@@ -123,10 +95,150 @@ export function TransactionsTable({
   showTabs = false,
   title = 'Transactions',
 }: TransactionsTableProps) {
+  const { address } = useWallet();
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedTabIndex, setSelectedTabIndex] = useState<Key>('all')
+  const previousTxIds = useRef<Set<string>>(new Set());
+  const isFirstLoad = useRef(true);
   // Pagination state
   const itemsPerPage = 10
   const [currentPage, setCurrentPage] = useState<number>(1)
+  
+  const formatTransactionDate = (timestamp: number) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+  
+  const analyzeTransactionPattern = (walletTxs: VaultTransaction[]) => {
+    const newTxs = getNewTransactionsForWallet(address!, previousTxIds.current);
+    
+    if (!isFirstLoad.current && newTxs.length > 0) {
+      const sortedAllTxs = [...walletTxs].sort((a, b) => a.timestamp - b.timestamp);
+      
+      for (const tx of newTxs) {
+        const txDate = formatTransactionDate(tx.timestamp);
+        const isDeposit = tx.type === 'incoming';
+        
+        if (isDeposit && tx.token === 'USDC') {
+          const nearbyFlux = sortedAllTxs.find(
+            t => t.type === 'outgoing' && t.token === 'FLUX' && 
+            Math.abs(t.timestamp - tx.timestamp) < 60000
+          );
+          
+          if (nearbyFlux) {
+            toast.success(
+              <div className="flex flex-col gap-1">
+                <span>Deposit Successful</span>
+                <span className="text-xs opacity-80">{parseFloat(tx.value).toFixed(2)} USDC • {txDate}</span>
+              </div>,
+              {
+                action: {
+                  label: 'View',
+                  onClick: () => window.open(`https://basescan.org/tx/${tx.hash}`, '_blank')
+                },
+              }
+            );
+          } else {
+            toast.error(
+              <div className="flex flex-col gap-1">
+                <span>Deposit Failed</span>
+                <span className="text-xs opacity-80">{parseFloat(tx.value).toFixed(2)} USDC returned • {txDate}</span>
+              </div>,
+              {
+                action: {
+                  label: 'View',
+                  onClick: () => window.open(`https://basescan.org/tx/${tx.hash}`, '_blank')
+                },
+              }
+            );
+          }
+        } else if (isDeposit && tx.token === 'FLUX') {
+          const nearbyUsdc = sortedAllTxs.find(
+            t => t.type === 'outgoing' && t.token === 'USDC' && 
+            Math.abs(t.timestamp - tx.timestamp) < 60000
+          );
+          
+          if (nearbyUsdc) {
+            toast.success(
+              <div className="flex flex-col gap-1">
+                <span>Withdrawal Successful</span>
+                <span className="text-xs opacity-80">{parseFloat(tx.value).toFixed(2)} FLUX • {txDate}</span>
+              </div>,
+              {
+                action: {
+                  label: 'View',
+                  onClick: () => window.open(`https://basescan.org/tx/${tx.hash}`, '_blank')
+                },
+              }
+            );
+          } else {
+            toast.error(
+              <div className="flex flex-col gap-1">
+                <span>Withdrawal Failed</span>
+                <span className="text-xs opacity-80">{parseFloat(tx.value).toFixed(2)} FLUX returned • {txDate}</span>
+              </div>,
+              {
+                action: {
+                  label: 'View',
+                  onClick: () => window.open(`https://basescan.org/tx/${tx.hash}`, '_blank')
+                },
+              }
+            );
+          }
+        }
+      }
+    }
+    
+    previousTxIds.current = new Set(walletTxs.map(tx => tx.id));
+    isFirstLoad.current = false;
+  };
+  
+  useEffect(() => {
+    if (!address) {
+      setTransactions([]);
+      setIsLoading(false);
+      return;
+    }
+    
+    let isMounted = true;
+    let interval: NodeJS.Timeout;
+    
+    const loadTransactions = async () => {
+      if (!isMounted) return;
+      
+      await fetchVaultTransactions();
+      
+      if (!isMounted) return;
+      
+      const walletTxs = getWalletTransactions(address);
+      analyzeTransactionPattern(walletTxs);
+      const formattedTxs = walletTxs.map(formatTransactionData);
+      setTransactions(formattedTxs);
+      setIsLoading(false);
+    };
+    
+    const initialLoad = async () => {
+      setIsLoading(true);
+      isFirstLoad.current = true;
+      
+      await loadTransactions();
+      
+      interval = setInterval(loadTransactions, 10000);
+    };
+    
+    initialLoad();
+    
+    return () => {
+      isMounted = false;
+      if (interval) clearInterval(interval);
+    };
+  }, [address]);
 
   // Date range state used for filtering
   const [dateRange, setDateRange] = useState<{
@@ -193,7 +305,7 @@ export function TransactionsTable({
         )
 
   // Determine count to show in badge
-  const badgeCount =
+  const badgeCount = isLoading ? 0 :
     displayTitle.toLowerCase() === 'recent transactions'
       ? displayedTransactions.length
       : filteredTransactions.length
@@ -294,6 +406,15 @@ export function TransactionsTable({
           className='px-6 pt-5 pb-6 lg:pb-5'
         />
         <div className='-mx-0'>
+          {isLoading ? (
+            <div className='flex items-center justify-center py-12'>
+              <div className='text-tertiary text-sm'>Loading transactions...</div>
+            </div>
+          ) : transactions.length === 0 ? (
+            <div className='flex items-center justify-center py-12'>
+              <div className='text-tertiary text-sm'>No transactions found</div>
+            </div>
+          ) : (
           <Table aria-label='Transactions'>
             <Table.Header className='bg-transparent'>
               <Table.Head
@@ -392,7 +513,8 @@ export function TransactionsTable({
               }}
             </Table.Body>
           </Table>
-          {displayTitle.toLowerCase() !== 'recent transactions' &&
+          )}
+          {!isLoading && displayTitle.toLowerCase() !== 'recent transactions' &&
             filteredTransactions.length > itemsPerPage && (
               <PaginationPageMinimalCenter
                 page={currentPage}
