@@ -78,7 +78,6 @@ export function useRealtimeTransactions(onNewTransaction?: (tx: Transaction) => 
       eventSourceRef.current = eventSource;
 
       eventSource.onopen = () => {
-        console.log('SSE connection established');
         if (reconnectTimeoutRef.current) {
           clearTimeout(reconnectTimeoutRef.current);
           reconnectTimeoutRef.current = null;
@@ -93,22 +92,20 @@ export function useRealtimeTransactions(onNewTransaction?: (tx: Transaction) => 
             message.data.forEach(handleNewTransaction);
           }
         } catch (error) {
-          console.error('Error parsing SSE message:', error);
+          // Silently ignore parsing errors
         }
       };
 
-      eventSource.onerror = (error) => {
-        console.error('SSE connection error:', error);
+      eventSource.onerror = () => {
         eventSource.close();
         eventSourceRef.current = null;
 
         reconnectTimeoutRef.current = setTimeout(() => {
-          console.log('Attempting to reconnect SSE...');
           connect();
         }, 5000);
       };
     } catch (error) {
-      console.error('Failed to create EventSource:', error);
+      // Silently ignore EventSource creation errors
     }
   }, [handleNewTransaction]);
 

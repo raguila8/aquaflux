@@ -100,7 +100,11 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       await wagmiDisconnect();
       setFluxBalance('0');
       setUsdcBalance('0');
-      router.push('/');
+      // Only redirect if currently on dashboard pages
+      const currentPath = window.location.pathname;
+      if (currentPath.startsWith('/dashboard')) {
+        router.push('/');
+      }
     } catch (error) {
       console.error('Error disconnecting wallet:', error);
     }

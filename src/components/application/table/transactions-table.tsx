@@ -58,7 +58,7 @@ const formatUTCDate = (utcDate: string): string => {
 
 const formatTransactionData = (tx: VaultTransaction): Transaction => {
   const asset: AssetName = tx.token === 'FLUX' ? 'Flux Token' : 'USDC';
-  const isDeposit = tx.to === '0x25f2F5C009700Afd6A7ce831B5f1006B20F101c1'.toLowerCase();
+  const isDeposit = tx.type === 'outgoing'; // User sending to vault
   const sign = isDeposit ? '-' : '+';
   const amountValue = parseFloat(tx.value);
   const amount = `${sign} ${amountValue.toLocaleString('en-US', {
@@ -116,7 +116,8 @@ export function TransactionsTable({
   };
   
   const analyzeTransactionPattern = useCallback((walletTxs: VaultTransaction[]) => {
-    const newTxs = getNewTransactionsForWallet(address!, previousTxIds.current);
+    // Filter for new transactions not in the previous set
+    const newTxs = walletTxs.filter(tx => !previousTxIds.current.has(tx.id));
     
     if (!isFirstLoad.current && newTxs.length > 0) {
       const sortedAllTxs = [...walletTxs].sort((a, b) => a.timestamp - b.timestamp);
@@ -216,7 +217,7 @@ export function TransactionsTable({
       
       if (!isMounted) return;
       
-      const walletTxs = getWalletTransactions(address);
+      const walletTxs = await getWalletTransactions(address);
       analyzeTransactionPattern(walletTxs);
       const formattedTxs = walletTxs.map(formatTransactionData);
       setTransactions(formattedTxs);

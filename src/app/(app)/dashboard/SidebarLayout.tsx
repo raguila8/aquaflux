@@ -31,9 +31,7 @@ export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
   )
   const [tokenSymbol, setTokenSymbol] = useState('USDC')
   
-  useRealtimeTransactions((transaction) => {
-    console.log('New transaction received:', transaction);
-  });
+  useRealtimeTransactions();
   
   const handleSignOut = async () => {
     await disconnect();
@@ -117,7 +115,7 @@ export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
           },
           {
             label: 'Support',
-            href: '/support',
+            href: 'https://t.me/aquaflux_tech',
             icon: HelpCircle,
           },
         ]}

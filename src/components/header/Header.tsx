@@ -42,7 +42,7 @@ export const Header = () => {
           <div className='hidden items-center md:flex lg:space-x-3 xl:space-x-4'>
             {/* Call to action */}
             <Button onClick={handleAuthClick} size='md'>
-              {isConnected ? 'Go to Dashboard' : 'Sign in'}
+              {isConnected ? 'Dashboard' : 'Sign in'}
             </Button>
           </div>
         </nav>

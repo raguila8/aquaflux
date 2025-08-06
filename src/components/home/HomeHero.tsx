@@ -24,12 +24,6 @@ export const HomeHero = () => {
       connect();
     }
   };
-  
-  useEffect(() => {
-    if (isConnected) {
-      router.push('/dashboard');
-    }
-  }, [isConnected, router]);
   return (
     <Container className='gap-16 pt-20 pb-16 sm:pb-20 lg:pt-28'>
       {/* Text content */}
