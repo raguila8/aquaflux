@@ -52,7 +52,7 @@ const pieChartData2 = [
   },
 ]
 
-const AccountCard = ({
+const PieChartCard = ({
   data,
   title,
   totalLabel,
@@ -148,7 +148,7 @@ export default function Analytics() {
         <FluxChart height='h-80' />
 
         <div className='flex flex-col gap-x-6 gap-y-5 md:flex-row md:flex-wrap'>
-          <AccountCard
+          <PieChartCard
             data={pieChartData1}
             title='Portfolio allocation'
             totalLabel='Total portfolio'
@@ -156,7 +156,7 @@ export default function Analytics() {
             change='3.4%'
             className='flex-1 md:min-w-[448px]'
           />
-          <AccountCard
+          <PieChartCard
             data={pieChartData2}
             title='Uniswap v3 allocation'
             totalLabel='Total Uniswap v3 liquidity'

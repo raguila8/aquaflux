@@ -42,7 +42,20 @@ export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
   }
 
   const title = getPageTitle(pathname)
-  const subtitle = 'Lorem ipsum dolor sit amet vestibulum augue.'
+
+  // Dynamic subtitle based on pathname
+  const getPageSubtitle = (path: string): string => {
+    if (path === '/dashboard')
+      return 'Real time portfolio, token price, and transaction history.'
+    if (path === '/dashboard/analytics')
+      return 'Performance, allocations, and liquidity. Updated in real time.'
+    if (path === '/dashboard/transactions')
+      return 'Full history of deposits and withdrawals with fees, hashes, and status.'
+    // Default subtitle
+    return 'Lorem ipsum dolor sit amet vestibulum augue.'
+  }
+
+  const subtitle = getPageSubtitle(pathname)
 
   return (
     <>

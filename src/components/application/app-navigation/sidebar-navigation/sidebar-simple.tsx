@@ -9,7 +9,6 @@ import { MobileNavigationHeader } from '@/components/application/app-navigation/
 import { NavAccountCard } from '@/components/application/app-navigation/base-components/nav-account-card'
 import { NavItemBase } from '@/components/application/app-navigation/base-components/nav-item'
 import { NavList } from '@/components/application/app-navigation/base-components/nav-list'
-import { ContentDivider } from '@/components/application/content-divider/content-divider'
 import type {
   NavItemType,
   NavItemDividerType,
