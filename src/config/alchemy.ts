@@ -9,9 +9,9 @@ const uiConfig: AlchemyAccountsUIConfig = {
       [
         {
           type: "external_wallets",
-          walletConnect: {
-            projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "b5de3f0a0e7e4c8f9c7f8d3f7a8c9e1f"
-          }
+          walletConnect: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ? {
+            projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+          } : undefined
         }
       ]
     ],
