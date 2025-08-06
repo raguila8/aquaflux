@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { TransactionsTable } from '@/components/application/table/transactions-table'
 import { FluxChart } from '@/components/application/charts/flux-chart'
 import { MetricsSimple } from '@/components/application/metrics/metrics'

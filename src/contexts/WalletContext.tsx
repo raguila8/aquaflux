@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAccount, useSignMessage, useAuthModal, useLogout } from '@account-kit/react';
 import { ethers } from 'ethers';
-import { FLUX_TOKEN_ADDRESS, ALCHEMY_RPC_URL, config } from '@/config/alchemy';
+import { FLUX_TOKEN_ADDRESS, ALCHEMY_RPC_URL } from '@/config/alchemy';
 
 interface WalletContextType {
   isConnected: boolean;
@@ -23,11 +23,16 @@ const FLUX_ABI = [
 ];
 
 export function WalletProvider({ children }: { children: React.ReactNode }) {
-  const { address, isLoadingAccount } = useAccount({ config });
+  const [mounted, setMounted] = useState(false);
+  const { address, isLoadingAccount } = useAccount({ type: "LightAccount" });
   const { openAuthModal } = useAuthModal();
-  const { logout } = useLogout({ config });
+  const { logout } = useLogout();
   const [fluxBalance, setFluxBalance] = useState<string>('0');
   const [isLoading, setIsLoading] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const fetchFluxBalance = async (walletAddress: string) => {
     try {
@@ -82,6 +87,24 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // Return default values during SSR
+  if (!mounted) {
+    return (
+      <WalletContext.Provider
+        value={{
+          isConnected: false,
+          address: null,
+          fluxBalance: '0',
+          connect: () => {},
+          disconnect: async () => {},
+          isLoading: false,
+        }}
+      >
+        {children}
+      </WalletContext.Provider>
+    );
+  }
+  
   return (
     <WalletContext.Provider
       value={{
@@ -91,6 +114,24 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
         connect,
         disconnect,
         isLoading: isLoadingAccount || isLoading,
+      }}
+    >
+      {children}
+    </WalletContext.Provider>
+  );
+}
+
+// SSR Provider for server-side rendering
+export function SSRWalletProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <WalletContext.Provider
+      value={{
+        isConnected: false,
+        address: null,
+        fluxBalance: '0',
+        connect: () => {},
+        disconnect: async () => {},
+        isLoading: false,
       }}
     >
       {children}

@@ -69,7 +69,7 @@ export async function fetchVaultTransactions(): Promise<VaultTransaction[]> {
     
     if (fluxFromResult.status === 'fulfilled') {
       for (const event of fluxFromResult.value) {
-        if (event.args?.to && event.args.to !== VAULT_ADDRESS) {
+        if ('args' in event && event.args?.to && event.args.to !== VAULT_ADDRESS) {
           allEvents.push({
             ...event,
             token: 'FLUX',
@@ -83,7 +83,7 @@ export async function fetchVaultTransactions(): Promise<VaultTransaction[]> {
     
     if (fluxToResult.status === 'fulfilled') {
       for (const event of fluxToResult.value) {
-        if (event.args?.from && event.args.from !== VAULT_ADDRESS) {
+        if ('args' in event && event.args?.from && event.args.from !== VAULT_ADDRESS) {
           allEvents.push({
             ...event,
             token: 'FLUX',
@@ -97,7 +97,7 @@ export async function fetchVaultTransactions(): Promise<VaultTransaction[]> {
     
     if (usdcFromResult.status === 'fulfilled') {
       for (const event of usdcFromResult.value) {
-        if (event.args?.to && event.args.to !== VAULT_ADDRESS) {
+        if ('args' in event && event.args?.to && event.args.to !== VAULT_ADDRESS) {
           allEvents.push({
             ...event,
             token: 'USDC',
@@ -111,7 +111,7 @@ export async function fetchVaultTransactions(): Promise<VaultTransaction[]> {
     
     if (usdcToResult.status === 'fulfilled') {
       for (const event of usdcToResult.value) {
-        if (event.args?.from && event.args.from !== VAULT_ADDRESS) {
+        if ('args' in event && event.args?.from && event.args.from !== VAULT_ADDRESS) {
           allEvents.push({
             ...event,
             token: 'USDC',
@@ -143,7 +143,7 @@ export async function fetchVaultTransactions(): Promise<VaultTransaction[]> {
           hash: event.transactionHash,
           from: event.type === 'incoming' ? event.walletAddress : VAULT_ADDRESS,
           to: event.type === 'incoming' ? VAULT_ADDRESS : event.walletAddress,
-          value: ethers.formatUnits(event.args?.value || 0, event.decimals),
+          value: ethers.formatUnits('args' in event ? event.args?.value || 0 : 0, event.decimals),
           token: event.token as 'FLUX' | 'USDC',
           timestamp: block.timestamp * 1000,
           type: event.type as 'incoming' | 'outgoing',

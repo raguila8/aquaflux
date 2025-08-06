@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { TransactionsTable } from '@/components/application/table/transactions-table'
 import { useWallet } from '@/contexts/WalletContext'
 import { useRouter } from 'next/navigation'

@@ -1,4 +1,4 @@
-import { VaultTransaction } from './vaultTransactionService';
+import { VaultTransaction } from './vaultTransactionServiceVercel';
 
 class MemoryTransactionCache {
   private static instance: MemoryTransactionCache;
