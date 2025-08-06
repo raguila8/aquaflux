@@ -21,6 +21,7 @@ interface AlertProps {
   description: ReactNode
   confirmLabel?: string
   color?: 'default' | 'brand' | 'gray' | 'error' | 'warning' | 'success'
+  className?: string
   onClose?: () => void
   onConfirm?: () => void
   showClose?: boolean
@@ -30,13 +31,19 @@ export const AlertFloating = ({
   title,
   description,
   confirmLabel,
+  className,
   onClose,
   onConfirm,
   color = 'default',
   showClose = true,
 }: AlertProps) => {
   return (
-    <div className='border-primary bg-primary_alt relative flex flex-col gap-4 rounded-xl border p-4 shadow-xs md:flex-row'>
+    <div
+      className={cx(
+        'border-primary bg-primary_alt relative flex flex-col gap-4 rounded-xl border p-4 shadow-xs md:flex-row',
+        className
+      )}
+    >
       <FeaturedIcon
         icon={iconMap[color]}
         color={color === 'default' ? 'gray' : color}
@@ -46,7 +53,7 @@ export const AlertFloating = ({
 
       <div className='flex flex-1 flex-col gap-3 md:w-0'>
         <div className='flex flex-col gap-1 overflow-auto'>
-          <p className='text-secondary pr-8 text-sm font-semibold md:truncate md:pr-0'>
+          <p className='text-primary pr-8 text-sm font-semibold md:truncate md:pr-0'>
             {title}
           </p>
           <p className='text-tertiary text-sm'>{description}</p>

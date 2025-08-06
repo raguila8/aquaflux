@@ -29,14 +29,14 @@ export const Header = () => {
               href='/signin'
               variant='tertiary'
               size='md'
-              className='overflow-hidden'
+              className='hidden overflow-hidden'
             >
               Sign in
             </Button>
 
             {/* Call to action */}
-            <Button href='/signup' size='md'>
-              Sign up
+            <Button href='#' size='md'>
+              Sign in
             </Button>
           </div>
         </nav>

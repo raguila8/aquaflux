@@ -3,7 +3,7 @@
 import { notify } from '@/lib/notify'
 import { useState } from 'react'
 import { useClipboard } from '@/hooks/use-clipboard'
-import { Lock01, Copy01, Check } from '@untitledui/icons'
+import { Copy01, Check } from '@untitledui/icons'
 import { CreditCardUp, Cryptocurrency03 } from '@untitledui-pro/icons/solid'
 import {
   DialogTrigger as AriaDialogTrigger,
@@ -29,7 +29,7 @@ type TwoFACodeModalProps = {
   tokenSymbol?: string
 }
 
-export const TWOFACodeModal = ({
+export const QRCodeModal = ({
   isOpen,
   onOpenChange,
   mode = 'deposit',
@@ -52,7 +52,7 @@ export const TWOFACodeModal = ({
       <ModalOverlay isDismissable>
         <Modal>
           <Dialog>
-            <div className='bg-primary relative w-full max-w-128 overflow-hidden rounded-2xl shadow-xl transition-all'>
+            <div className='relative w-full max-w-128 overflow-hidden rounded-2xl bg-[linear-gradient(rgba(9,9,11,0.66),rgba(9,9,11,0.66)),linear-gradient(#07344550,#07344550)] shadow-xl transition-all'>
               <CloseButton
                 onClick={() => onOpenChange(false)}
                 theme='light'
@@ -65,7 +65,8 @@ export const TWOFACodeModal = ({
                     color='gray'
                     size='lg'
                     theme='modern'
-                    icon={Cryptocurrency03}
+                    icon={mode === 'deposit' ? Cryptocurrency03 : CreditCardUp}
+                    className='shadow-inner-blur-secondary bg-[linear-gradient(rgba(9,9,11,0.66),rgba(9,9,11,0.66)),linear-gradient(#07344550,#07344550)]'
                   />
 
                   <BackgroundPattern
@@ -88,7 +89,7 @@ export const TWOFACodeModal = ({
               </div>
               <div className='h-5 w-full' />
               <div className='flex flex-col gap-4 px-4 sm:gap-5 sm:px-6'>
-                <div className='bg-secondary relative flex w-full items-center justify-center rounded-lg p-5'>
+                <div className='bg-primary shadow-inner-blur-light relative flex w-full items-center justify-center rounded-lg p-5'>
                   <QRCode
                     value={address}
                     size='lg'
@@ -111,9 +112,10 @@ export const TWOFACodeModal = ({
                   value={value}
                   onChange={setValue}
                   className='font-mono'
+                  inputClassName='shadow-inner-blur rounded-lg'
                 />
                 <Button
-                  size='md'
+                  size='lg'
                   color='tertiary'
                   onClick={() => copy(value)}
                   iconLeading={copied ? Check : Copy01}
@@ -125,6 +127,7 @@ export const TWOFACodeModal = ({
                   title={alertTitle}
                   description='If you send anything else you can potentially lose your assets forever.'
                   showClose={false}
+                  className='shadow-inner-blur-light'
                 />
               </div>
               <div className='z-10 flex flex-1 flex-col-reverse gap-3 p-4 pt-6 *:grow sm:grid sm:grid-cols-2 sm:px-6 sm:pt-8 sm:pb-6'>

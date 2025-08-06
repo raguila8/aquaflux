@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { TWOFACodeModal } from '@/components/application/modals/twofa-code-modal'
+import { TWOFACodeModal } from '@/components/application/modals/qr-code-modal'
 import { Button } from '@/components/base/buttons/button'
 import { CreditCardUp, Cryptocurrency03 } from '@untitledui-pro/icons/solid'
 

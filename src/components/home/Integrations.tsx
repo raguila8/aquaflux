@@ -52,13 +52,6 @@ export function Integrations() {
                 Arbitrium network (ARB). Simply click connect wallet and scan
                 the QR code to connect and interact with our dashboard today!
               </p>
-
-              <div className='mt-8'>
-                <Button href='#' variant='secondary'>
-                  <span>Connect wallet</span>
-                  <ChevronRightIcon className='h-4 w-4' />
-                </Button>
-              </div>
             </div>
           </div>
           <div className='relative md:col-span-6 md:pl-12 xl:pl-36'>

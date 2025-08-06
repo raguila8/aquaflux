@@ -5,7 +5,7 @@ import { Badge } from '@/components/base/badges/badges'
 import { FeaturedCardQRCode } from '@/components/application/app-navigation/base-components/featured-cards'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { TWOFACodeModal } from '@/components/application/modals/twofa-code-modal'
+import { QRCodeModal } from '@/components/application/modals/qr-code-modal'
 import { Button } from '@/components/base/buttons/button'
 import { CreditCardUp, Cryptocurrency03 } from '@untitledui-pro/icons/solid'
 import { Toaster } from '@/components/application/notifications/toaster'
@@ -154,7 +154,7 @@ export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
         </div>
       </main>
 
-      <TWOFACodeModal
+      <QRCodeModal
         isOpen={open2FA}
         onOpenChange={setOpen2FA}
         mode={transferMode}

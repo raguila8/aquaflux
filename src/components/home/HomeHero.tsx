@@ -1,21 +1,14 @@
-'use client'
-
 import Image from 'next/image'
 import { Container } from '@/components/shared/Container'
 import { Button } from '@/components/shared/Button'
 import { ContentPill } from '@/components/shared/ContentPill'
-import { useState } from 'react'
-import { Dialog, DialogPanel, DialogBackdrop } from '@headlessui/react'
-import { SparklesIcon, XMarkIcon } from '@heroicons/react/16/solid'
-import { PlayCircleIcon } from '@heroicons/react/20/solid'
+import { SparklesIcon } from '@heroicons/react/16/solid'
 import { CLIENTS } from '@/config'
 
 import appScreenshot from '@/images/app-screenshot.png'
 import cosmicButterfly from '@/images/cosmic-butterfly.png'
 
 export const HomeHero = () => {
-  let [isOpen, setIsOpen] = useState(false)
-
   return (
     <Container className='gap-16 pt-20 pb-16 sm:pb-20 lg:pt-28'>
       {/* Text content */}
@@ -43,58 +36,30 @@ export const HomeHero = () => {
             in any market condition.
           </p>
           <div className='mt-8 flex items-center justify-center space-x-3 sm:space-x-5'>
-            <Button id='top-cta' href='/signup'>
+            <Button id='top-cta' href='#'>
               {' '}
               Get started{' '}
             </Button>
-            <Button
-              variant='tertiary'
-              onClick={() => setIsOpen(true)}
-              className='overflow-hidden'
-            >
-              <span className='flex h-7 w-7 items-center justify-center rounded-full bg-white/[.07] transition duration-200 ease-in-out group-hover:bg-white/10'>
-                <PlayCircleIcon className='h-5 w-5 text-violet-50' />
-              </span>
-              <span>Watch video</span>
+            <Button variant='tertiary' className='group overflow-hidden'>
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                width={24}
+                height={24}
+                viewBox='0 0 24 24'
+                className='size-4 text-violet-100/85 duration-200 ease-in-out group-hover:text-violet-100'
+              >
+                <title>telegram</title>
+                <g fill='currentColor'>
+                  <path
+                    d='M23.953,2.527a.515.515,0,0,0-.349-.381,1.8,1.8,0,0,0-.945.067S1.63,9.772.429,10.609c-.258.18-.345.285-.388.408-.208.6.439.858.439.858L5.9,13.641a.59.59,0,0,0,.275-.016c1.232-.779,12.4-7.834,13.049-8.071.1-.03.177,0,.157.075-.258.905-9.909,9.478-9.962,9.53a.2.2,0,0,0-.072.177l-.506,5.292s-.212,1.647,1.435,0c1.168-1.169,2.289-2.137,2.849-2.608,1.864,1.287,3.869,2.71,4.734,3.455a1.506,1.506,0,0,0,1.1.423,1.236,1.236,0,0,0,1.051-.933S23.84,5.542,23.968,3.476c.013-.2.03-.332.032-.471A1.762,1.762,0,0,0,23.953,2.527Z'
+                    fill='currentColor'
+                  />
+                </g>
+              </svg>
+              <span>Join telegram</span>
             </Button>
           </div>
         </div>
-
-        {/* Video modal*/}
-        <Dialog
-          className='fixed inset-0 z-50 h-full w-full overflow-hidden px-4 transition duration-150 ease-linear'
-          open={isOpen}
-          onClose={() => setIsOpen(false)}
-        >
-          {/* Modal overlay */}
-          <DialogBackdrop
-            transition
-            className='fixed inset-0 bg-black/30 backdrop-blur-xs transition duration-300 data-closed:opacity-0 data-enter:ease-out data-leave:ease-in'
-          />
-          <div className='mx-auto flex min-h-screen w-auto items-center justify-center'>
-            <DialogPanel
-              transition
-              className='shadow-inner-blur relative max-h-full w-full max-w-5xl rounded-2xl bg-white/[.02] p-2 transition duration-300 ease-out after:absolute after:inset-0 after:rounded-2xl after:border after:border-violet-200/[.04] data-closed:translate-y-40 data-closed:scale-75 data-closed:opacity-0'
-            >
-              <Button
-                variant='secondary'
-                size='md'
-                className='absolute -top-12 right-2 z-50 flex p-2 lg:-top-14 lg:p-2.5'
-                onClick={() => setIsOpen(false)}
-              >
-                <XMarkIcon className='h-4.5 w-4.5' />
-              </Button>
-              <div className='relative z-50 aspect-16/9 rounded-lg'>
-                <iframe
-                  className='absolute h-full w-full rounded-lg'
-                  allow='autoplay'
-                  title='Video'
-                  src='https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1'
-                ></iframe>
-              </div>
-            </DialogPanel>
-          </div>
-        </Dialog>
       </div>
 
       {/* App screenshot */}

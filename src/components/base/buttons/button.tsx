@@ -74,7 +74,7 @@ export const styles = sortCx({
     },
     tertiary: {
       root: [
-        'text-tertiary hover:bg-primary_hover hover:text-tertiary_hover data-loading:bg-primary_hover',
+        'text-tertiary hover:bg-primary_hover hover:text-tertiary_hover data-loading:bg-primary_hover hover:shadow-inner-blur-no-border',
         // Icon styles
         '*:data-icon:text-fg-quaternary hover:*:data-icon:text-fg-quaternary_hover',
       ].join(' '),

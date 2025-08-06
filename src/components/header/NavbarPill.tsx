@@ -372,17 +372,17 @@ export const NavbarPill = () => {
                 href='/signin'
                 variant='tertiary'
                 size='sm'
-                className='overflow-hidden'
+                className='hidden overflow-hidden'
               >
                 Sign in
               </Button>
 
               <Button
                 className='-mr-px rounded-full after:rounded-full'
-                href='/signup'
+                href='#'
                 size='sm'
               >
-                Get started
+                Sign in
               </Button>
 
               {hasLinks && <Hamburger />}

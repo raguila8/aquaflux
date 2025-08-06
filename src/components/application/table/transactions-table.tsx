@@ -8,7 +8,7 @@ import { getLocalTimeZone } from '@internationalized/date'
 import type { DateValue } from 'react-aria-components'
 import { parseDate } from '@internationalized/date'
 import { BadgeWithDot, Badge } from '@/components/base/badges/badges'
-import { DownloadCloud02 } from '@untitledui/icons'
+import { FileDownload02 } from '@untitledui-pro/icons/solid'
 import { TabList, Tabs } from '@/components/application/tabs/tabs'
 import { Button } from '@/components/base/buttons/button'
 import { Avatar } from '@/components/base/avatar/avatar'
@@ -284,7 +284,7 @@ export function TransactionsTable({
               <Button
                 size='sm'
                 color='secondary'
-                iconLeading={DownloadCloud02}
+                iconLeading={FileDownload02}
                 onClick={handleDownloadCSV}
               >
                 Download CSV

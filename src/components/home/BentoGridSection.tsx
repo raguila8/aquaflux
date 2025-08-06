@@ -3,7 +3,6 @@
 import Image from 'next/image'
 import { Stats } from '@/components/home/Stats'
 import { Container } from '@/components/shared/Container'
-import { Button } from '@/components/shared/Button'
 import { StarField } from '@/components/shared/StarField'
 import { useEffect } from 'react'
 
@@ -12,7 +11,6 @@ import {
   CursorArrowRippleIcon,
   ClockIcon,
   BoltIcon,
-  ChevronRightIcon,
 } from '@heroicons/react/16/solid'
 
 import globe from '@/images/globe.svg?url'
@@ -100,7 +98,7 @@ export const BentoGridSection = () => {
                 </div>
                 <div className='grid h-full w-full grid-cols-12 rounded-xl lg:gap-12 xl:grid-cols-2 xl:gap-20'>
                   {/* Card content */}
-                  <div className='col-span-12 px-8 pt-10 pb-4 sm:px-10 sm:pt-12 lg:col-span-7 lg:py-12 lg:pr-0 xl:col-span-1 xl:py-16 xl:pl-12'>
+                  <div className='col-span-12 px-8 pt-10 pb-4 sm:px-10 sm:pt-12 lg:col-span-7 lg:py-16 lg:pr-0 xl:col-span-1 xl:py-20 xl:pl-12'>
                     <div>
                       <p className='text-aqua-50 text-sm font-bold tracking-wider'>
                         <span className='relative inline-block text-nowrap'>
@@ -148,18 +146,6 @@ export const BentoGridSection = () => {
                             Quick and responsive times
                           </p>
                         </div>
-                      </div>
-
-                      <div className='relative z-50 mt-9 sm:mt-10'>
-                        <Button
-                          href='#'
-                          variant='secondary'
-                          size='md'
-                          className='relative z-50 cursor-pointer'
-                        >
-                          <span>Learn more</span>
-                          <ChevronRightIcon className='h-4 w-4' />
-                        </Button>
                       </div>
                     </div>
                   </div>
@@ -213,18 +199,6 @@ export const BentoGridSection = () => {
                         stored encrypted on a secure server and accessed only
                         with your consent.
                       </p>
-
-                      <div className='relative z-10 mt-8'>
-                        <Button
-                          href='#'
-                          variant='secondary'
-                          size='md'
-                          className='relative z-10 cursor-pointer'
-                        >
-                          <span>Learn more</span>
-                          <ChevronRightIcon className='h-4 w-4' />
-                        </Button>
-                      </div>
                     </div>
                   </div>
 
@@ -266,7 +240,7 @@ export const BentoGridSection = () => {
                   <div className='h-56 max-[510px]:h-40'></div>
 
                   {/* Card content */}
-                  <div className='px-8 pt-8 pb-10 sm:px-10 sm:pb-12 xl:px-12'>
+                  <div className='px-8 pt-8 pb-10 sm:px-10 sm:pb-14 xl:px-12'>
                     <div>
                       <p className='text-aqua-50 text-sm font-bold tracking-wider'>
                         <span className='relative inline-block text-nowrap'>
@@ -287,18 +261,6 @@ export const BentoGridSection = () => {
                         handles shorts, longs, and more, so token holders keep
                         earning in any market.
                       </p>
-
-                      <div className='relative z-10 mt-8'>
-                        <Button
-                          href='#'
-                          variant='secondary'
-                          size='md'
-                          className='relative z-10 cursor-pointer'
-                        >
-                          <span>Learn more</span>
-                          <ChevronRightIcon className='h-4 w-4' />
-                        </Button>
-                      </div>
                     </div>
                   </div>
                 </div>
