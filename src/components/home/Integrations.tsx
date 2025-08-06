@@ -60,6 +60,8 @@ export function Integrations() {
                 <Image
                   src={spaceSpotlight}
                   alt=''
+                  width={1200}
+                  height={600}
                   className='h-full w-full object-contain'
                 />
               </div>
@@ -91,6 +93,8 @@ export function Integrations() {
                             <Image
                               src={integration.image}
                               alt={integration.name}
+                              width={48}
+                              height={48}
                               className='h-9 w-9 sm:h-12 sm:w-12 md:h-9 md:w-9 lg:h-12 lg:w-12'
                             />
                           </div>

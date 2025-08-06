@@ -106,16 +106,17 @@ export const HomeHero = () => {
 
         {/* Logos */}
         <div className='relative mt-8 overflow-hidden [mask:linear-gradient(90deg,_transparent,_white_20%,_white_80%,_transparent)]'>
-          <div className='animate-infiniteScroll flex w-max items-center justify-around'>
+          <div className='animate-infiniteScroll flex w-max items-center'>
             {[...Array(2)].map((_, index) => (
               <div
                 key={`homehero-clients-col-${index}`}
-                className='flex w-1/2 items-center'
+                className='flex items-center gap-8 sm:gap-12 px-4'
               >
                 {CLIENTS.map((client) => (
                   <client.logo
                     key={`homehero-${client.name}-${index}`}
-                    className='mx-3 scale-90 sm:mx-6 sm:scale-100'
+                    className='h-8 w-auto opacity-70 hover:opacity-100 transition-opacity sm:h-10'
+                    style={{ width: 'auto', height: 'auto', maxHeight: '40px' }}
                   />
                 ))}
               </div>

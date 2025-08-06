@@ -1,15 +1,15 @@
 import React from 'react'
 import type { SocialObjects, Clients } from './types.ts'
-const alphaWallet = () => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/alpha-wallet.svg" alt="Alpha Wallet" />
-const bybit = () => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/bybit.svg" alt="Bybit" />
-const coinbase = () => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/coinbase.svg" alt="Coinbase" />
-const coolWallet = () => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/cool-wallet.svg" alt="Cool Wallet" />
-const exodus = () => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/exodus.svg" alt="Exodus" />
-const metamask = () => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/metamask.svg" alt="MetaMask" />
-const myetherwallet = () => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/myetherwallet.svg" alt="MyEtherWallet" />
-const safe = () => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/safe.svg" alt="Safe" />
-const safepal = () => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/safepal.svg" alt="SafePal" />
-const trezor = () => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/trezor.svg" alt="Trezor" />
+const alphaWallet = (props: any) => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/alpha-wallet.svg" alt="Alpha Wallet" width="120" height="40" {...props} />
+const bybit = (props: any) => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/bybit.svg" alt="Bybit" width="120" height="40" {...props} />
+const coinbase = (props: any) => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/coinbase.svg" alt="Coinbase" width="120" height="40" {...props} />
+const coolWallet = (props: any) => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/cool-wallet.svg" alt="Cool Wallet" width="120" height="40" {...props} />
+const exodus = (props: any) => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/exodus.svg" alt="Exodus" width="120" height="40" {...props} />
+const metamask = (props: any) => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/metamask.svg" alt="MetaMask" width="120" height="40" {...props} />
+const myetherwallet = (props: any) => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/myetherwallet.svg" alt="MyEtherWallet" width="120" height="40" {...props} />
+const safe = (props: any) => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/safe.svg" alt="Safe" width="120" height="40" {...props} />
+const safepal = (props: any) => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/safepal.svg" alt="SafePal" width="120" height="40" {...props} />
+const trezor = (props: any) => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/trezor.svg" alt="Trezor" width="120" height="40" {...props} />
 
 import twitterIcon from '@/icons/nucleo/twitter.svg'
 import discordIcon from '@/icons/nucleo/discord.svg'
