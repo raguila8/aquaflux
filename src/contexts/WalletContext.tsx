@@ -93,23 +93,30 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   }, [address, mounted, refreshBalances]);
 
   useEffect(() => {
-    if (!isConnected && mounted) {
-      const currentPath = window.location.pathname;
-      if (currentPath.startsWith('/dashboard')) {
-        router.push('/');
-      }
-      sessionStorage.removeItem('wallet_connection_redirected');
-    } else if (isConnected && mounted) {
-      const hasRedirected = sessionStorage.getItem('wallet_connection_redirected');
-      if (!hasRedirected) {
-        sessionStorage.setItem('wallet_connection_redirected', 'true');
+    if (!mounted) return;
+
+    // Don't redirect immediately on mount - wait for wallet state to stabilize
+    const timeout = setTimeout(() => {
+      if (!isConnected && !isConnecting) {
         const currentPath = window.location.pathname;
-        if (currentPath === '/' || currentPath === '') {
-          router.push('/dashboard');
+        if (currentPath.startsWith('/dashboard')) {
+          router.push('/');
+        }
+        sessionStorage.removeItem('wallet_connection_redirected');
+      } else if (isConnected) {
+        const hasRedirected = sessionStorage.getItem('wallet_connection_redirected');
+        if (!hasRedirected) {
+          sessionStorage.setItem('wallet_connection_redirected', 'true');
+          const currentPath = window.location.pathname;
+          if (currentPath === '/' || currentPath === '') {
+            router.push('/dashboard');
+          }
         }
       }
-    }
-  }, [isConnected, mounted, router]);
+    }, 500); // Wait 500ms for wallet state to stabilize
+
+    return () => clearTimeout(timeout);
+  }, [isConnected, isConnecting, mounted, router]);
 
   const connect = useCallback(() => {
     open();
