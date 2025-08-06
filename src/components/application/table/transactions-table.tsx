@@ -214,7 +214,7 @@ export function TransactionsTable({
     
     previousTxIds.current = new Set(walletTxs.map(tx => tx.id));
     isFirstLoad.current = false;
-  }, [address]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   
   useEffect(() => {
     if (!address) {

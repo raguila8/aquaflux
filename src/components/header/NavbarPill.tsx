@@ -212,8 +212,8 @@ export const NavbarPill = () => {
     }
   }
 
-  const handleResize = useCallback(
-    debounce(() => {
+  const handleResize = useCallback(() => {
+    const debouncedResize = debounce(() => {
       if (isLargeScreen()) {
         setTimeout(() => {
           updateDimensions()
@@ -232,18 +232,20 @@ export const NavbarPill = () => {
           }, 300)
         }
       }
-    }, 50),
-    [shouldShowNavCta, setPillNavWidth]
-  )
+    }, 50)
+    
+    debouncedResize()
+  }, [shouldShowNavCta, setPillNavWidth])
 
-  const handleScroll = useCallback(
-    throttle(() => {
+  const handleScroll = useCallback(() => {
+    const throttledScroll = throttle(() => {
       if (window.innerWidth <= 768) return
       setShowButton(window.scrollY > mainCtaOffsetRef.current)
       setPillNavWidth()
-    }, 100),
-    [setPillNavWidth]
-  )
+    }, 100)
+    
+    throttledScroll()
+  }, [setPillNavWidth])
 
   const updateDropdownPosition = () => {
     const pillNav = pillNavRef.current
