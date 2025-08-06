@@ -110,7 +110,7 @@ export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
         featureCard={
           <FeaturedCardQRCode
             title='Deposit to wallet'
-            description='Open your wallet and scan the QR code below to deposit USDC on Arbitrum.'
+            description='Open your wallet and scan the QR code below to deposit USDC on Base.'
             confirmLabel='Fund wallet'
             onConfirm={() => {
               setTransferMode('deposit')

@@ -32,7 +32,7 @@ export const HomeHero = () => {
           </h1>
           <p className='mt-5 max-w-xl text-center text-[17px] leading-8 text-slate-300 sm:text-lg sm:leading-8'>
             Our multi-faceted approach combines intelligent liquidity provision
-            and advanced machine learning trading to deliver consistent returns
+            across Balancer v3 pools and strategic staking to deliver consistent returns
             in any market condition.
           </p>
           <div className='mt-8 flex items-center justify-center space-x-3 sm:space-x-5'>
@@ -40,7 +40,7 @@ export const HomeHero = () => {
               {' '}
               Get started{' '}
             </Button>
-            <Button variant='tertiary' className='group overflow-hidden'>
+            <Button variant='tertiary' href='https://t.me/+gbjAAlcYhL9kMzZk' className='group overflow-hidden'>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 width={24}

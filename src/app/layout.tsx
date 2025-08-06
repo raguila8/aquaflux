@@ -6,11 +6,23 @@ import "@/styles/globals.css";
 
 export const metadata: Metadata = {
   title: {
-    template: '%s - Nebula',
-    default: 'Seamless Collaboration Tools for Modern Teams - Nebula',
+    template: '%s | AquaFlux',
+    default: 'AquaFlux - Advanced DeFi Liquidity & Trading Platform',
   },
   description:
-    "Unlock the potential of remote work with Nebula's advanced collaboration ecosystem. Designed for modern teams, Nebula streamlines communication, simplifies projects, and secures your data.",
+    'Experience the future of decentralized finance with AquaFlux. Intelligent liquidity provision, machine learning-powered trading strategies, and consistent returns across all market conditions.',
+  metadataBase: new URL('https://aquaflux.io'),
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 }
 
 export default function RootLayout({

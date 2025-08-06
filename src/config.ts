@@ -31,7 +31,7 @@ export const SOCIALS: SocialObjects = [
   },
   {
     name: 'telegram',
-    href: '#',
+    href: 'https://t.me/+gbjAAlcYhL9kMzZk',
     label: 'Connect with our chat',
     ariaLabel: 'Follow on Telegram',
     icon: telegramIcon,

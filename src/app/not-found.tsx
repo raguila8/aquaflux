@@ -5,9 +5,19 @@ import { Container } from '@/components/shared/Container'
 import { Button } from '@/components/shared/Button'
 import { ContentPill } from '@/components/shared/ContentPill'
 import { ChevronRightIcon } from '@heroicons/react/16/solid'
+import type { Metadata } from 'next'
 
 import spaceSpotlight from '@/images/space-spotlight.png'
 import UFOIcon from '@/icons/nucleo/ufo-18.svg'
+
+export const metadata: Metadata = {
+  title: '404 - Page Not Found',
+  description: 'The page you are looking for could not be found. Return to AquaFlux to continue exploring our DeFi platform.',
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 export default function NotFound() {
   return (

@@ -116,7 +116,7 @@ export const BentoGridSection = () => {
                       <p className='mt-2 text-base text-slate-300/90 sm:mt-3'>
                         Join from any country in the world and join our large
                         community of crypto enthusiasts where you can expect to
-                        earn 30-100% returns per year by simply holding our
+                        earn 15-150% returns per year by simply holding our
                         token.
                       </p>
 
@@ -257,9 +257,9 @@ export const BentoGridSection = () => {
                       </h3>
                       <p className='mt-2 text-base text-slate-300/90 sm:mt-3'>
                         We trade, leverage, and provide liquidity across dozens
-                        of projects on Uniswap v4 and HyperLiquid. Our bot
-                        handles shorts, longs, and more, so token holders keep
-                        earning in any market.
+                        of projects on Balancer v3. Our bot determines which pools 
+                        will be best based on market conditions, this means you will 
+                        benefit from the highs of crypto but experience little lows.
                       </p>
                     </div>
                   </div>

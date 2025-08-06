@@ -130,6 +130,9 @@ export function Footer({ cta = true }: Props) {
                         href={social.href}
                         aria-label={social.ariaLabel}
                         className='group text-indigo-blue-50/90 flex items-center space-x-2 text-sm font-semibold drop-shadow-[-2px_-4px_6px_rgba(221,232,252,0.2)]'
+                        style={{
+                          display: (social.name === 'twitter' || social.name === 'discord') ? 'none' : 'flex'
+                        }}
                       >
                         <social.icon className='group-hover:text-indigo-blue-200/85 h-4 w-4 duration-200 ease-in-out' />
                         <span className='group-hover:text-indigo-blue-300/95 hidden duration-200 ease-in-out lg:inline'>

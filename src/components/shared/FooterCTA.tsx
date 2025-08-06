@@ -25,7 +25,7 @@ export function FooterCTA() {
           </h1>
           <p className='mt-5 max-w-xl text-center text-[17px] leading-8 text-slate-300 sm:text-lg sm:leading-8'>
             Flux gives you a piece of our secured vault. Our bot taps that
-            hardware wallet to trade on Uniswap v4 and HyperLiquid, growing the
+            hardware wallet to trade on Balancer v3, growing the
             value of every token.
           </p>
           <div className='mt-8 flex items-center justify-center space-x-3 sm:space-x-5'>

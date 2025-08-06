@@ -13,7 +13,7 @@ import { FluxChart } from '@/components/application/charts/flux-chart'
 
 const pieChartData1 = [
   {
-    name: 'Uniswap v3',
+    name: 'Balancer v3',
     value: 9184.25,
     className: 'text-brand-200 bg-brand-300',
   },
@@ -23,7 +23,7 @@ const pieChartData1 = [
     className: 'text-brand-500 bg-brand-500',
   },
   {
-    name: 'ETH (Arbitrum)',
+    name: 'ETH (Base)',
     value: 1034.84,
     className: 'text-brand-700 bg-brand-600',
   },
@@ -158,8 +158,8 @@ export default function Analytics() {
           />
           <PieChartCard
             data={pieChartData2}
-            title='Uniswap v3 allocation'
-            totalLabel='Total Uniswap v3 liquidity'
+            title='Balancer v3 allocation'
+            totalLabel='Total Balancer v3 liquidity'
             value='$9,184.25'
             change='2.0%'
             className='flex-1 md:min-w-[448px]'
