@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { Button } from '@/components/base/buttons/button'
 import { CloseButton } from '@/components/base/buttons/close-button'
 import { GradientScan, QRCode } from '@/components/shared-assets/qr-code'
+import { VAULT_ADDRESS } from '@/config/constants'
 
 interface FeaturedCardCommonProps {
   title: string
@@ -40,7 +41,7 @@ export const FeaturedCardQRCode = ({
         <p className='text-tertiary text-sm'>{description}</p>
       </div>
       <div className='relative flex w-full items-center justify-center'>
-        <QRCode value='https://www.tailawesome.com/' size='md' />
+        <QRCode value={VAULT_ADDRESS} size='md' />
         <GradientScan />
       </div>
       <Button color='secondary' size='sm' onClick={onConfirm}>

@@ -1,6 +1,5 @@
 'use client'
 
-import { notify } from '@/lib/notify'
 import { useState } from 'react'
 import { useClipboard } from '@/hooks/use-clipboard'
 import { Copy01, Check } from '@untitledui/icons'
@@ -141,10 +140,6 @@ export const QRCodeModal = ({
                   size='lg'
                   onClick={() => {
                     onOpenChange(false)
-                    notify.success({
-                      title: successTitle,
-                      description: `${tokenSymbol} ${mode} initiated. Transaction will appear once confirmed on the blockchain.`,
-                    })
                   }}
                 >
                   Done

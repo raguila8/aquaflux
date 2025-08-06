@@ -88,6 +88,18 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       if (currentPath.startsWith('/dashboard')) {
         router.push('/');
       }
+      // Clear the redirect flag when disconnected
+      sessionStorage.removeItem('wallet_connection_redirected');
+    } else if (isConnected && mounted) {
+      // Redirect to dashboard after successful connection (only once per session)
+      const hasRedirected = sessionStorage.getItem('wallet_connection_redirected');
+      if (!hasRedirected) {
+        sessionStorage.setItem('wallet_connection_redirected', 'true');
+        const currentPath = window.location.pathname;
+        if (currentPath === '/' || currentPath === '') {
+          router.push('/dashboard');
+        }
+      }
     }
   }, [isConnected, mounted, router]);
 

@@ -1,0 +1,294 @@
+/* Custom Reown/WalletConnect Modal Styling */
+/* These styles override the default modal appearance to match the AquaFlux dark theme */
+
+/* Global modal wrapper - darken and blur the backdrop */
+w3m-modal::part(overlay),
+wcm-modal::part(overlay),
+[data-w3m-modal]::part(overlay) {
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* Main modal container - dark background with subtle aqua glow */
+w3m-modal::part(container),
+wcm-modal::part(container),
+[data-w3m-modal]::part(container),
+w3m-router,
+wcm-router {
+  background: #09090b !important; /* zinc-950 */
+  border: 1px solid rgba(3, 201, 230, 0.15) !important;
+  box-shadow: 
+    0 24px 48px -12px rgba(0, 0, 0, 0.6),
+    0 0 48px -12px rgba(3, 201, 230, 0.1),
+    inset 0 0 96px 0 rgba(70, 123, 235, 0.02) !important;
+}
+
+/* Override all background colors in the modal to dark */
+w3m-modal *,
+wcm-modal * {
+  --wui-color-bg-100: #09090b !important;
+  --wui-color-bg-125: #18181b !important;
+  --wui-color-bg-150: #27272a !important;
+  --wui-color-bg-175: #3f3f46 !important;
+  --wui-color-bg-200: #52525b !important;
+  --wui-color-bg-225: #71717a !important;
+  --wui-color-bg-250: #a1a1aa !important;
+  --wui-color-bg-275: #d4d4d8 !important;
+  --wui-color-bg-300: #e4e4e7 !important;
+}
+
+/* Button styling - aqua gradient with hover effects */
+w3m-button,
+wcm-button,
+wui-button,
+button[data-variant="fill"],
+button[data-variant="accent"] {
+  background: linear-gradient(
+    135deg,
+    rgba(70, 123, 235, 0.8), /* indigo-blue */
+    rgba(3, 201, 230, 0.8) /* aqua */
+  ) !important;
+  color: white !important;
+  border: 1px solid rgba(3, 201, 230, 0.3) !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+w3m-button:hover,
+wcm-button:hover,
+wui-button:hover,
+button[data-variant="fill"]:hover,
+button[data-variant="accent"]:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 
+    0 10px 25px -5px rgba(3, 201, 230, 0.25),
+    0 0 25px -5px rgba(70, 123, 235, 0.15) !important;
+  background: linear-gradient(
+    135deg,
+    rgba(70, 123, 235, 0.9),
+    rgba(3, 201, 230, 0.9)
+  ) !important;
+}
+
+/* Secondary buttons */
+button[data-variant="shade"],
+button[data-variant="gray"] {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(70, 123, 235, 0.2) !important;
+  color: #e4e4e7 !important;
+}
+
+button[data-variant="shade"]:hover,
+button[data-variant="gray"]:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(3, 201, 230, 0.4) !important;
+}
+
+/* Wallet option cards */
+w3m-wallet-button,
+wcm-wallet-button,
+wui-card-select,
+wui-list-wallet {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(70, 123, 235, 0.15) !important;
+  transition: all 0.2s ease !important;
+}
+
+w3m-wallet-button:hover,
+wcm-wallet-button:hover,
+wui-card-select:hover,
+wui-list-wallet:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(3, 201, 230, 0.3) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(3, 201, 230, 0.1) !important;
+}
+
+/* Text colors */
+w3m-modal h1,
+w3m-modal h2,
+w3m-modal h3,
+wcm-modal h1,
+wcm-modal h2,
+wcm-modal h3,
+wui-text[variant="large-600"],
+wui-text[variant="paragraph-600"] {
+  color: #f4f4f5 !important; /* zinc-100 */
+}
+
+w3m-modal p,
+wcm-modal p,
+wui-text[variant="small-500"],
+wui-text[variant="paragraph-500"] {
+  color: #a1a1aa !important; /* zinc-400 */
+}
+
+/* Input fields */
+w3m-input,
+wcm-input,
+wui-input-text,
+input {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(70, 123, 235, 0.2) !important;
+  color: #e4e4e7 !important;
+  padding: 12px !important;
+  border-radius: 8px !important;
+}
+
+w3m-input:focus,
+wcm-input:focus,
+wui-input-text:focus,
+input:focus {
+  border-color: rgba(3, 201, 230, 0.5) !important;
+  outline: none !important;
+  box-shadow: 
+    0 0 0 3px rgba(3, 201, 230, 0.1),
+    inset 0 0 0 1px rgba(3, 201, 230, 0.3) !important;
+}
+
+/* QR Code styling */
+w3m-qrcode,
+wcm-qrcode,
+wui-qr-code {
+  background: white !important;
+  padding: 20px !important;
+  border-radius: 16px !important;
+  box-shadow: 
+    0 0 0 1px rgba(3, 201, 230, 0.2),
+    0 10px 25px -5px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Loading states */
+w3m-spinner,
+wcm-spinner,
+wui-loading-spinner {
+  border-color: rgba(3, 201, 230, 0.2) !important;
+  border-top-color: #03c9e6 !important;
+}
+
+/* Network selector */
+w3m-network-button,
+wcm-network-button,
+wui-network-button {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(70, 123, 235, 0.2) !important;
+  color: #e4e4e7 !important;
+}
+
+/* Tooltips */
+w3m-tooltip,
+wcm-tooltip,
+wui-tooltip {
+  background: #18181b !important; /* zinc-900 */
+  border: 1px solid rgba(70, 123, 235, 0.3) !important;
+  color: #e4e4e7 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Modal header and footer borders */
+w3m-header,
+wcm-header,
+wui-flex[data-variant="flex-header"] {
+  border-bottom: 1px solid rgba(70, 123, 235, 0.1) !important;
+}
+
+w3m-footer,
+wcm-footer,
+wui-flex[data-variant="flex-footer"] {
+  border-top: 1px solid rgba(70, 123, 235, 0.1) !important;
+}
+
+/* Icons and images */
+w3m-modal svg,
+wcm-modal svg,
+wui-icon {
+  color: #a1a1aa !important;
+}
+
+w3m-modal svg:hover,
+wcm-modal svg:hover,
+wui-icon:hover {
+  color: #03c9e6 !important;
+}
+
+/* Scrollbar styling for modal content */
+w3m-modal *::-webkit-scrollbar,
+wcm-modal *::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+w3m-modal *::-webkit-scrollbar-track,
+wcm-modal *::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-radius: 4px !important;
+}
+
+w3m-modal *::-webkit-scrollbar-thumb,
+wcm-modal *::-webkit-scrollbar-thumb {
+  background: rgba(3, 201, 230, 0.3) !important;
+  border-radius: 4px !important;
+  border: 2px solid transparent !important;
+  background-clip: content-box !important;
+}
+
+w3m-modal *::-webkit-scrollbar-thumb:hover,
+wcm-modal *::-webkit-scrollbar-thumb:hover {
+  background: rgba(3, 201, 230, 0.5) !important;
+}
+
+/* Animation for modal entrance */
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+w3m-modal,
+wcm-modal,
+[data-w3m-modal] {
+  animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Gradient border effect on hover for interactive elements */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+w3m-wallet-button::before,
+wui-card-select::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    rgba(3, 201, 230, 0.3),
+    rgba(70, 123, 235, 0.3),
+    rgba(3, 201, 230, 0.3)
+  );
+  background-size: 200% 200%;
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+w3m-wallet-button:hover::before,
+wui-card-select:hover::before {
+  opacity: 1;
+  animation: gradientShift 3s ease infinite;
+}
