@@ -3,8 +3,6 @@
 @plugin "tailwindcss-react-aria-components";
 @import './vendors/odometer-theme-default.css' layer(components);
 @import './vendors/app-theme.css';
-@import './alchemy-modal.css';
-@import './alchemy-modal-enhanced.css';
 
 @theme inline {
   --font-sans:

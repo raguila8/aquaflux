@@ -2,6 +2,7 @@ import { AlchemyAccountsUIConfig, createConfig } from "@account-kit/react";
 import { base, alchemy } from "@account-kit/infra";
 import { QueryClient } from "@tanstack/react-query";
 
+// Simple wallet connect only configuration
 const uiConfig: AlchemyAccountsUIConfig = {
   illustrationStyle: "outline",
   auth: {
@@ -10,7 +11,7 @@ const uiConfig: AlchemyAccountsUIConfig = {
         {
           type: "external_wallets",
           walletConnect: {
-            projectId: "b5de3f0a0e7e4c8f9c7f8d3f7a8c9e1f" // Use a valid project ID
+            projectId: "b5de3f0a0e7e4c8f9c7f8d3f7a8c9e1f"
           }
         }
       ]
@@ -26,7 +27,6 @@ export const config = createConfig(
     }),
     chain: base,
     ssr: true,
-    enablePopupOauth: true,
   },
   uiConfig
 );
