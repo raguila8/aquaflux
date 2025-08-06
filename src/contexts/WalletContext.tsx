@@ -61,7 +61,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     if (address && mounted) {
       refreshBalances();
       
-      const unsubscribe = subscribeToNewTransactions(address, () => {
+      const unsubscribe = subscribeToNewTransactions(() => {
         refreshBalances();
       });
       
@@ -75,7 +75,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       setFluxBalance('0');
       setUsdcBalance('0');
     }
-  }, [address, refreshBalances]);
+  }, [address, mounted, refreshBalances]);
 
   useEffect(() => {
     if (!isConnected && mounted) {

@@ -342,6 +342,22 @@ export function TransactionsTable({
 
     const csvContent = [header.map(escapeCell).join(','), ...rows].join('\n')
 
+    // Create filename with date range
+    let filename = 'transactions'
+    if (dateRange) {
+      const startDate = new Date(
+        dateRange.start.year,
+        dateRange.start.month - 1,
+        dateRange.start.day
+      ).toISOString().split('T')[0]
+      const endDate = new Date(
+        dateRange.end.year,
+        dateRange.end.month - 1,
+        dateRange.end.day
+      ).toISOString().split('T')[0]
+      filename = `transactions_${startDate}_to_${endDate}`
+    }
+    
     // Create a blob and trigger the download
     const blob = new Blob([csvContent], {
       type: 'text/csv;charset=utf-8;',
@@ -349,12 +365,12 @@ export function TransactionsTable({
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.setAttribute('download', 'transactions.csv')
+    link.setAttribute('download', `${filename}.csv`)
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
-  }, [filteredTransactions])
+  }, [filteredTransactions, dateRange])
 
   return (
     <div className='flex flex-col gap-8'>

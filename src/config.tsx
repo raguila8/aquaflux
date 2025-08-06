@@ -1,3 +1,4 @@
+import React from 'react'
 import type { SocialObjects, Clients } from './types.ts'
 const alphaWallet = () => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/alpha-wallet.svg" alt="Alpha Wallet" />
 const bybit = () => <img src="https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/logos/bybit.svg" alt="Bybit" />

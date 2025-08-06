@@ -1,5 +1,5 @@
-import { Footer } from '@/components/navigation/Footer'
-import { Header } from '@/components/navigation/Header'
+import { Footer } from '@/components/shared/Footer'
+import { Header } from '@/components/header/Header'
 import "@/styles/reown-modal.css";
 import { Toaster } from 'sonner'
 import Script from 'next/script'
