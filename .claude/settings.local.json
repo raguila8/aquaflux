@@ -8,7 +8,10 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(pnpm run build:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "WebFetch(domain:accountkit.alchemy.com)",
+      "WebFetch(domain:www.alchemy.com)",
+      "Bash(pnpm add:*)"
     ],
     "deny": []
   }

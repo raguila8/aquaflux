@@ -12,69 +12,79 @@ export function AlchemyProviders({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setMounted(true);
     
-    // Inject global styles to ensure modal appears on top and matches theme
+    // Inject enhanced modal styles
     const style = document.createElement('style');
     style.innerHTML = `
-      /* Force Alchemy modal to appear on top */
-      body > div[data-rk*="modal"],
-      body > div[class*="aa-"], 
-      body > div[class*="alchemy"],
-      body > div[class*="account-kit"],
-      body > div[role="dialog"],
-      wcm-modal,
-      w3m-modal,
-      .akui-modal-container,
-      .akui-modal,
-      div[data-testid*="modal"],
-      div[id*="modal"] {
+      /* Critical z-index fixes for Alchemy modal */
+      body > div:has([role="dialog"]),
+      body > div[id*="headlessui-portal"],
+      body > div[id*="radix-"],
+      body > div[data-overlay-container],
+      #__next ~ div {
         z-index: 2147483647 !important;
         position: fixed !important;
-      }
-      
-      /* Force backdrop to be visible */
-      body > div[data-rk*="backdrop"],
-      body > div[class*="backdrop"],
-      body > div[class*="overlay"],
-      .akui-modal-backdrop {
-        z-index: 2147483646 !important;
-        position: fixed !important;
         inset: 0 !important;
-        background-color: rgba(0, 0, 0, 0.8) !important;
-        backdrop-filter: blur(8px) !important;
+        pointer-events: auto !important;
       }
       
-      /* Dark theme for modal content */
-      .akui-modal,
-      .akui-modal-content,
-      div[class*="account-kit"] {
-        background: linear-gradient(rgba(9, 9, 11, 0.98), rgba(9, 9, 11, 0.98)) !important;
-        color: #fafafa !important;
+      /* Enhanced backdrop with blur */
+      body > div:has([role="dialog"])::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        z-index: -1;
       }
       
-      /* Style buttons in modal */
-      .akui-button,
-      button[class*="wallet"],
-      button[class*="connect"] {
-        background: linear-gradient(135deg, #03c9e6, #0596b5) !important;
-        color: white !important;
-        border: none !important;
-        font-weight: 600 !important;
-        transition: all 0.2s ease !important;
+      /* Center modal properly */
+      [role="dialog"] {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        max-width: 480px !important;
+        width: 90% !important;
+        background: linear-gradient(180deg, 
+          rgba(9, 9, 11, 0.98) 0%, 
+          rgba(18, 18, 27, 0.98) 100%) !important;
+        border: 1px solid rgba(3, 201, 230, 0.3) !important;
+        border-radius: 24px !important;
+        padding: 32px !important;
+        box-shadow: 
+          0 0 100px rgba(3, 201, 230, 0.3),
+          0 30px 60px -15px rgba(0, 0, 0, 0.7) !important;
       }
       
-      .akui-button:hover,
-      button[class*="wallet"]:hover,
-      button[class*="connect"]:hover {
-        background: linear-gradient(135deg, #0596b5, #0c7792) !important;
-        transform: translateY(-1px) !important;
-      }
-      
-      /* Fix for any potential stacking context issues */
-      body {
-        position: relative;
+      /* Ensure body doesn't scroll when modal is open */
+      body:has([role="dialog"]) {
+        overflow: hidden !important;
       }
     `;
     document.head.appendChild(style);
+    
+    // Additional DOM manipulation to ensure modal appears correctly
+    const checkModal = setInterval(() => {
+      const modal = document.querySelector('[role="dialog"]');
+      const backdrop = document.querySelector('[data-overlay-container]');
+      
+      if (modal) {
+        const parent = modal.parentElement;
+        if (parent) {
+          parent.style.zIndex = '2147483647';
+          parent.style.position = 'fixed';
+          parent.style.inset = '0';
+        }
+      }
+      
+      if (backdrop && backdrop instanceof HTMLElement) {
+        backdrop.style.zIndex = '2147483646';
+      }
+    }, 100);
+    
+    // Clean up interval after 10 seconds
+    setTimeout(() => clearInterval(checkModal), 10000);
     
     return () => {
       document.head.removeChild(style);

@@ -9,13 +9,13 @@ importers:
   .:
     dependencies:
       '@account-kit/core':
-        specifier: ^4.5.1
+        specifier: ^4.52.4
         version: 4.52.4(2df5c94c435b48a54a289cf6838c4bd9)
       '@account-kit/infra':
-        specifier: ^4.5.1
+        specifier: ^4.52.4
         version: 4.52.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.33.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.76))
       '@account-kit/react':
-        specifier: ^4.5.1
+        specifier: ^4.52.4
         version: 4.52.4(a3ff8ffb78573f87b01e829823b7f77a)
       '@headlessui/react':
         specifier: ^2.2.5
@@ -11573,7 +11573,7 @@ snapshots:
 
   '@turnkey/webauthn-stamper@0.4.3':
     dependencies:
-      '@noble/hashes': 1.7.1
+      '@noble/hashes': 1.8.0
       buffer: 6.0.3
 
   '@turnkey/webauthn-stamper@0.5.0':
@@ -12831,7 +12831,7 @@ snapshots:
 
   bs58check@3.0.1:
     dependencies:
-      '@noble/hashes': 1.7.1
+      '@noble/hashes': 1.8.0
       bs58: 5.0.0
 
   bser@2.1.1:
@@ -15256,10 +15256,10 @@ snapshots:
   ox@0.6.7(typescript@5.8.3)(zod@3.25.76):
     dependencies:
       '@adraffy/ens-normalize': 1.11.0
-      '@noble/curves': 1.8.1
-      '@noble/hashes': 1.7.1
-      '@scure/bip32': 1.6.2
-      '@scure/bip39': 1.5.4
+      '@noble/curves': 1.9.6
+      '@noble/hashes': 1.8.0
+      '@scure/bip32': 1.7.0
+      '@scure/bip39': 1.6.0
       abitype: 1.0.8(typescript@5.8.3)(zod@3.25.76)
       eventemitter3: 5.0.1
     optionalDependencies:
@@ -15728,7 +15728,7 @@ snapshots:
     dependencies:
       object-assign: 4.1.1
       react: 19.1.0
-      react-is: 16.13.1
+      react-is: 18.3.1
 
   react-stately@3.40.0(react@19.1.0):
     dependencies:

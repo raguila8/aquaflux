@@ -9,9 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@account-kit/react": "^4.5.1",
-    "@account-kit/infra": "^4.5.1",
-    "@account-kit/core": "^4.5.1",
+    "@account-kit/core": "^4.52.4",
+    "@account-kit/infra": "^4.52.4",
+    "@account-kit/react": "^4.52.4",
     "@headlessui/react": "^2.2.5",
     "@heroicons/react": "^2.2.0",
     "@internationalized/date": "^3.8.2",
