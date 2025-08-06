@@ -83,6 +83,8 @@ export const HomeHero = () => {
           <Image
             src={cosmicButterfly}
             alt=''
+            width={1920}
+            height={1080}
             className='size-full object-cover'
             sizes='100vw'
             priority
@@ -92,6 +94,8 @@ export const HomeHero = () => {
         <Image
           src={appScreenshot}
           alt='App screenshot'
+          width={1920}
+          height={1080}
           className='relative h-auto w-full rounded-lg'
           sizes='(max-width: 1280px) 100vw, 1200px'
           priority

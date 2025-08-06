@@ -75,6 +75,8 @@ export const BentoGridSection = () => {
             <Image
               src={spaceSpotlight}
               alt=''
+              width={1152}
+              height={768}
               className='size-full object-cover'
               sizes='(max-width: 768px) 100vw, 1152px'
             />
@@ -94,7 +96,7 @@ export const BentoGridSection = () => {
             <div className="card bg-indigo-blue-200/5 relative col-span-2 overflow-hidden rounded-xl p-[1.5px] before:absolute before:top-0 before:left-0 before:z-30 before:h-full before:w-full before:rounded-xl before:opacity-0 before:transition-opacity before:duration-500 before:content-[''] after:absolute after:top-0 after:left-0 after:z-10 after:h-full after:w-full after:rounded-xl after:opacity-0 after:transition-opacity after:duration-500 after:content-[''] hover:before:opacity-100 hover:after:opacity-100">
               <div className='shadow-inner-blur-no-border relative z-30 w-full overflow-hidden rounded-xl bg-white/[0.01] backdrop-blur-lg backdrop-brightness-50'>
                 <div className='absolute inset-0 -z-10 opacity-60'>
-                  <Image src={globeGlow} alt='' className='h-full w-full' />
+                  <Image src={globeGlow} alt='' width={800} height={800} className='h-full w-full' />
                 </div>
                 <div className='grid h-full w-full grid-cols-12 rounded-xl lg:gap-12 xl:grid-cols-2 xl:gap-20'>
                   {/* Card content */}
@@ -156,6 +158,8 @@ export const BentoGridSection = () => {
                       <Image
                         src={globe}
                         alt=''
+                        width={600}
+                        height={600}
                         className='h-full w-full object-contain'
                       />
                     </div>
@@ -171,6 +175,8 @@ export const BentoGridSection = () => {
                   <Image
                     src={encryptionGradient}
                     alt=''
+                    width={420}
+                    height={600}
                     className='h-full w-full opacity-0'
                     sizes='(max-width: 420px) 100vw'
                   />
@@ -208,6 +214,8 @@ export const BentoGridSection = () => {
                       <Image
                         src={binaryCodeBg}
                         alt=''
+                        width={600}
+                        height={400}
                         className='h-full w-full object-cover'
                       />
                     </div>
@@ -215,6 +223,8 @@ export const BentoGridSection = () => {
                       <Image
                         src={encryptionIcon}
                         alt=''
+                        width={600}
+                        height={400}
                         className='size-full object-cover'
                       />
                     </div>
@@ -230,6 +240,8 @@ export const BentoGridSection = () => {
                   <Image
                     src={teamIntegrations}
                     alt=''
+                    width={420}
+                    height={280}
                     className='h-auto w-full'
                     sizes='(max-width: 420px) 100vw'
                   />
