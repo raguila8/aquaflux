@@ -52,8 +52,13 @@ const modal = createAppKit({
     email: false,
     socials: false,
     swaps: false,
-    onramp: false
-  }
+    onramp: false,
+    allWallets: true
+  },
+  enableWalletConnect: true,
+  enableInjected: true,
+  enableEIP6963: true,
+  enableCoinbase: true
 })
 
 interface ReownProviderProps {
