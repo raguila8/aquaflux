@@ -1,4 +1,6 @@
 import { Alchemy, Network } from 'alchemy-sdk';
+import { getUserBalancerTotalValue, getUserBalancerPositions } from './balancerV3Service';
+import { FLUX_TOKEN_ADDRESS } from '@/config/constants';
 
 const settings = {
   apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
@@ -22,12 +24,14 @@ interface BalancerPoolPosition {
   tokens: TokenBalance[];
 }
 
-interface FluxPriceData {
+export interface FluxPriceData {
   timestamp: number;
   price: number;
   totalSupply: number;
   baseTokensValue: number;
   balancerPoolsValue: number;
+  priceChange24h?: number;
+  priceChangePercentage24h?: number;
 }
 
 /**
@@ -140,62 +144,128 @@ export async function getWalletTokenBalances(address: string): Promise<TokenBala
 }
 
 /**
+ * Get total supply of FLUX tokens from the contract
+ */
+export async function getFluxTotalSupply(): Promise<number> {
+  try {
+    // ERC20 totalSupply method signature
+    const totalSupplyMethod = '0x18160ddd';
+    
+    const result = await alchemy.core.call({
+      to: FLUX_TOKEN_ADDRESS,
+      data: totalSupplyMethod
+    });
+    
+    // Convert hex result to number (assuming 18 decimals)
+    const supplyBigInt = BigInt(result);
+    const supply = Number(supplyBigInt) / 1e18;
+    
+    return supply;
+  } catch (error) {
+    console.error('Error fetching FLUX total supply:', error);
+    // Default to a reasonable supply if we can't fetch it
+    return 1000000; // 1M FLUX as default
+  }
+}
+
+/**
  * Calculate FLUX token price based on total value / total supply
  * Price = (Base tokens value + Balancer v3 pools value) / Total FLUX supply
  */
 export async function calculateFluxPrice(
   walletAddress: string,
-  totalFluxSupply: number
+  totalFluxSupply?: number
 ): Promise<FluxPriceData> {
   try {
-    // Get all base tokens value
+    // Get total FLUX supply if not provided
+    const fluxSupply = totalFluxSupply || await getFluxTotalSupply();
+    
+    // Get all base tokens value (including ETH)
     const tokenBalances = await getWalletTokenBalances(walletAddress);
     const baseTokensValue = tokenBalances.reduce((sum, token) => sum + token.valueInUSD, 0);
     
-    // TODO: Integrate with Balancer v3 to get pool positions value
-    // For now, we'll use a placeholder
-    const balancerPoolsValue = 0;
+    // Get Balancer v3 pool positions value
+    const balancerPoolsValue = await getUserBalancerTotalValue(walletAddress);
     
     // Calculate total value and price per FLUX token
     const totalValue = baseTokensValue + balancerPoolsValue;
-    const price = totalFluxSupply > 0 ? totalValue / totalFluxSupply : 0;
+    const price = fluxSupply > 0 ? totalValue / fluxSupply : 0;
     
-    return {
+    // Calculate 24h change
+    const priceChange = calculate24HourChange(price);
+    
+    const priceData: FluxPriceData = {
       timestamp: Date.now(),
       price,
-      totalSupply: totalFluxSupply,
+      totalSupply: fluxSupply,
       baseTokensValue,
-      balancerPoolsValue
+      balancerPoolsValue,
+      priceChange24h: priceChange.percentage,
+      priceChangePercentage24h: priceChange.trend === 'positive' ? priceChange.percentage : -priceChange.percentage
     };
+    
+    // Store price for historical tracking
+    storePriceHistory(priceData);
+    
+    return priceData;
   } catch (error) {
     console.error('Error calculating FLUX price:', error);
+    const fluxSupply = totalFluxSupply || 1000000;
     return {
       timestamp: Date.now(),
       price: 0,
-      totalSupply: totalFluxSupply,
+      totalSupply: fluxSupply,
       baseTokensValue: 0,
-      balancerPoolsValue: 0
+      balancerPoolsValue: 0,
+      priceChange24h: 0,
+      priceChangePercentage24h: 0
     };
   }
 }
 
 /**
  * Store FLUX price history in localStorage for charting
+ * Stores daily snapshots for long-term tracking
  */
 export function storePriceHistory(priceData: FluxPriceData): void {
   try {
     const key = 'flux_price_history';
+    const dailyKey = 'flux_price_daily';
+    
+    // Store recent history (for real-time display)
     const existingData = localStorage.getItem(key);
     let history: FluxPriceData[] = existingData ? JSON.parse(existingData) : [];
     
     // Add new data point
     history.push(priceData);
     
-    // Keep only last 30 days of data (assuming hourly updates)
-    const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-    history = history.filter(point => point.timestamp > thirtyDaysAgo);
+    // Keep only last 7 days of detailed data
+    const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+    history = history.filter(point => point.timestamp > sevenDaysAgo);
     
     localStorage.setItem(key, JSON.stringify(history));
+    
+    // Store daily snapshot (one per day)
+    const dailyData = localStorage.getItem(dailyKey);
+    let dailyHistory: FluxPriceData[] = dailyData ? JSON.parse(dailyData) : [];
+    
+    // Check if we already have a snapshot for today
+    const today = new Date().setHours(0, 0, 0, 0);
+    const hasToday = dailyHistory.some(point => {
+      const pointDate = new Date(point.timestamp).setHours(0, 0, 0, 0);
+      return pointDate === today;
+    });
+    
+    if (!hasToday) {
+      // Add daily snapshot
+      dailyHistory.push(priceData);
+      
+      // Keep only last 90 days of daily data
+      const ninetyDaysAgo = Date.now() - (90 * 24 * 60 * 60 * 1000);
+      dailyHistory = dailyHistory.filter(point => point.timestamp > ninetyDaysAgo);
+      
+      localStorage.setItem(dailyKey, JSON.stringify(dailyHistory));
+    }
   } catch (error) {
     console.error('Error storing price history:', error);
   }
@@ -203,17 +273,31 @@ export function storePriceHistory(priceData: FluxPriceData): void {
 
 /**
  * Get FLUX price history for charting
+ * Returns daily data for longer periods, hourly for shorter
  */
 export function getPriceHistory(days: number = 7): FluxPriceData[] {
   try {
-    const key = 'flux_price_history';
-    const data = localStorage.getItem(key);
-    if (!data) return [];
-    
-    const history: FluxPriceData[] = JSON.parse(data);
-    const cutoffTime = Date.now() - (days * 24 * 60 * 60 * 1000);
-    
-    return history.filter(point => point.timestamp > cutoffTime);
+    if (days <= 7) {
+      // Return detailed history for short periods
+      const key = 'flux_price_history';
+      const data = localStorage.getItem(key);
+      if (!data) return [];
+      
+      const history: FluxPriceData[] = JSON.parse(data);
+      const cutoffTime = Date.now() - (days * 24 * 60 * 60 * 1000);
+      
+      return history.filter(point => point.timestamp > cutoffTime);
+    } else {
+      // Return daily snapshots for longer periods
+      const dailyKey = 'flux_price_daily';
+      const data = localStorage.getItem(dailyKey);
+      if (!data) return [];
+      
+      const history: FluxPriceData[] = JSON.parse(data);
+      const cutoffTime = Date.now() - (days * 24 * 60 * 60 * 1000);
+      
+      return history.filter(point => point.timestamp > cutoffTime);
+    }
   } catch (error) {
     console.error('Error getting price history:', error);
     return [];

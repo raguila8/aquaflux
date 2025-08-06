@@ -16,7 +16,8 @@
       "WebFetch(domain:docs.reown.com)",
       "WebFetch(domain:github.com)",
       "Bash(pnpm remove:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "WebFetch(domain:docs.balancer.fi)"
     ],
     "deny": []
   }

@@ -17,24 +17,56 @@ const FluxChart = dynamic(
     ssr: false 
   }
 )
+
+const FluxPriceCard = dynamic(
+  () => import('@/components/application/FluxPriceCard').then(mod => ({ default: mod.FluxPriceCard })),
+  { 
+    loading: () => <div className="h-64 animate-pulse bg-zinc-800/50 rounded-lg" />,
+    ssr: false 
+  }
+)
+
 import { MetricsSimple } from '@/components/application/metrics/metrics'
 import { useWallet } from '@/contexts/WalletContext'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useMemo } from 'react'
 import { getWalletTransactions } from '@/services/vaultTransactionServiceVercel'
+import { calculateFluxPrice, type FluxPriceData } from '@/services/fluxPriceService'
+import { VAULT_ADDRESS } from '@/config/constants'
 
-const TOKEN_PRICE = 0.37;
 const REFRESH_INTERVAL = 5 * 60 * 1000;
 
 export default function Dashboard() {
   const { isConnected, fluxBalance, connect, address } = useWallet();
   const router = useRouter();
   const [fluxChange, setFluxChange] = useState({ percentage: '0', trend: 'neutral' as 'positive' | 'negative' | 'neutral' });
+  const [priceData, setPriceData] = useState<FluxPriceData | null>(null);
+  const [loading, setLoading] = useState(true);
+  
+  // Fetch FLUX price data
+  useEffect(() => {
+    const fetchPrice = async () => {
+      try {
+        const data = await calculateFluxPrice(VAULT_ADDRESS);
+        setPriceData(data);
+      } catch (error) {
+        console.error('Error fetching FLUX price:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchPrice();
+    const interval = setInterval(fetchPrice, 30000); // Update every 30 seconds
+    
+    return () => clearInterval(interval);
+  }, []);
   
   const portfolioValue = useMemo(() => {
-    const value = parseFloat(fluxBalance || '0') * TOKEN_PRICE;
+    const tokenPrice = priceData?.price || 0.37; // Fallback to default price
+    const value = parseFloat(fluxBalance || '0') * tokenPrice;
     return value.toFixed(2);
-  }, [fluxBalance]);
+  }, [fluxBalance, priceData]);
   
   useEffect(() => {
     const calculateDailyChange = async () => {
@@ -96,6 +128,8 @@ export default function Dashboard() {
   }, [isConnected, router, connect]);
   
   const trend = fluxChange.trend === 'neutral' ? 'positive' : fluxChange.trend;
+  const priceTrend = (priceData?.priceChangePercentage24h || 0) >= 0 ? 'positive' : 'negative';
+  const priceChangeDisplay = Math.abs(priceData?.priceChangePercentage24h || 0).toFixed(2);
   
   return (
     <div className='flex flex-col gap-10 lg:flex-row'>
@@ -111,11 +145,11 @@ export default function Dashboard() {
             actions={false}
           />
           <MetricsSimple
-            title={`$${TOKEN_PRICE}`}
+            title={`$${priceData?.price?.toFixed(4) || '0.3700'}`}
             subtitle='Current token price'
             type='modern'
-            trend='positive'
-            change='12%'
+            trend={priceTrend}
+            change={`${priceChangeDisplay}%`}
             className='flex-1 lg:min-w-[320px]'
             actions={false}
           />
@@ -130,7 +164,15 @@ export default function Dashboard() {
           />
         </div>
 
-        <FluxChart />
+        <div className='grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-5'>
+          <div className='lg:col-span-2'>
+            <FluxChart />
+          </div>
+          <div className='lg:col-span-1'>
+            <FluxPriceCard />
+          </div>
+        </div>
+        
         <TransactionsTable title='Recent transactions' />
       </div>
     </div>
