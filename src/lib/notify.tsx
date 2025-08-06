@@ -3,7 +3,7 @@
 import { toast } from 'sonner'
 import { IconNotification } from '@/components/application/notifications/notifications'
 
-type SuccessArgs = {
+type NotificationArgs = {
   title?: string
   description?: string
   confirmLabel?: string
@@ -16,7 +16,7 @@ export const notify = {
     description = '',
     confirmLabel,
     onConfirm,
-  }: SuccessArgs) {
+  }: NotificationArgs) {
     toast.custom((t) => (
       <IconNotification
         title={title}
@@ -31,5 +31,46 @@ export const notify = {
       />
     ))
   },
-  // Add error, warning, info variants as needed
+  
+  info({
+    title = 'Info',
+    description = '',
+    confirmLabel,
+    onConfirm,
+  }: NotificationArgs) {
+    toast.custom((t) => (
+      <IconNotification
+        title={title}
+        description={description}
+        {...(confirmLabel && { confirmLabel })}
+        color='brand'
+        onClose={() => toast.dismiss(t)}
+        onConfirm={() => {
+          onConfirm?.()
+          toast.dismiss(t)
+        }}
+      />
+    ))
+  },
+  
+  error({
+    title = 'Error',
+    description = '',
+    confirmLabel,
+    onConfirm,
+  }: NotificationArgs) {
+    toast.custom((t) => (
+      <IconNotification
+        title={title}
+        description={description}
+        {...(confirmLabel && { confirmLabel })}
+        color='error'
+        onClose={() => toast.dismiss(t)}
+        onConfirm={() => {
+          onConfirm?.()
+          toast.dismiss(t)
+        }}
+      />
+    ))
+  },
 }

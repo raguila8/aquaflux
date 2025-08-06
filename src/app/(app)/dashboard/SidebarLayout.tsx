@@ -10,6 +10,7 @@ import { Button } from '@/components/base/buttons/button'
 import { Toaster } from '@/components/application/notifications/toaster'
 import { useWallet } from '@/contexts/WalletContext'
 import { useRouter } from 'next/navigation'
+import { useRealtimeTransactions } from '@/hooks/useRealtimeTransactions'
 
 import Home03 from '@/icons/untitledui/pro/home-03.svg'
 import Rows01 from '@/icons/untitledui/pro/rows-01.svg'
@@ -29,6 +30,10 @@ export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
     'deposit'
   )
   const [tokenSymbol, setTokenSymbol] = useState('USDC')
+  
+  useRealtimeTransactions((transaction) => {
+    console.log('New transaction received:', transaction);
+  });
   
   const handleSignOut = async () => {
     await disconnect();
