@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
 
-const VAULT_ADDRESS = '0x25f2F5C009700Afd6A7ce831B5f1006B20F101c1';
+const VAULT_ADDRESS = '0x9EE4d24dB1104bDF818391efCB8CCBa8Ff206159';
 const WEBHOOK_SECRET = process.env.ALCHEMY_WEBHOOK_SECRET || '';
 const WEBHOOK_AUTH_TOKEN = process.env.ALCHEMY_WEBHOOK_AUTH_TOKEN || '';
 const VAULT_DATA_FILE = path.join(process.cwd(), 'transactions', 'data', 'vault-transactions.json');

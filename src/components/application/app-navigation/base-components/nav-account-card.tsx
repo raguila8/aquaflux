@@ -26,6 +26,7 @@ import { RadioButtonBase } from '@/components/base/radio-buttons/radio-buttons'
 import { useBreakpoint } from '@/hooks/use-breakpoint'
 import { cx } from '@/utils/cx'
 import { truncateHash } from '@/lib/utils'
+import { useWallet } from '@/contexts/WalletContext'
 
 type NavAccountType = {
   /** Unique identifier for the nav item. */
@@ -75,6 +76,7 @@ export const NavAccountMenu = ({
 }) => {
   const focusManager = useFocusManager()
   const dialogRef = useRef<HTMLDivElement>(null)
+  const { disconnect } = useWallet()
 
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -173,6 +175,7 @@ export const NavAccountMenu = ({
           label='Sign out'
           icon={LogOut01}
           shortcut='⌥⇧Q'
+          onClick={disconnect}
         />
       </div>
     </AriaDialog>
@@ -229,15 +232,19 @@ export const NavAccountCard = ({
 }) => {
   const triggerRef = useRef<HTMLDivElement>(null)
   const isDesktop = useBreakpoint('lg')
+  const { address } = useWallet()
 
   const selectedAccount = placeholderAccounts.find(
     (account) => account.id === selectedAccountId
   )
 
+  // Use actual connected wallet address or fallback to placeholder
+  const displayAddress = address || walletAddress
+
   const Title = (
-    <Tooltip arrow title={walletAddress} className='max-w-sm font-mono'>
+    <Tooltip arrow title={displayAddress} className='max-w-sm font-mono'>
       <TooltipTrigger>
-        <span>{truncateHash(walletAddress)}</span>
+        <span>{truncateHash(displayAddress)}</span>
       </TooltipTrigger>
     </Tooltip>
   )

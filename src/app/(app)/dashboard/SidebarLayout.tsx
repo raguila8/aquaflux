@@ -148,13 +148,7 @@ export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
                   </p>
                   <p className='text-md text-tertiary'>{subtitle}</p>
                 </div>
-                <div className='flex flex-col items-end gap-2'>
-                  {address && (
-                    <p className='text-sm text-tertiary'>
-                      {address.slice(0, 6)}...{address.slice(-4)}
-                    </p>
-                  )}
-                  <div className='flex gap-3'>
+                <div className='flex gap-3'>
                   <Button
                     size='md'
                     color='secondary'
@@ -178,14 +172,6 @@ export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
                   >
                     Deposit
                   </Button>
-                  <Button
-                    size='md'
-                    color='secondary'
-                    onClick={handleSignOut}
-                  >
-                    Sign Out
-                  </Button>
-                  </div>
                 </div>
               </div>
             </div>
