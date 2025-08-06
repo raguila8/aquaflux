@@ -20,20 +20,32 @@ import { FeaturedIcon } from '@/components/foundations/featured-icon/featured-ic
 import { BackgroundPattern } from '@/components/shared-assets/background-patterns'
 import { GradientScan, QRCode } from '@/components/shared-assets/qr-code'
 import { Input } from '@/components/base/input/input'
+import * as Alerts from '@/components/application/alerts/alerts'
 
 type TwoFACodeModalProps = {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
+  mode?: 'deposit' | 'withdraw'
+  tokenSymbol?: string
 }
 
 export const TWOFACodeModal = ({
   isOpen,
   onOpenChange,
+  mode = 'deposit',
+  tokenSymbol = 'USDC',
 }: TwoFACodeModalProps) => {
   const [value, setValue] = useState(
     '0x05d242f6686122ae37e003be9f11e3a9f7bb6390f8e43de216c89f44c28f4595'
   )
   const { copy, copied } = useClipboard()
+
+  const titleText = mode === 'deposit' ? 'Deposit' : 'Withdraw'
+  const labelText = `${tokenSymbol} deposit address`
+  const alertTitle = `Only deposit ${tokenSymbol} on the ARB (Arbitrium) network.`
+  const successTitle = `${titleText} successful`
+  const address =
+    '0x9749a2817894a0f8aff9977efc5d0aaaad6133a94247b1ee3ab707c2bfe7d1d1'
 
   return (
     <AriaDialogTrigger isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -67,7 +79,7 @@ export const TWOFACodeModal = ({
                     slot='title'
                     className='text-md text-primary font-semibold'
                   >
-                    Deposit
+                    {titleText}
                   </AriaHeading>
                   <p className='text-tertiary text-sm'>
                     Scan the QR or copy the address to your wallet.
@@ -78,12 +90,12 @@ export const TWOFACodeModal = ({
               <div className='flex flex-col gap-4 px-4 sm:gap-5 sm:px-6'>
                 <div className='bg-secondary relative flex w-full items-center justify-center rounded-lg p-5'>
                   <QRCode
-                    value='0x9749a2817894a0f8aff9977efc5d0aaaad6133a94247b1ee3ab707c2bfe7d1d1'
+                    value={address}
                     size='lg'
                     className='hidden sm:flex'
                   />
                   <QRCode
-                    value='https://www.tailawesome.com/'
+                    value={address}
                     size='md'
                     className='flex sm:hidden'
                   />
@@ -95,7 +107,7 @@ export const TWOFACodeModal = ({
                 <Input
                   isReadOnly
                   size='md'
-                  label='USDC Deposit address'
+                  label={labelText}
                   value={value}
                   onChange={setValue}
                   className='font-mono'
@@ -107,10 +119,14 @@ export const TWOFACodeModal = ({
                   iconLeading={copied ? Check : Copy01}
                 />
               </div>
-              <p className='text-tertiary group-invalid:text-error-primary mt-2 px-4.5 text-sm sm:px-6.5'>
-                Only deposit USDC on the ARB (Arbitrium) network. If you send
-                anything else you can potentially lose your assets forever.
-              </p>
+              <div className='mx-4.5 mt-4.5 sm:mx-6.5'>
+                <Alerts.AlertFloating
+                  color='warning'
+                  title={alertTitle}
+                  description='If you send anything else you can potentially lose your assets forever.'
+                  showClose={false}
+                />
+              </div>
               <div className='z-10 flex flex-1 flex-col-reverse gap-3 p-4 pt-6 *:grow sm:grid sm:grid-cols-2 sm:px-6 sm:pt-8 sm:pb-6'>
                 <Button
                   color='secondary'
@@ -125,7 +141,7 @@ export const TWOFACodeModal = ({
                   onClick={() => {
                     onOpenChange(false)
                     notify.success({
-                      title: 'Deposit successful',
+                      title: successTitle,
                       description:
                         'Lorem ipsum dolor sit amet hac erat vestibulum nunc fames.',
                     })

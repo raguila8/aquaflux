@@ -21,65 +21,71 @@ interface FluxChartProps {
 const lineData = [
   {
     date: '2025-01-01',
-    A: 600,
-    B: 350,
+    A: 1200,
+    B: 400,
   },
   {
     date: '2025-02-01',
-    A: 620,
-    B: 370,
+    A: 1300,
+    B: 210,
   },
   {
     date: '2025-03-01',
-    A: 630,
-    B: 380,
+    A: 1160,
+    B: 600,
   },
   {
     date: '2025-04-01',
-    A: 650,
-    B: 400,
+    A: 1300,
+    B: 620,
   },
   {
     date: '2025-05-01',
-    A: 600,
-    B: 350,
+    A: 1480,
+    B: 440,
   },
   {
     date: '2025-06-01',
-    A: 650,
-    B: 400,
+    A: 1300,
+    B: 660,
   },
   {
     date: '2025-07-01',
-    A: 620,
-    B: 370,
+    A: 1240,
+    B: 480,
   },
   {
     date: '2025-08-01',
-    A: 750,
-    B: 500,
+    A: 1500,
+    B: 960,
   },
   {
     date: '2025-09-01',
-    A: 780,
-    B: 530,
+    A: 1560,
+    B: 800,
   },
   {
     date: '2025-10-01',
-    A: 750,
-    B: 500,
+    A: 1300,
+    B: 580,
   },
   {
     date: '2025-11-01',
-    A: 780,
-    B: 530,
+    A: 1500,
+    B: 760,
   },
   {
     date: '2025-12-01',
-    A: 820,
-    B: 570,
+    A: 1609,
+    B: 1000,
   },
 ]
+
+const colors: Record<string, string> = {
+  A: 'text-utility-brand-600',
+  B: 'text-utility-brand-300/80',
+  C: 'text-utility-brand-700',
+}
 
 export const FluxChart = ({ height = 'h-64' }: FluxChartProps) => {
   return (
@@ -188,13 +194,18 @@ export const FluxChart = ({ height = 'h-64' }: FluxChartProps) => {
 
             <Area
               isAnimationActive={false}
-              className='text-utility-brand-400 [&_.recharts-area-area]:translate-y-[6px] [&_.recharts-area-area]:[clip-path:inset(0_0_6px_0)]'
+              className={cn(
+                colors['B'],
+                '[&_.recharts-area-area]:translate-y-[6px] [&_.recharts-area-area]:[clip-path:inset(0_0_6px_0)]'
+              )}
               dataKey='B'
-              name='Previous period'
+              name='2024'
               type='monotone'
               stroke='currentColor'
               strokeWidth={2}
               fill='none'
+              strokeDasharray='0.1 8'
+              strokeLinecap='round'
               activeDot={{
                 className: 'fill-bg-primary stroke-utility-brand-600 stroke-2',
               }}

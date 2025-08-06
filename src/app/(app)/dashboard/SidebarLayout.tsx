@@ -22,6 +22,10 @@ import {
 export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname()
   const [open2FA, setOpen2FA] = useState(false)
+  const [transferMode, setTransferMode] = useState<'deposit' | 'withdraw'>(
+    'deposit'
+  )
+  const [tokenSymbol, setTokenSymbol] = useState('USDC')
 
   // Dynamic title based on pathname
   const getPageTitle = (path: string): string => {
@@ -96,7 +100,11 @@ export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
             title='Deposit to wallet'
             description='Open your wallet and scan the QR code below to deposit USDC on Arbitrum.'
             confirmLabel='Fund wallet'
-            onConfirm={() => setOpen2FA(true)}
+            onConfirm={() => {
+              setTransferMode('deposit')
+              setTokenSymbol('USDC')
+              setOpen2FA(true)
+            }}
             onDismiss={() => {}}
             showCloseButton={false}
           />
@@ -119,13 +127,22 @@ export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
                     size='md'
                     color='secondary'
                     iconLeading={CreditCardUp}
+                    onClick={() => {
+                      setTransferMode('withdraw')
+                      setTokenSymbol('FLUX')
+                      setOpen2FA(true)
+                    }}
                   >
                     Withdraw
                   </Button>
                   <Button
                     size='md'
                     iconLeading={Cryptocurrency03}
-                    onClick={() => setOpen2FA(true)}
+                    onClick={() => {
+                      setTransferMode('deposit')
+                      setTokenSymbol('USDC')
+                      setOpen2FA(true)
+                    }}
                   >
                     Deposit
                   </Button>
@@ -137,7 +154,12 @@ export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
         </div>
       </main>
 
-      <TWOFACodeModal isOpen={open2FA} onOpenChange={setOpen2FA} />
+      <TWOFACodeModal
+        isOpen={open2FA}
+        onOpenChange={setOpen2FA}
+        mode={transferMode}
+        tokenSymbol={tokenSymbol}
+      />
       <Toaster />
     </>
   )

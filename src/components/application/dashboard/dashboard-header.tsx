@@ -13,6 +13,10 @@ export const DashboardHeader = ({
   subtitle: string
 }) => {
   const [open2FA, setOpen2FA] = useState(false)
+  const [transferMode, setTransferMode] = useState<'deposit' | 'withdraw'>(
+    'deposit'
+  )
+  const [tokenSymbol, setTokenSymbol] = useState('USDC')
 
   return (
     <>
@@ -26,20 +30,38 @@ export const DashboardHeader = ({
             <p className='text-md text-tertiary'>{subtitle}</p>
           </div>
           <div className='flex gap-3'>
-            <Button size='md' color='secondary' iconLeading={CreditCardUp}>
+            <Button
+              size='md'
+              color='secondary'
+              iconLeading={CreditCardUp}
+              onClick={() => {
+                setTransferMode('withdraw')
+                setTokenSymbol('FLUX')
+                setOpen2FA(true)
+              }}
+            >
               Withdraw
             </Button>
             <Button
               size='md'
               iconLeading={Cryptocurrency03}
-              onClick={() => setOpen2FA(true)}
+              onClick={() => {
+                setTransferMode('deposit')
+                setTokenSymbol('USDC')
+                setOpen2FA(true)
+              }}
             >
               Deposit
             </Button>
           </div>
         </div>
       </div>
-      <TWOFACodeModal isOpen={open2FA} onOpenChange={setOpen2FA} />
+      <TWOFACodeModal
+        isOpen={open2FA}
+        onOpenChange={setOpen2FA}
+        mode={transferMode}
+        tokenSymbol={tokenSymbol}
+      />
     </>
   )
 }
