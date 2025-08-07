@@ -1,7 +1,7 @@
 import { VAULT_ADDRESS } from '@/config/constants';
 
-const BALANCER_API_URL = 'https://api-v3.balancer.fi';
-const BALANCER_API_URL_TEST = 'https://test-api-v3.balancer.fi';
+const BALANCER_API_URL = 'https://api-v3.balancer.fi/graphql';
+const BALANCER_API_URL_TEST = 'https://test-api-v3.balancer.fi/graphql';
 
 // Using the production API by default
 const API_URL = process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? BALANCER_API_URL_TEST : BALANCER_API_URL;
@@ -132,32 +132,44 @@ const getTokenPricesQuery = `
  */
 async function executeGraphQLQuery(query: string, variables: Record<string, any>): Promise<any> {
   try {
+    const requestBody = {
+      query,
+      variables
+    };
+    
+    console.log('Balancer API request:', {
+      url: API_URL,
+      variables
+    });
+
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
-      body: JSON.stringify({
-        query,
-        variables
-      })
+      body: JSON.stringify(requestBody)
     });
 
+    const responseText = await response.text();
+    console.log('Balancer API response status:', response.status);
+
     if (!response.ok) {
-      throw new Error(`Balancer API error: ${response.status}`);
+      console.error('Balancer API error response:', responseText);
+      throw new Error(`Balancer API error: ${response.status} - ${responseText}`);
     }
 
-    const data = await response.json();
+    const data = JSON.parse(responseText);
     
     if (data.errors) {
       console.error('GraphQL errors:', data.errors);
-      throw new Error('GraphQL query failed');
+      throw new Error(`GraphQL query failed: ${JSON.stringify(data.errors)}`);
     }
 
     return data.data;
   } catch (error) {
     console.error('Error executing GraphQL query:', error);
-    throw error;
+    return null; // Return null instead of throwing to prevent app crashes
   }
 }
 
@@ -175,6 +187,7 @@ export async function getUserBalancerPositions(userAddress: string): Promise<Bal
     });
 
     if (!data || !data.userGetPoolBalances) {
+      console.log('No Balancer pool balances data returned');
       return [];
     }
 

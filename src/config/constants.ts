@@ -3,7 +3,7 @@ export const FLUX_TOKEN_ADDRESS = process.env.NEXT_PUBLIC_FLUX_TOKEN_ADDRESS || 
 export const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 export const VAULT_ADDRESS = "0x9EE4d24dB1104bDF818391efCB8CCBa8Ff206159";
 
-// API Keys and URLs
-export const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || "WsRl4toSVOL8xSY2QQcrgpQ6MCHb-8cQ";
-export const ALCHEMY_RPC_URL = `https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
-export const ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY || "N6JDYEFIP3544JDTEBFT8VCT4Q8SV5V1IC";
+// API Keys and URLs - Using environment variables only, no fallback demo keys
+export const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY;
+export const ALCHEMY_RPC_URL = ALCHEMY_API_KEY ? `https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}` : null;
+export const ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY;

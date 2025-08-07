@@ -34,6 +34,12 @@ interface AlchemyTokenMetadataResponse {
  */
 export async function getTokenBalances(walletAddress: string): Promise<TokenBalance[]> {
   try {
+    // Skip Alchemy calls if no API key is available
+    if (!ALCHEMY_RPC_URL) {
+      console.warn('Alchemy API key not configured, token balances unavailable');
+      return [];
+    }
+    
     const response = await fetch(ALCHEMY_RPC_URL, {
       method: 'POST',
       headers: {
@@ -72,6 +78,12 @@ export async function getTokenBalances(walletAddress: string): Promise<TokenBala
  */
 export async function getTokenMetadata(contractAddress: string): Promise<TokenMetadata | null> {
   try {
+    // Skip Alchemy calls if no API key is available
+    if (!ALCHEMY_RPC_URL) {
+      console.warn('Alchemy API key not configured, token metadata unavailable');
+      return null;
+    }
+    
     const response = await fetch(ALCHEMY_RPC_URL, {
       method: 'POST',
       headers: {

@@ -47,14 +47,6 @@ const modal = createAppKit({
     '--w3m-font-family': 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
     '--w3m-font-size-master': '10px',
   },
-  features: {
-    analytics: true,
-    email: false,
-    socials: false,
-    swaps: false,
-    onramp: false,
-    allWallets: true
-  },
   enableWalletConnect: true,
   enableInjected: true,
   enableEIP6963: true,

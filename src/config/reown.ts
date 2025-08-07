@@ -6,6 +6,15 @@ export const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '4e
 
 export const networks = [base, baseSepolia] as const
 
+// Get Alchemy API key or fallback to public RPC endpoints
+const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
+const baseRpcUrl = alchemyApiKey 
+  ? `https://base-mainnet.g.alchemy.com/v2/${alchemyApiKey}`
+  : 'https://mainnet.base.org' // Public Base RPC
+const baseSepoliaRpcUrl = alchemyApiKey
+  ? `https://base-sepolia.g.alchemy.com/v2/${alchemyApiKey}`
+  : 'https://sepolia.base.org' // Public Base Sepolia RPC
+
 export const wagmiAdapter = new WagmiAdapter({
   storage: createStorage({
     storage: cookieStorage
@@ -14,8 +23,8 @@ export const wagmiAdapter = new WagmiAdapter({
   projectId,
   networks: [...networks],
   transports: {
-    [base.id]: http(`https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'WsRl4toSVOL8xSY2QQcrgpQ6MCHb-8cQ'}`),
-    [baseSepolia.id]: http(`https://base-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'WsRl4toSVOL8xSY2QQcrgpQ6MCHb-8cQ'}`)
+    [base.id]: http(baseRpcUrl),
+    [baseSepolia.id]: http(baseSepoliaRpcUrl)
   }
 })
 

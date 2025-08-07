@@ -1,5 +1,14 @@
 import { ALCHEMY_RPC_URL, VAULT_ADDRESS, FLUX_TOKEN_ADDRESS, USDC_ADDRESS } from '@/config/constants';
 
+// Helper function to check if Alchemy is available
+function checkAlchemyAvailable(): boolean {
+  if (!ALCHEMY_RPC_URL) {
+    console.warn('Alchemy API key not configured, blockchain data unavailable');
+    return false;
+  }
+  return true;
+}
+
 interface AlchemyTransaction {
   blockNum: string;
   uniqueId: string;
@@ -57,10 +66,14 @@ export async function getVaultAssetTransfers(
   pageKey?: string
 ): Promise<AlchemyTransaction[]> {
   try {
+    if (!checkAlchemyAvailable()) {
+      return [];
+    }
+
     const allTransfers: AlchemyTransaction[] = [];
     
     // Get transfers FROM the vault
-    const fromVaultResponse = await fetch(ALCHEMY_RPC_URL, {
+    const fromVaultResponse = await fetch(ALCHEMY_RPC_URL!, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -96,7 +109,7 @@ export async function getVaultAssetTransfers(
     }
 
     // Get transfers TO the vault
-    const toVaultResponse = await fetch(ALCHEMY_RPC_URL, {
+    const toVaultResponse = await fetch(ALCHEMY_RPC_URL!, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -154,10 +167,14 @@ export async function getWalletAssetTransfers(
   toBlock: string = 'latest'
 ): Promise<AlchemyTransaction[]> {
   try {
+    if (!checkAlchemyAvailable()) {
+      return [];
+    }
+
     const allTransfers: AlchemyTransaction[] = [];
     
     // Get transfers where wallet interacts with vault
-    const response = await fetch(ALCHEMY_RPC_URL, {
+    const response = await fetch(ALCHEMY_RPC_URL!, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -190,7 +207,7 @@ export async function getWalletAssetTransfers(
     }
 
     // Get transfers from vault to wallet
-    const reverseResponse = await fetch(ALCHEMY_RPC_URL, {
+    const reverseResponse = await fetch(ALCHEMY_RPC_URL!, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -241,7 +258,11 @@ export async function getWalletAssetTransfers(
  */
 export async function getTransactionReceipt(txHash: string): Promise<TransactionReceipt | null> {
   try {
-    const response = await fetch(ALCHEMY_RPC_URL, {
+    if (!checkAlchemyAvailable()) {
+      return null;
+    }
+    
+    const response = await fetch(ALCHEMY_RPC_URL!, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -298,7 +319,11 @@ export function formatAlchemyTransaction(tx: AlchemyTransaction) {
 export function subscribeToNewTransactions(
   callback: (tx: any) => void
 ): () => void {
-  const ws = new WebSocket(ALCHEMY_RPC_URL.replace('https://', 'wss://'));
+  if (!checkAlchemyAvailable()) {
+    return () => {}; // Return empty cleanup function
+  }
+  
+  const ws = new WebSocket(ALCHEMY_RPC_URL!.replace('https://', 'wss://'));
   
   ws.onopen = () => {
     // Subscribe to new pending transactions
@@ -337,7 +362,11 @@ export function subscribeToNewTransactions(
  */
 export async function getCurrentBlockNumber(): Promise<number> {
   try {
-    const response = await fetch(ALCHEMY_RPC_URL, {
+    if (!checkAlchemyAvailable()) {
+      return 0;
+    }
+    
+    const response = await fetch(ALCHEMY_RPC_URL!, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
