@@ -2,10 +2,10 @@
 
 export const dynamic = 'force-dynamic'
 
-import dynamic from 'next/dynamic'
+import dynamicImport from 'next/dynamic'
 import { TransactionsTable } from '@/components/application/table/transactions-table'
 
-const DashboardWrapper = dynamic(
+const DashboardWrapper = dynamicImport(
   () => import('@/components/application/dashboard/DashboardWrapper').then(mod => ({ default: mod.DashboardWrapper })),
   { ssr: false }
 )
