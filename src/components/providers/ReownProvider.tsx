@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode } from 'react'
 import { createAppKit } from '@reown/appkit/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider, cookieToInitialState, State } from 'wagmi'
@@ -78,25 +78,7 @@ export function ReownProvider({
   cookies,
   initialState 
 }: ReownProviderProps) {
-  const [isModalReady, setIsModalReady] = useState(false)
   const state = initialState || (cookies ? cookieToInitialState(wagmiAdapter.wagmiConfig, cookies) : undefined)
-
-  useEffect(() => {
-    // Immediate modal readiness now that CSS properly handles the initial state
-    setIsModalReady(true)
-    if (typeof document !== 'undefined') {
-      // Use requestAnimationFrame to ensure DOM is ready
-      requestAnimationFrame(() => {
-        document.body.classList.add('wallet-modal-ready')
-      })
-    }
-
-    return () => {
-      if (typeof document !== 'undefined') {
-        document.body.classList.remove('wallet-modal-ready')
-      }
-    }
-  }, [])
 
   return (
     <WagmiProvider config={wagmiAdapter.wagmiConfig} initialState={state}>

@@ -6,6 +6,7 @@ import { GeistMono } from 'geist/font/mono'
 import "@/styles/globals.css";
 import { ReownProvider } from '@/components/providers/ReownProvider';
 import { WalletProvider } from '@/contexts/WalletContext';
+import { ModalHider } from '@/components/providers/ModalHider';
 import { cookieToInitialState } from 'wagmi';
 import { config } from '@/config/reown';
 
@@ -123,11 +124,13 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://base-sepolia.g.alchemy.com" />
       </head>
       <body className='bg-zinc-950 antialiased'>
-        <ReownProvider cookies={cookies} initialState={initialState}>
-          <WalletProvider>
-            {children}
-          </WalletProvider>
-        </ReownProvider>
+        <ModalHider>
+          <ReownProvider cookies={cookies} initialState={initialState}>
+            <WalletProvider>
+              {children}
+            </WalletProvider>
+          </ReownProvider>
+        </ModalHider>
       </body>
     </html>
   )

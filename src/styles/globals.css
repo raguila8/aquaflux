@@ -5,25 +5,13 @@
 @import './vendors/app-theme.css';
 @import './reown-modal.css';
 
-/* Fix for WalletConnect modal flash on page load */
-/* Prevents modal from showing on initial render but allows it to work when opened */
+/* Smooth transition for modals after initial load */
 @layer base {
-  /* Initially hide modal during page load */
-  body:not(.wallet-modal-ready) w3m-modal,
-  body:not(.wallet-modal-ready) wcm-modal,
-  body:not(.wallet-modal-ready) w3m-router,
-  body:not(.wallet-modal-ready) wcm-router,
-  body:not(.wallet-modal-ready) [data-w3m-modal],
-  body:not(.wallet-modal-ready) [data-wcm-modal] {
-    opacity: 0 !important;
-    pointer-events: none !important;
-  }
-  
-  /* Smooth transition when modal becomes ready */
-  body.wallet-modal-ready w3m-modal,
-  body.wallet-modal-ready wcm-modal,
-  body.wallet-modal-ready [data-w3m-modal],
-  body.wallet-modal-ready [data-wcm-modal] {
+  /* Add smooth transitions once modals are ready */
+  body:not([data-modal-loading]) w3m-modal,
+  body:not([data-modal-loading]) wcm-modal,
+  body:not([data-modal-loading]) [data-w3m-modal],
+  body:not([data-modal-loading]) [data-wcm-modal] {
     transition: opacity 0.2s ease !important;
   }
 }
