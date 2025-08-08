@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { useAccount, useDisconnect, useBalance } from 'wagmi';
 import { useAppKit } from '@reown/appkit/react';
 import { getFluxBalance, getUsdcBalance } from '@/services/alchemyTokenService';
-import { subscribeToPendingTransactions, subscribeToMinedTransactions } from '@/services/alchemyRealtimeService';
+import { subscribeToWalletTransactions, unsubscribeAll, type TransactionInfo } from '@/services/alchemyWebSocketService';
 import { useRouter, usePathname } from 'next/navigation';
 
 interface WalletContextType {
@@ -65,16 +65,15 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     if (address && isReady) {
       refreshBalances();
       
-      let unsubscribePending: (() => void) | undefined;
-      let unsubscribeMined: (() => void) | undefined;
+      let unsubscribe: (() => void) | undefined;
       
       const setupSubscriptions = async () => {
-        unsubscribePending = await subscribeToPendingTransactions(address, () => {
-          setTimeout(refreshBalances, 1000);
-        });
-        
-        unsubscribeMined = await subscribeToMinedTransactions(address, () => {
-          refreshBalances();
+        unsubscribe = await subscribeToWalletTransactions(address, (tx: TransactionInfo) => {
+          if (tx.status === 'confirmed' || tx.type === 'failed') {
+            refreshBalances();
+          } else if (tx.status === 'pending') {
+            setTimeout(refreshBalances, 1000);
+          }
         });
       };
       
@@ -83,13 +82,13 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       const interval = setInterval(refreshBalances, 30000);
       
       return () => {
-        unsubscribePending?.();
-        unsubscribeMined?.();
+        unsubscribe?.();
         clearInterval(interval);
       };
     } else {
       setFluxBalance('0');
       setUsdcBalance('0');
+      unsubscribeAll();
     }
   }, [address, isReady, refreshBalances]);
 
