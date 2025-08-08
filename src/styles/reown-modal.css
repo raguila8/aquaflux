@@ -1,12 +1,46 @@
 /* Custom Reown/WalletConnect Modal Styling */
 /* These styles override the default modal appearance to match the AquaFlux dark theme */
 
+/* Fix for grey overlay appearing on initial load */
+/* Hide modal and overlay by default until explicitly opened */
+w3m-modal:not([open]),
+wcm-modal:not([open]),
+[data-w3m-modal]:not([open]),
+w3m-modal[open="false"],
+wcm-modal[open="false"],
+[data-w3m-modal][open="false"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Ensure overlay is completely hidden when modal is not open */
+w3m-modal:not([open])::part(overlay),
+wcm-modal:not([open])::part(overlay),
+[data-w3m-modal]:not([open])::part(overlay),
+w3m-modal[open="false"]::part(overlay),
+wcm-modal[open="false"]::part(overlay),
+[data-w3m-modal][open="false"]::part(overlay) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 /* Global modal wrapper - darken and blur the backdrop */
-w3m-modal::part(overlay),
-wcm-modal::part(overlay),
-[data-w3m-modal]::part(overlay) {
+w3m-modal[open="true"]::part(overlay),
+wcm-modal[open="true"]::part(overlay),
+[data-w3m-modal][open="true"]::part(overlay),
+w3m-modal[open]::part(overlay),
+wcm-modal[open]::part(overlay),
+[data-w3m-modal][open]::part(overlay) {
   background: rgba(0, 0, 0, 0.85) !important;
   backdrop-filter: blur(8px) !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 /* Main modal container - dark background with subtle aqua glow */
