@@ -27,6 +27,8 @@ export default function NotFound() {
         <Image
           src={spaceSpotlight}
           alt=''
+          width={1920}
+          height={1080}
           className='absolute -bottom-3/4 left-1/2 h-auto max-w-3xl -translate-x-1/2 object-contain opacity-90 sm:max-w-4xl md:-bottom-full lg:-bottom-[135%] lg:max-w-7xl'
           sizes='(max-width: 1024px) 100vw, 1280px'
           priority

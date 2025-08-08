@@ -338,12 +338,16 @@ export const NavbarPill = () => {
               >
                 <Image
                   src={logo}
-                  alt='Nebula Logo'
+                  alt='AquaFlux Logo'
+                  width={120}
+                  height={26}
                   className='hidden h-[26px] w-auto min-[402px]:block'
                 />
                 <Image
                   src={logoIcon}
-                  alt='Nebula Logo Icon'
+                  alt='AquaFlux Logo Icon'
+                  width={26}
+                  height={26}
                   className='h-[26px] w-auto min-[402px]:hidden'
                 />
               </Link>

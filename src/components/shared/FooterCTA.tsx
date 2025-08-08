@@ -53,6 +53,9 @@ export function FooterCTA() {
       <Image
         src={spaceSpotlight}
         alt=''
+        width={1920}
+        height={1080}
+        sizes='(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1800px'
         className='absolute -bottom-3/4 left-1/2 h-auto w-full max-w-3xl -translate-x-1/2 object-contain opacity-80 sm:max-w-4xl md:-bottom-full lg:-bottom-[165%] lg:max-w-[1800px]'
       />
     </>

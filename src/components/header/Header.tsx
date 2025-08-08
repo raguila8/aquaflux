@@ -33,7 +33,7 @@ export const Header = () => {
               aria-label='Home'
               className='flex shrink-0 items-center'
             >
-              <Image src={logo} alt='' className='h-7 w-auto lg:h-8' />
+              <Image src={logo} alt='AquaFlux Logo' width={120} height={32} className='h-7 w-auto lg:h-8' />
             </Link>
           </div>
 

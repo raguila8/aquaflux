@@ -29,6 +29,8 @@ export const HeroContainer = ({
         <Image
           src={spaceWavesPng}
           alt=''
+          width={1920}
+          height={1080}
           className={cn(
             'absolute inset-x-0 -top-64 -z-20 size-full object-cover',
             bgGradientClassName

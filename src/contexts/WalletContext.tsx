@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { useAccount, useDisconnect, useBalance } from 'wagmi';
 import { useAppKit } from '@reown/appkit/react';
 import { getFluxBalance, getUsdcBalance } from '@/services/alchemyTokenService';
-import { subscribeToWalletTransactions, unsubscribeAll, type TransactionInfo } from '@/services/alchemyWebSocketService';
+import { subscribeToWalletTransactions, unsubscribeAll, type TransactionInfo } from '@/services/alchemyWebSocketService.tsx';
 import { useRouter, usePathname } from 'next/navigation';
 
 interface WalletContextType {

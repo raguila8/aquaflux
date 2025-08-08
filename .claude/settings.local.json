@@ -22,7 +22,9 @@
       "Bash(npm run dev:*)",
       "Bash(dir node_modules)",
       "Bash(npm run build:*)",
-      "Bash(npx next:*)"
+      "Bash(npx next:*)",
+      "Bash(dir:*)",
+      "Bash(cp:*)"
     ],
     "deny": []
   }

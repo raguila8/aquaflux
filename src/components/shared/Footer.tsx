@@ -113,12 +113,16 @@ export function Footer({ cta = true }: Props) {
                     >
                       <Image
                         src={logo}
-                        alt=''
+                        alt='AquaFlux Logo'
+                        width={120}
+                        height={32}
                         className='h-6 w-auto sm:inline sm:h-7 xl:h-8'
                       />
                       <Image
                         src={logoIcon}
-                        alt=''
+                        alt='AquaFlux Logo Icon'
+                        width={32}
+                        height={32}
                         className='hidden h-8 w-auto'
                       />
                     </Link>
