@@ -5,7 +5,7 @@ import { useAccount, useDisconnect, useBalance } from 'wagmi';
 import { useAppKit } from '@reown/appkit/react';
 import { getFluxBalance, getUsdcBalance } from '@/services/alchemyTokenService';
 import { subscribeToPendingTransactions, subscribeToMinedTransactions } from '@/services/alchemyRealtimeService';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface WalletContextType {
   isConnected: boolean;
@@ -15,33 +15,29 @@ interface WalletContextType {
   connect: () => void;
   disconnect: () => void;
   isLoading: boolean;
-  isHydrated: boolean;
+  isReady: boolean;
   refreshBalances: () => Promise<void>;
 }
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
 export function WalletProvider({ children }: { children: React.ReactNode }) {
-  const [mounted, setMounted] = useState(false);
-  const [isHydrated, setIsHydrated] = useState(false);
-  const { address, isConnected, isConnecting } = useAccount();
+  const [isReady, setIsReady] = useState(false);
+  const { address, isConnected, isConnecting, status } = useAccount();
   const { disconnect: wagmiDisconnect } = useDisconnect();
   const { open } = useAppKit();
   const router = useRouter();
+  const pathname = usePathname();
   
   const [fluxBalance, setFluxBalance] = useState<string>('0');
   const [usdcBalance, setUsdcBalance] = useState<string>('0');
   const [isLoading, setIsLoading] = useState(false);
   
   useEffect(() => {
-    setMounted(true);
-    // Allow time for proper hydration and wallet state initialization
-    const hydrationTimer = setTimeout(() => {
-      setIsHydrated(true);
-    }, 2000); // Wait 2 seconds for full hydration
-    
-    return () => clearTimeout(hydrationTimer);
-  }, []);
+    if (status !== 'reconnecting') {
+      setIsReady(true);
+    }
+  }, [status]);
 
   const refreshBalances = useCallback(async () => {
     if (!address) {
@@ -66,21 +62,18 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   }, [address]);
 
   useEffect(() => {
-    if (address && mounted) {
+    if (address && isReady) {
       refreshBalances();
       
       let unsubscribePending: (() => void) | undefined;
       let unsubscribeMined: (() => void) | undefined;
       
-      // Subscribe to real-time transactions
       const setupSubscriptions = async () => {
         unsubscribePending = await subscribeToPendingTransactions(address, () => {
-          // Refresh balances when new transaction is detected
           setTimeout(refreshBalances, 1000);
         });
         
         unsubscribeMined = await subscribeToMinedTransactions(address, () => {
-          // Refresh balances when transaction is confirmed
           refreshBalances();
         });
       };
@@ -98,53 +91,15 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       setFluxBalance('0');
       setUsdcBalance('0');
     }
-  }, [address, mounted, refreshBalances]);
+  }, [address, isReady, refreshBalances]);
 
   useEffect(() => {
-    if (!mounted || !isHydrated) return;
+    if (!isReady || status === 'reconnecting') return;
 
-    const currentPath = window.location.pathname;
-    
-    // Be very conservative with dashboard redirects - only redirect if we're certain
-    if (currentPath.startsWith('/dashboard')) {
-      // For dashboard pages, wait much longer and only redirect if absolutely certain user isn't connected
-      const dashboardTimeout = setTimeout(() => {
-        if (!isConnected && !isConnecting) {
-          // Additional check - see if there's any sign of previous wallet connection
-          const hasWalletData = sessionStorage.getItem('wallet_connection_redirected') ||
-                               localStorage.getItem('wagmi.store') ||
-                               localStorage.getItem('wagmi.cache') ||
-                               document.cookie.includes('wagmi');
-          
-          if (!hasWalletData) {
-            console.log('No wallet connection detected after extended wait, redirecting to homepage');
-            router.push('/');
-          } else {
-            console.log('Wallet data found, staying on dashboard');
-          }
-        }
-        sessionStorage.removeItem('wallet_connection_redirected');
-      }, 5000); // Wait 5 seconds for dashboard pages
-
-      return () => clearTimeout(dashboardTimeout);
-    } else {
-      // For homepage, redirect to dashboard if connected (shorter timeout)
-      const homepageTimeout = setTimeout(() => {
-        if (isConnected) {
-          const hasRedirected = sessionStorage.getItem('wallet_connection_redirected');
-          if (!hasRedirected) {
-            sessionStorage.setItem('wallet_connection_redirected', 'true');
-            if (currentPath === '/' || currentPath === '') {
-              console.log('Wallet connected, redirecting to dashboard');
-              router.push('/dashboard');
-            }
-          }
-        }
-      }, 1000);
-
-      return () => clearTimeout(homepageTimeout);
+    if (pathname === '/' && isConnected) {
+      router.push('/dashboard');
     }
-  }, [isConnected, isConnecting, mounted, isHydrated, router]);
+  }, [isConnected, isReady, status, pathname, router]);
 
   const connect = useCallback(() => {
     open();
@@ -155,35 +110,14 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       await wagmiDisconnect();
       setFluxBalance('0');
       setUsdcBalance('0');
-      const currentPath = window.location.pathname;
-      if (currentPath.startsWith('/dashboard')) {
+      if (pathname.startsWith('/dashboard')) {
         router.push('/');
       }
     } catch (error) {
       console.error('Error disconnecting wallet:', error);
     }
-  }, [wagmiDisconnect, router]);
+  }, [wagmiDisconnect, router, pathname]);
 
-  if (!mounted) {
-    return (
-      <WalletContext.Provider
-        value={{
-          isConnected: false,
-          address: null,
-          fluxBalance: '0',
-          usdcBalance: '0',
-          connect: () => {},
-          disconnect: async () => {},
-          isLoading: true,
-          isHydrated: false,
-          refreshBalances: async () => {},
-        }}
-      >
-        {children}
-      </WalletContext.Provider>
-    );
-  }
-  
   return (
     <WalletContext.Provider
       value={{
@@ -193,8 +127,8 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
         usdcBalance,
         connect,
         disconnect,
-        isLoading: isLoading || isConnecting || !isHydrated,
-        isHydrated,
+        isLoading: isLoading || isConnecting,
+        isReady,
         refreshBalances,
       }}
     >

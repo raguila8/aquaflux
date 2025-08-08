@@ -8,7 +8,6 @@ import { SparklesIcon } from '@heroicons/react/16/solid'
 import { CLIENTS } from '@/config'
 import { useWallet } from '@/contexts/WalletContext'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
 
 const appScreenshot = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/app-screenshot.avif'
 const cosmicButterfly = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/cosmic-butterfly.avif'

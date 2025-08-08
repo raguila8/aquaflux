@@ -2,6 +2,7 @@
 
 export const dynamic = 'force-dynamic'
 
+import dynamic from 'next/dynamic'
 import {
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
@@ -15,15 +16,18 @@ import { FluxChart } from '@/components/application/charts/flux-chart'
 import { ChartSkeleton } from '@/components/shared/SkeletonLoader'
 import { PieChartSkeleton } from '@/components/shared/PieChartSkeleton'
 import { useWallet } from '@/contexts/WalletContext'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { getWalletTokenBalances } from '@/services/fluxPriceService'
 import { getUserBalancerTotalValue, getUserBalancerPositions } from '@/services/balancerV3Service'
 import { VAULT_ADDRESS } from '@/config/constants'
 
-export default function Analytics() {
-  const { isConnected, connect } = useWallet();
-  const router = useRouter();
+const DashboardWrapper = dynamic(
+  () => import('@/components/application/dashboard/DashboardWrapper').then(mod => ({ default: mod.DashboardWrapper })),
+  { ssr: false }
+)
+
+function AnalyticsContent() {
+  const { isConnected } = useWallet();
   const [portfolioData, setPortfolioData] = useState({
     totalValue: 12935.56,
     baseAssets: 3751.31,
@@ -36,17 +40,6 @@ export default function Analytics() {
   });
   const [portfolioLoading, setPortfolioLoading] = useState(true);
   const [chartLoading, setChartLoading] = useState(true);
-  
-  useEffect(() => {
-    if (!isConnected) {
-      router.push('/');
-      setTimeout(() => {
-        connect();
-      }, 100);
-    }
-  }, [isConnected, router, connect]);
-
-  // Fetch real data
   useEffect(() => {
     const fetchRealData = async () => {
       try {
@@ -241,5 +234,13 @@ export default function Analytics() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function Analytics() {
+  return (
+    <DashboardWrapper>
+      <AnalyticsContent />
+    </DashboardWrapper>
   )
 }

@@ -18,11 +18,14 @@ const FluxChart = dynamic(
   }
 )
 
+const DashboardWrapper = dynamic(
+  () => import('@/components/application/dashboard/DashboardWrapper').then(mod => ({ default: mod.DashboardWrapper })),
+  { ssr: false }
+)
 
 import { MetricsSimple } from '@/components/application/metrics/metrics'
 import { MetricSkeleton, ChartSkeleton, TableSkeleton } from '@/components/shared/SkeletonLoader'
 import { useWallet } from '@/contexts/WalletContext'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState, useMemo } from 'react'
 import { getWalletTransactions } from '@/services/vaultTransactionServiceVercel'
 import { calculateFluxPrice, type FluxPriceData } from '@/services/fluxPriceService'
@@ -30,9 +33,8 @@ import { VAULT_ADDRESS } from '@/config/constants'
 
 const REFRESH_INTERVAL = 5 * 60 * 1000;
 
-export default function Dashboard() {
-  const { isConnected, fluxBalance, connect, address } = useWallet();
-  const router = useRouter();
+function DashboardContent() {
+  const { fluxBalance, address } = useWallet();
   const [fluxChange, setFluxChange] = useState({ percentage: '0', trend: 'neutral' as 'positive' | 'negative' | 'neutral' });
   const [priceData, setPriceData] = useState<FluxPriceData | null>(null);
   const [priceLoading, setPriceLoading] = useState(true);
@@ -40,7 +42,6 @@ export default function Dashboard() {
   const [chartLoading, setChartLoading] = useState(true);
   const [transactionsLoading, setTransactionsLoading] = useState(true);
   
-  // Fetch FLUX price data
   useEffect(() => {
     const fetchPrice = async () => {
       try {
@@ -54,13 +55,13 @@ export default function Dashboard() {
     };
     
     fetchPrice();
-    const interval = setInterval(fetchPrice, 30000); // Update every 30 seconds
+    const interval = setInterval(fetchPrice, 30000);
     
     return () => clearInterval(interval);
   }, []);
   
   const portfolioValue = useMemo(() => {
-    const tokenPrice = priceData?.price || 0.37; // Fallback to default price
+    const tokenPrice = priceData?.price || 0.37;
     const value = parseFloat(fluxBalance || '0') * tokenPrice;
     return value.toFixed(2);
   }, [fluxBalance, priceData]);
@@ -119,20 +120,11 @@ export default function Dashboard() {
   }, [address, fluxBalance]);
   
   useEffect(() => {
-    if (!isConnected) {
-      router.push('/');
-      setTimeout(() => {
-        connect();
-      }, 100);
-    } else {
-      // Set balance loading to false once wallet is connected and we have balance data
-      if (fluxBalance !== undefined) {
-        setBalanceLoading(false);
-      }
+    if (fluxBalance !== undefined) {
+      setBalanceLoading(false);
     }
-  }, [isConnected, router, connect, fluxBalance]);
+  }, [fluxBalance]);
   
-  // Simulate chart loading (in real implementation, this would be controlled by the chart component)
   useEffect(() => {
     if (!chartLoading) return;
     const timer = setTimeout(() => setChartLoading(false), 1500);
@@ -195,5 +187,13 @@ export default function Dashboard() {
         {transactionsLoading ? <TableSkeleton /> : <TransactionsTable title='Recent transactions' />}
       </div>
     </div>
+  )
+}
+
+export default function Dashboard() {
+  return (
+    <DashboardWrapper>
+      <DashboardContent />
+    </DashboardWrapper>
   )
 }
