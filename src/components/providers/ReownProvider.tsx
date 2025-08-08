@@ -82,17 +82,16 @@ export function ReownProvider({
   const state = initialState || (cookies ? cookieToInitialState(wagmiAdapter.wagmiConfig, cookies) : undefined)
 
   useEffect(() => {
-    // Delay modal readiness to prevent flash on initial load
-    const timer = setTimeout(() => {
-      setIsModalReady(true)
-      // Add class to body when modal is ready
-      if (typeof document !== 'undefined') {
+    // Immediate modal readiness now that CSS properly handles the initial state
+    setIsModalReady(true)
+    if (typeof document !== 'undefined') {
+      // Use requestAnimationFrame to ensure DOM is ready
+      requestAnimationFrame(() => {
         document.body.classList.add('wallet-modal-ready')
-      }
-    }, 100)
+      })
+    }
 
     return () => {
-      clearTimeout(timer)
       if (typeof document !== 'undefined') {
         document.body.classList.remove('wallet-modal-ready')
       }

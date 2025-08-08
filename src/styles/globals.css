@@ -5,69 +5,26 @@
 @import './vendors/app-theme.css';
 @import './reown-modal.css';
 
-/* Critical fix for WalletConnect modal flash on page load */
-/* This ensures the modal is completely hidden until user interaction */
+/* Fix for WalletConnect modal flash on page load */
+/* Prevents modal from showing on initial render but allows it to work when opened */
 @layer base {
-  /* Hide all WalletConnect/Reown modal elements on initialization */
-  w3m-modal,
-  wcm-modal,
-  w3m-router,
-  wcm-router,
-  [data-w3m-modal],
-  [data-wcm-modal],
-  w3m-overlay,
-  wcm-overlay {
-    display: none !important;
-    visibility: hidden !important;
+  /* Initially hide modal during page load */
+  body:not(.wallet-modal-ready) w3m-modal,
+  body:not(.wallet-modal-ready) wcm-modal,
+  body:not(.wallet-modal-ready) w3m-router,
+  body:not(.wallet-modal-ready) wcm-router,
+  body:not(.wallet-modal-ready) [data-w3m-modal],
+  body:not(.wallet-modal-ready) [data-wcm-modal] {
     opacity: 0 !important;
     pointer-events: none !important;
-    transition: none !important;
   }
   
-  /* Only show when explicitly opened AND body is ready */
-  body.wallet-modal-ready w3m-modal[open="true"],
-  body.wallet-modal-ready wcm-modal[open="true"],
-  body.wallet-modal-ready [data-w3m-modal][open="true"],
-  body.wallet-modal-ready [data-wcm-modal][open="true"],
-  body.wallet-modal-ready w3m-modal.w3m-active,
-  body.wallet-modal-ready wcm-modal.wcm-active,
-  body.wallet-modal-ready w3m-modal.w3m-open,
-  body.wallet-modal-ready wcm-modal.wcm-open {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    transition: opacity 0.3s ease !important;
-  }
-  
-  /* Prevent any background overlays from showing on load */
-  body::before,
-  body::after,
-  #__next::before,
-  #__next::after {
-    display: none !important;
-  }
-  
-  /* Ensure no modal backdrop can appear during initialization */
-  .w3m-overlay,
-  .wcm-overlay,
-  .w3m-backdrop,
-  .wcm-backdrop,
-  [class*="modal-overlay"],
-  [class*="modal-backdrop"] {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-  }
-  
-  /* Show backdrop only when modal is active AND body is ready */
-  body.wallet-modal-ready .w3m-overlay.w3m-active,
-  body.wallet-modal-ready .wcm-overlay.wcm-active,
-  body.wallet-modal-ready .w3m-backdrop.w3m-active,
-  body.wallet-modal-ready .wcm-backdrop.wcm-active {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+  /* Smooth transition when modal becomes ready */
+  body.wallet-modal-ready w3m-modal,
+  body.wallet-modal-ready wcm-modal,
+  body.wallet-modal-ready [data-w3m-modal],
+  body.wallet-modal-ready [data-wcm-modal] {
+    transition: opacity 0.2s ease !important;
   }
 }
 
