@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic'
 
-import dynamic from 'next/dynamic'
+import dynamicImport from 'next/dynamic'
 import {
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
@@ -21,7 +21,7 @@ import { getWalletTokenBalances } from '@/services/fluxPriceService'
 import { getUserBalancerTotalValue, getUserBalancerPositions } from '@/services/balancerV3Service'
 import { VAULT_ADDRESS } from '@/config/constants'
 
-const DashboardWrapper = dynamic(
+const DashboardWrapper = dynamicImport(
   () => import('@/components/application/dashboard/DashboardWrapper').then(mod => ({ default: mod.DashboardWrapper })),
   { ssr: false }
 )

@@ -20,7 +20,9 @@
       "WebFetch(domain:docs.balancer.fi)",
       "Bash(git show:*)",
       "Bash(npm run dev:*)",
-      "Bash(dir node_modules)"
+      "Bash(dir node_modules)",
+      "Bash(npm run build:*)",
+      "Bash(npx next:*)"
     ],
     "deny": []
   }
