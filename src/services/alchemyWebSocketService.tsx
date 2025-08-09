@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alchemy, Network, AlchemySubscription } from 'alchemy-sdk';
-import { notify } from '@/lib/notify';
+import { toast } from 'sonner';
 import { VAULT_ADDRESS, FLUX_TOKEN_ADDRESS, USDC_ADDRESS, ALCHEMY_API_KEY, ALCHEMY_WS_URL } from '@/config/constants';
 
 const settings = {
@@ -81,12 +81,23 @@ function checkForRefund(userAddress: string, originalTx: PendingTransaction) {
         ? 'not buying at least 10 FLUX' 
         : 'transaction validation failed';
       
-      notify.error({
-        title: 'Transaction Failed',
-        description: `Failed due to ${reason}. ${formatTokenAmount(originalTx.value, originalTx.token === 'USDC' ? 6 : 18)} ${originalTx.token} returned - ${originalTx.hash.slice(0, 10)}...${originalTx.hash.slice(-8)}`,
-        confirmLabel: 'View on Basescan',
-        onConfirm: () => window.open(getBasescanUrl(originalTx.hash), '_blank'),
-      });
+      toast.error(
+        <div className="flex flex-col gap-1">
+          <span>Transaction Failed</span>
+          <span className="text-xs opacity-80">
+            Failed due to {reason}. {formatTokenAmount(originalTx.value, originalTx.token === 'USDC' ? 6 : 18)} {originalTx.token} returned
+          </span>
+          <span className="text-xs opacity-60 font-mono">
+            {originalTx.hash.slice(0, 10)}...{originalTx.hash.slice(-8)}
+          </span>
+        </div>,
+        {
+          action: {
+            label: 'View',
+            onClick: () => window.open(getBasescanUrl(originalTx.hash), '_blank')
+          }
+        }
+      );
       
       const failedTx: TransactionInfo = {
         hash: originalTx.hash,
@@ -124,22 +135,46 @@ function showTransactionToast(tx: TransactionInfo, userAddress: string) {
   
   if (tx.status === 'pending') {
     // Immediate notification when transaction is detected
-    notify.info({
-      title: `${action} ${tx.token}`,
-      description: `${tx.value} ${tx.token} ${direction} vault${isDeposit && tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} - ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
-      confirmLabel: 'View on Basescan',
-      onConfirm: () => window.open(basescanUrl, '_blank'),
-    });
+    toast.loading(
+      <div className="flex flex-col gap-1">
+        <span>{action} {tx.token}</span>
+        <span className="text-xs opacity-80">
+          {tx.value} {tx.token} {direction} vault{isDeposit && tx.fee !== '0' ? ` (Fee: ${tx.fee} {tx.token})` : ''}
+        </span>
+        <span className="text-xs opacity-60 font-mono">
+          {tx.hash.slice(0, 10)}...{tx.hash.slice(-8)}
+        </span>
+      </div>,
+      {
+        id: tx.hash,
+        action: {
+          label: 'View',
+          onClick: () => window.open(basescanUrl, '_blank')
+        }
+      }
+    );
   } else if (tx.status === 'confirmed' && tx.type !== 'failed') {
     const isDeposit = tx.type === 'deposit';
     const successAction = isDeposit ? 'Sent' : 'Received';
     
-    notify.success({
-      title: `${successAction} ${tx.token}!`,
-      description: `${tx.value} ${tx.token} successfully ${successAction.toLowerCase()}${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} - ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
-      confirmLabel: 'View on Basescan',
-      onConfirm: () => window.open(basescanUrl, '_blank'),
-    });
+    toast.dismiss(tx.hash); // Dismiss the loading toast
+    toast.success(
+      <div className="flex flex-col gap-1">
+        <span>{successAction} {tx.token}!</span>
+        <span className="text-xs opacity-80">
+          {tx.value} {tx.token} successfully {successAction.toLowerCase()}{tx.fee !== '0' ? ` (Fee: ${tx.fee} {tx.token})` : ''}
+        </span>
+        <span className="text-xs opacity-60 font-mono">
+          {tx.hash.slice(0, 10)}...{tx.hash.slice(-8)}
+        </span>
+      </div>,
+      {
+        action: {
+          label: 'View',
+          onClick: () => window.open(basescanUrl, '_blank')
+        }
+      }
+    );
   }
 }
 
@@ -168,10 +203,20 @@ export async function subscribeToWalletTransactions(
     console.log('🔌 Connecting to Alchemy WebSocket for wallet:', walletAddress);
     
     // Show connection toast
-    notify.info({
-      title: 'WebSocket Connected',
-      description: `Monitoring ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)} for USDC and FLUX transactions`,
-    });
+    toast.info(
+      <div className="flex flex-col gap-1">
+        <span>WebSocket Connected</span>
+        <span className="text-xs opacity-80">
+          Monitoring {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+        </span>
+        <span className="text-xs opacity-60">
+          Tracking USDC and FLUX transactions
+        </span>
+      </div>,
+      {
+        duration: 3000
+      }
+    );
     
     const depositSub = alchemy.ws.on(
       {
@@ -336,12 +381,23 @@ export async function subscribeToWalletTransactions(
           
           // Show special notification for minted FLUX
           if (isMinted) {
-            notify.success({
-              title: 'FLUX Minted!',
-              description: `Receiving ${value} newly minted FLUX tokens - ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
-              confirmLabel: 'View on Basescan',
-              onConfirm: () => window.open(getBasescanUrl(tx.hash), '_blank'),
-            });
+            toast.success(
+              <div className="flex flex-col gap-1">
+                <span>FLUX Minted!</span>
+                <span className="text-xs opacity-80">
+                  Receiving {value} newly minted FLUX tokens
+                </span>
+                <span className="text-xs opacity-60 font-mono">
+                  {tx.hash.slice(0, 10)}...{tx.hash.slice(-8)}
+                </span>
+              </div>,
+              {
+                action: {
+                  label: 'View',
+                  onClick: () => window.open(getBasescanUrl(tx.hash), '_blank')
+                }
+              }
+            );
           } else {
             showTransactionToast(txInfo, walletAddress);
           }
@@ -399,19 +455,41 @@ export async function subscribeToWalletTransactions(
         };
         
         if (isMinted) {
-          notify.success({
-            title: 'FLUX Minted!',
-            description: `Receiving ${formattedValue} newly minted FLUX tokens - ${log.transactionHash.slice(0, 10)}...${log.transactionHash.slice(-8)}`,
-            confirmLabel: 'View on Basescan',
-            onConfirm: () => window.open(getBasescanUrl(log.transactionHash), '_blank'),
-          });
+          toast.success(
+            <div className="flex flex-col gap-1">
+              <span>FLUX Minted!</span>
+              <span className="text-xs opacity-80">
+                Receiving {formattedValue} newly minted FLUX tokens
+              </span>
+              <span className="text-xs opacity-60 font-mono">
+                {log.transactionHash.slice(0, 10)}...{log.transactionHash.slice(-8)}
+              </span>
+            </div>,
+            {
+              action: {
+                label: 'View',
+                onClick: () => window.open(getBasescanUrl(log.transactionHash), '_blank')
+              }
+            }
+          );
         } else {
-          notify.info({
-            title: 'Receiving FLUX',
-            description: `${formattedValue} FLUX from ${from.slice(0, 6)}...${from.slice(-4)} - ${log.transactionHash.slice(0, 10)}...${log.transactionHash.slice(-8)}`,
-            confirmLabel: 'View on Basescan',
-            onConfirm: () => window.open(getBasescanUrl(log.transactionHash), '_blank'),
-          });
+          toast.info(
+            <div className="flex flex-col gap-1">
+              <span>Receiving FLUX</span>
+              <span className="text-xs opacity-80">
+                {formattedValue} FLUX from {from.slice(0, 6)}...{from.slice(-4)}
+              </span>
+              <span className="text-xs opacity-60 font-mono">
+                {log.transactionHash.slice(0, 10)}...{log.transactionHash.slice(-8)}
+              </span>
+            </div>,
+            {
+              action: {
+                label: 'View',
+                onClick: () => window.open(getBasescanUrl(log.transactionHash), '_blank')
+              }
+            }
+          );
         }
         
         transactionCallbacks.get(walletAddress)?.forEach(cb => cb(txInfo));
@@ -558,12 +636,21 @@ async function monitorTransactionStatus(
             if (receipt.status === 1) {
               showTransactionToast(txInfo, walletAddress);
             } else {
-              notify.error({
-                title: 'Transaction Failed',
-                description: `${value} ${token} - ${txHash.slice(0, 10)}...${txHash.slice(-8)}`,
-                confirmLabel: 'View on Basescan',
-                onConfirm: () => window.open(getBasescanUrl(txHash), '_blank'),
-              });
+              toast.error(
+                <div className="flex flex-col gap-1">
+                  <span>Transaction Failed</span>
+                  <span className="text-xs opacity-80">{value} {token}</span>
+                  <span className="text-xs opacity-60 font-mono">
+                    {txHash.slice(0, 10)}...{txHash.slice(-8)}
+                  </span>
+                </div>,
+                {
+                  action: {
+                    label: 'View',
+                    onClick: () => window.open(getBasescanUrl(txHash), '_blank')
+                  }
+                }
+              );
             }
             
             transactionCallbacks.get(walletAddress)?.forEach(cb => cb(txInfo));
@@ -578,12 +665,22 @@ async function monitorTransactionStatus(
           const pendingTx = pendingTransactions.get(txHash);
           if (pendingTx && !refundedTransactions.has(txHash)) {
             // Remove pending notification
-            notify.error({
-              title: 'Transaction Timeout',
-              description: `Transaction confirmation timed out - ${txHash.slice(0, 10)}...${txHash.slice(-8)}`,
-              confirmLabel: 'View on Basescan',
-              onConfirm: () => window.open(getBasescanUrl(txHash), '_blank'),
-            });
+            toast.dismiss(txHash);
+            toast.error(
+              <div className="flex flex-col gap-1">
+                <span>Transaction Timeout</span>
+                <span className="text-xs opacity-80">Transaction confirmation timed out</span>
+                <span className="text-xs opacity-60 font-mono">
+                  {txHash.slice(0, 10)}...{txHash.slice(-8)}
+                </span>
+              </div>,
+              {
+                action: {
+                  label: 'View',
+                  onClick: () => window.open(getBasescanUrl(txHash), '_blank')
+                }
+              }
+            );
             
             pendingTransactions.delete(txHash);
           }
