@@ -1,6 +1,6 @@
 // Token Addresses on Base
 export const FLUX_TOKEN_ADDRESS = "0xB6a9D1E420B0DbAa3d137D8aa3D97927f04eA8F9";
-export const USDC_ADDRESS = "0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42";
+export const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 export const VAULT_ADDRESS = "0x9EE4d24dB1104bDF818391efCB8CCBa8Ff206159";
 
 // API Keys and URLs
