@@ -1,7 +1,6 @@
-import React from 'react';
 import { Alchemy, Network, AlchemySubscription } from 'alchemy-sdk';
 import { toast } from 'sonner';
-import { IconNotification } from '@/components/application/notifications/notifications';
+import { showSuccessToast, showErrorToast, showInfoToast } from '@/lib/toast-notification';
 import { VAULT_ADDRESS, FLUX_TOKEN_ADDRESS, USDC_ADDRESS, ALCHEMY_API_KEY, ALCHEMY_WS_URL } from '@/config/constants';
 
 const settings = {
@@ -82,19 +81,12 @@ function checkForRefund(userAddress: string, originalTx: PendingTransaction) {
         ? 'not buying at least 10 FLUX' 
         : 'transaction validation failed';
       
-      toast.custom((t) => (
-        <IconNotification
-          title='Transaction Failed'
-          description={`Failed due to ${reason}. ${formatTokenAmount(originalTx.value, originalTx.token === 'USDC' ? 6 : 18)} ${originalTx.token} returned • ${originalTx.hash.slice(0, 10)}...${originalTx.hash.slice(-8)}`}
-          color='error'
-          confirmLabel='View on Basescan'
-          onClose={() => toast.dismiss(t)}
-          onConfirm={() => {
-            window.open(getBasescanUrl(originalTx.hash), '_blank');
-            toast.dismiss(t);
-          }}
-        />
-      ));
+      showErrorToast({
+        title: 'Transaction Failed',
+        description: `Failed due to ${reason}. ${formatTokenAmount(originalTx.value, originalTx.token === 'USDC' ? 6 : 18)} ${originalTx.token} returned • ${originalTx.hash.slice(0, 10)}...${originalTx.hash.slice(-8)}`,
+        confirmLabel: 'View on Basescan',
+        onConfirm: () => window.open(getBasescanUrl(originalTx.hash), '_blank'),
+      });
       
       const failedTx: TransactionInfo = {
         hash: originalTx.hash,
@@ -132,41 +124,30 @@ function showTransactionToast(tx: TransactionInfo, userAddress: string) {
   
   if (tx.status === 'pending') {
     // Show pending notification for outgoing transactions only
-    toast.custom((t) => (
-      <IconNotification
-        title={`Sending ${tx.token}`}
-        description={`${tx.value} ${tx.token} to vault${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`}
-        color='brand'
-        confirmLabel='View on Basescan'
-        onClose={() => toast.dismiss(t)}
-        onConfirm={() => {
-          window.open(basescanUrl, '_blank');
-          toast.dismiss(t);
-        }}
-      />
-    ), { id: tx.hash });
+    const toastId = showInfoToast({
+      title: `Sending ${tx.token}`,
+      description: `${tx.value} ${tx.token} to vault${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+      confirmLabel: 'View on Basescan',
+      onConfirm: () => window.open(basescanUrl, '_blank'),
+    });
+    // Store the toast ID for later dismissal
+    (window as any)[`toast_${tx.hash}`] = toastId;
   } else if (tx.status === 'confirmed' && tx.type !== 'failed') {
     const isDeposit = tx.type === 'deposit';
     const successAction = isDeposit ? 'Sent' : 'Received';
     
     // Only dismiss pending toast if this is a deposit confirmation
-    if (isDeposit) {
-      toast.dismiss(tx.hash);
+    if (isDeposit && (window as any)[`toast_${tx.hash}`]) {
+      toast.dismiss((window as any)[`toast_${tx.hash}`]);
+      delete (window as any)[`toast_${tx.hash}`];
     }
     
-    toast.custom((t) => (
-      <IconNotification
-        title={`${successAction} ${tx.token}!`}
-        description={`${tx.value} ${tx.token} successfully ${successAction.toLowerCase()}${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`}
-        color='success'
-        confirmLabel='View on Basescan'
-        onClose={() => toast.dismiss(t)}
-        onConfirm={() => {
-          window.open(basescanUrl, '_blank');
-          toast.dismiss(t);
-        }}
-      />
-    ));
+    showSuccessToast({
+      title: `${successAction} ${tx.token}!`,
+      description: `${tx.value} ${tx.token} successfully ${successAction.toLowerCase()}${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+      confirmLabel: 'View on Basescan',
+      onConfirm: () => window.open(basescanUrl, '_blank'),
+    });
   }
 }
 
@@ -195,14 +176,10 @@ export async function subscribeToWalletTransactions(
     console.log('🔌 Connecting to Alchemy WebSocket for wallet:', walletAddress);
     
     // Show connection toast
-    toast.custom((t) => (
-      <IconNotification
-        title='WebSocket Connected'
-        description={`Monitoring ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)} for USDC and FLUX transactions`}
-        color='brand'
-        onClose={() => toast.dismiss(t)}
-      />
-    ), { duration: 3000 });
+    showInfoToast({
+      title: 'WebSocket Connected',
+      description: `Monitoring ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)} for USDC and FLUX transactions`,
+    });
     
     const depositSub = alchemy.ws.on(
       {
@@ -370,19 +347,12 @@ export async function subscribeToWalletTransactions(
           
           // Show special notification for minted FLUX
           if (isMinted) {
-            toast.custom((t) => (
-              <IconNotification
-                title='FLUX Minted!'
-                description={`Receiving ${value} newly minted FLUX tokens • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`}
-                color='success'
-                confirmLabel='View on Basescan'
-                onClose={() => toast.dismiss(t)}
-                onConfirm={() => {
-                  window.open(getBasescanUrl(tx.hash), '_blank');
-                  toast.dismiss(t);
-                }}
-              />
-            ));
+            showSuccessToast({
+              title: 'FLUX Minted!',
+              description: `Receiving ${value} newly minted FLUX tokens • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+              confirmLabel: 'View on Basescan',
+              onConfirm: () => window.open(getBasescanUrl(tx.hash), '_blank'),
+            });
           } else {
             showTransactionToast(txInfo, walletAddress);
           }
@@ -532,19 +502,12 @@ async function monitorTransactionStatus(
             if (receipt.status === 1) {
               showTransactionToast(txInfo, walletAddress);
             } else {
-              toast.custom((t) => (
-                <IconNotification
-                  title='Transaction Failed'
-                  description={`${value} ${token} • ${txHash.slice(0, 10)}...${txHash.slice(-8)}`}
-                  color='error'
-                  confirmLabel='View on Basescan'
-                  onClose={() => toast.dismiss(t)}
-                  onConfirm={() => {
-                    window.open(getBasescanUrl(txHash), '_blank');
-                    toast.dismiss(t);
-                  }}
-                />
-              ));
+              showErrorToast({
+                title: 'Transaction Failed',
+                description: `${value} ${token} • ${txHash.slice(0, 10)}...${txHash.slice(-8)}`,
+                confirmLabel: 'View on Basescan',
+                onConfirm: () => window.open(getBasescanUrl(txHash), '_blank'),
+              });
             }
             
             transactionCallbacks.get(walletAddress)?.forEach(cb => cb(txInfo));
@@ -559,20 +522,16 @@ async function monitorTransactionStatus(
           const pendingTx = pendingTransactions.get(txHash);
           if (pendingTx && !refundedTransactions.has(txHash)) {
             // Remove pending notification
-            toast.dismiss(txHash);
-            toast.custom((t) => (
-              <IconNotification
-                title='Transaction Timeout'
-                description={`Transaction confirmation timed out • ${txHash.slice(0, 10)}...${txHash.slice(-8)}`}
-                color='error'
-                confirmLabel='View on Basescan'
-                onClose={() => toast.dismiss(t)}
-                onConfirm={() => {
-                  window.open(getBasescanUrl(txHash), '_blank');
-                  toast.dismiss(t);
-                }}
-              />
-            ));
+            if ((window as any)[`toast_${txHash}`]) {
+              toast.dismiss((window as any)[`toast_${txHash}`]);
+              delete (window as any)[`toast_${txHash}`];
+            }
+            showErrorToast({
+              title: 'Transaction Timeout',
+              description: `Transaction confirmation timed out • ${txHash.slice(0, 10)}...${txHash.slice(-8)}`,
+              confirmLabel: 'View on Basescan',
+              onConfirm: () => window.open(getBasescanUrl(txHash), '_blank'),
+            });
             
             pendingTransactions.delete(txHash);
           }

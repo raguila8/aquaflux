@@ -25,7 +25,8 @@
       "Bash(npx next:*)",
       "Bash(dir:*)",
       "Bash(cp:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(del:*)"
     ],
     "deny": []
   }

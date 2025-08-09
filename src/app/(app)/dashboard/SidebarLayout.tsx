@@ -60,7 +60,7 @@ export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
     if (path === '/dashboard/transactions')
       return 'Full history of deposits and withdrawals with fees, hashes, and status.'
     // Default subtitle
-    return 'Lorem ipsum dolor sit amet vestibulum augue.'
+    return 'Monitor your portfolio and manage your assets.'
   }
 
   const subtitle = getPageSubtitle(pathname)
