@@ -1,7 +1,5 @@
 import { Alchemy, Network, AlchemySubscription } from 'alchemy-sdk';
 import { toast } from 'sonner';
-import { notify } from '@/lib/notify';
-import { IconNotification } from '@/components/application/notifications/notifications';
 import { VAULT_ADDRESS, FLUX_TOKEN_ADDRESS, USDC_ADDRESS, ALCHEMY_API_KEY, ALCHEMY_WS_URL } from '@/config/constants';
 
 const settings = {
@@ -82,12 +80,7 @@ function checkForRefund(userAddress: string, originalTx: PendingTransaction) {
       refundedTransactions.add(originalTx.hash);
       refundedTransactions.add(refundTx.hash);
       
-      notify.error({
-        title: 'Transaction Failed',
-        description: `10 FLUX minimum required. ${formatTokenAmount(originalTx.value, originalTx.token === 'USDC' ? 6 : 18)} ${originalTx.token} returned to wallet • ${originalTx.hash.slice(0, 10)}...${originalTx.hash.slice(-8)}`,
-        confirmLabel: 'View on Basescan',
-        onConfirm: () => window.open(getBasescanUrl(originalTx.hash), '_blank'),
-      });
+      // Error notification will be handled in WalletContext
       
       const failedTx: TransactionInfo = {
         hash: originalTx.hash,
@@ -114,42 +107,13 @@ function checkForRefund(userAddress: string, originalTx: PendingTransaction) {
 }
 
 function showTransactionToast(tx: TransactionInfo, userAddress: string) {
-  const isDeposit = tx.from.toLowerCase() === userAddress.toLowerCase();
-  const action = isDeposit ? 'Sending' : 'Receiving';
-  const direction = isDeposit ? 'to' : 'from';
-  const basescanUrl = getBasescanUrl(tx.hash);
-  
+  // Notifications are now handled in WalletContext React component
+  // This function is kept for any non-notification related logic
   if (refundedTransactions.has(tx.hash)) {
     return;
   }
   
-  if (tx.status === 'pending') {
-    // Show pending notification with warning icon for outgoing transactions
-    const toastId = notify.warning({
-      title: `Sending ${tx.token}`,
-      description: `${tx.value} ${tx.token} to vault${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
-      confirmLabel: 'View on Basescan',
-      onConfirm: () => window.open(basescanUrl, '_blank'),
-    });
-    // Store the toast ID for later dismissal
-    (window as any)[`toast_${tx.hash}`] = toastId;
-  } else if (tx.status === 'confirmed' && tx.type !== 'failed') {
-    const isDeposit = tx.type === 'deposit';
-    const successAction = isDeposit ? 'Sent' : 'Received';
-    
-    // Only dismiss pending toast if this is a deposit confirmation
-    if (isDeposit && (window as any)[`toast_${tx.hash}`]) {
-      toast.dismiss((window as any)[`toast_${tx.hash}`]);
-      delete (window as any)[`toast_${tx.hash}`];
-    }
-    
-    notify.success({
-      title: `${successAction} ${tx.token}!`,
-      description: `${tx.value} ${tx.token} successfully ${successAction.toLowerCase()}${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
-      confirmLabel: 'View on Basescan',
-      onConfirm: () => window.open(basescanUrl, '_blank'),
-    });
-  }
+  // Any additional logic that needs to happen on transaction updates can go here
 }
 
 export async function subscribeToWalletTransactions(
@@ -176,11 +140,7 @@ export async function subscribeToWalletTransactions(
   try {
     console.log('🔌 Connecting to Alchemy WebSocket for wallet:', walletAddress);
     
-    // Show connection toast
-    notify.info({
-      title: 'WebSocket Connected',
-      description: `Monitoring ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)} for USDC and FLUX transactions`,
-    });
+    // Connection notification removed - will be handled in WalletContext if needed
     
     const depositSub = alchemy.ws.on(
       {
@@ -355,20 +315,7 @@ export async function subscribeToWalletTransactions(
           const sentTokenType = getSentTokenType(walletAddress);
           const isSuccessfulSwap = sentTokenType === 'USDC'; // Only USDC→FLUX is a successful swap
           
-          // Show special notification for minted FLUX or successful swaps
-          if (isMinted || isSuccessfulSwap) {
-            const title = isMinted ? 'FLUX Minted!' : 'Swap Successful!';
-            const description = isMinted 
-              ? `Receiving ${value} newly minted FLUX tokens • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`
-              : `Successfully received ${value} FLUX for your USDC • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`;
-              
-            notify.success({
-              title,
-              description,
-              confirmLabel: 'View on Basescan',
-              onConfirm: () => window.open(getBasescanUrl(tx.hash), '_blank'),
-            });
-          }
+          // Special notifications for minted FLUX or successful swaps will be handled in WalletContext
           
           transactionCallbacks.get(walletAddress)?.forEach(cb => cb(txInfo));
           monitorTransactionStatus(tx.hash, walletAddress, 'withdrawal');
@@ -515,12 +462,7 @@ async function monitorTransactionStatus(
             if (receipt.status === 1) {
               showTransactionToast(txInfo, walletAddress);
             } else {
-              notify.error({
-                title: 'Transaction Failed',
-                description: `${value} ${token} • ${txHash.slice(0, 10)}...${txHash.slice(-8)}`,
-                confirmLabel: 'View on Basescan',
-                onConfirm: () => window.open(getBasescanUrl(txHash), '_blank'),
-              });
+              // Error notification will be handled in WalletContext
             }
             
             transactionCallbacks.get(walletAddress)?.forEach(cb => cb(txInfo));

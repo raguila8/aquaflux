@@ -6,6 +6,7 @@ import { useAppKit } from '@reown/appkit/react';
 import { getFluxBalance, getUsdcBalance } from '@/services/alchemyTokenService';
 import { subscribeToWalletTransactions, unsubscribeAll, type TransactionInfo } from '@/services/alchemyWebSocketService.tsx';
 import { useRouter, usePathname } from 'next/navigation';
+import { notify } from '@/lib/notify';
 
 interface WalletContextType {
   isConnected: boolean;
@@ -69,10 +70,39 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       
       const setupSubscriptions = async () => {
         unsubscribe = await subscribeToWalletTransactions(address, (tx: TransactionInfo) => {
-          if (tx.status === 'confirmed' || tx.type === 'failed') {
-            refreshBalances();
-          } else if (tx.status === 'pending') {
+          // Handle notifications in React context where Toaster is available
+          const basescanUrl = `https://basescan.org/tx/${tx.hash}`;
+          
+          if (tx.status === 'pending') {
+            // Show yellow warning for outgoing transactions
+            notify.warning({
+              title: `Sending ${tx.token}`,
+              description: `${tx.value} ${tx.token} to vault${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+              confirmLabel: 'View on Basescan',
+              onConfirm: () => window.open(basescanUrl, '_blank'),
+            });
             setTimeout(refreshBalances, 1000);
+          } else if (tx.status === 'confirmed' && tx.type !== 'failed') {
+            const isDeposit = tx.type === 'deposit';
+            const successAction = isDeposit ? 'Sent' : 'Received';
+            
+            // Show green success for confirmed transactions
+            notify.success({
+              title: `${successAction} ${tx.token}!`,
+              description: `${tx.value} ${tx.token} successfully ${successAction.toLowerCase()}${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+              confirmLabel: 'View on Basescan',
+              onConfirm: () => window.open(basescanUrl, '_blank'),
+            });
+            refreshBalances();
+          } else if (tx.type === 'failed') {
+            // Show red error for failed transactions
+            notify.error({
+              title: 'Transaction Failed',
+              description: `10 FLUX minimum required. ${tx.value} ${tx.token} returned to wallet • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+              confirmLabel: 'View on Basescan',
+              onConfirm: () => window.open(basescanUrl, '_blank'),
+            });
+            refreshBalances();
           }
         });
       };
