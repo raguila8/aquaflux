@@ -257,38 +257,3 @@ wcm-modal,
   animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-/* Gradient border effect on hover for interactive elements */
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-w3m-wallet-button::before,
-wui-card-select::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  padding: 1px;
-  border-radius: inherit;
-  background: linear-gradient(
-    90deg,
-    rgba(3, 201, 230, 0.3),
-    rgba(70, 123, 235, 0.3),
-    rgba(3, 201, 230, 0.3)
-  );
-  background-size: 200% 200%;
-  -webkit-mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-w3m-wallet-button:hover::before,
-wui-card-select:hover::before {
-  opacity: 1;
-  animation: gradientShift 3s ease infinite;
-}
