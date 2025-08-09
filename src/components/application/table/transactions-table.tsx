@@ -222,7 +222,6 @@ export function TransactionsTable({
     }
     
     let isMounted = true;
-    let interval: NodeJS.Timeout;
     
     const loadTransactions = async (isInitial = false) => {
       if (!isMounted) return;
@@ -281,7 +280,6 @@ export function TransactionsTable({
     
     return () => {
       isMounted = false;
-      if (interval) clearInterval(interval);
     };
   }, [address, analyzeTransactionPattern]);
 

@@ -1,13 +1,32 @@
 /* Custom Reown/WalletConnect Modal Styling */
 /* These styles override the default modal appearance to match the AquaFlux dark theme */
 
-/* Main modal container - minimal styling */
+/* Main modal container - dark background with subtle aqua glow */
 w3m-modal::part(container),
 wcm-modal::part(container),
 [data-w3m-modal]::part(container),
 w3m-router,
 wcm-router {
+  background: #09090b !important; /* zinc-950 */
   border: 1px solid rgba(3, 201, 230, 0.15) !important;
+  box-shadow: 
+    0 24px 48px -12px rgba(0, 0, 0, 0.6),
+    0 0 48px -12px rgba(3, 201, 230, 0.1),
+    inset 0 0 96px 0 rgba(70, 123, 235, 0.02) !important;
+}
+
+/* Override all background colors in the modal to dark */
+w3m-modal *,
+wcm-modal * {
+  --wui-color-bg-100: #09090b !important;
+  --wui-color-bg-125: #18181b !important;
+  --wui-color-bg-150: #27272a !important;
+  --wui-color-bg-175: #3f3f46 !important;
+  --wui-color-bg-200: #52525b !important;
+  --wui-color-bg-225: #71717a !important;
+  --wui-color-bg-250: #a1a1aa !important;
+  --wui-color-bg-275: #d4d4d8 !important;
+  --wui-color-bg-300: #e4e4e7 !important;
 }
 
 
