@@ -83,7 +83,9 @@ function checkForRefund(userAddress: string, originalTx: PendingTransaction) {
       
       notify.error({
         title: 'Transaction Failed',
-        description: `Failed due to ${reason}. ${formatTokenAmount(originalTx.value, originalTx.token === 'USDC' ? 6 : 18)} ${originalTx.token} returned`,
+        description: `Failed due to ${reason}. ${formatTokenAmount(originalTx.value, originalTx.token === 'USDC' ? 6 : 18)} ${originalTx.token} returned - ${originalTx.hash.slice(0, 10)}...${originalTx.hash.slice(-8)}`,
+        confirmLabel: 'View on Basescan',
+        onConfirm: () => window.open(getBasescanUrl(originalTx.hash), '_blank'),
       });
       
       const failedTx: TransactionInfo = {
@@ -124,16 +126,17 @@ function showTransactionToast(tx: TransactionInfo, userAddress: string) {
     // Immediate notification when transaction is detected
     notify.info({
       title: `${action} ${tx.token}`,
-      description: `${tx.value} ${tx.token} ${direction} vault${isDeposit && tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''}`,
+      description: `${tx.value} ${tx.token} ${direction} vault${isDeposit && tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} - ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+      confirmLabel: 'View on Basescan',
+      onConfirm: () => window.open(basescanUrl, '_blank'),
     });
   } else if (tx.status === 'confirmed' && tx.type !== 'failed') {
     const isDeposit = tx.type === 'deposit';
     const successAction = isDeposit ? 'Sent' : 'Received';
-    const emoji = isDeposit ? '✅' : '💰';
     
     notify.success({
       title: `${successAction} ${tx.token}!`,
-      description: `${tx.value} ${tx.token} successfully ${successAction.toLowerCase()}${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''}`,
+      description: `${tx.value} ${tx.token} successfully ${successAction.toLowerCase()}${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} - ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
       confirmLabel: 'View on Basescan',
       onConfirm: () => window.open(basescanUrl, '_blank'),
     });
@@ -328,8 +331,10 @@ export async function subscribeToWalletTransactions(
           // Show special notification for minted FLUX
           if (isMinted) {
             notify.success({
-              title: '🪙 FLUX Minted!',
-              description: `Receiving ${value} newly minted FLUX tokens`,
+              title: 'FLUX Minted!',
+              description: `Receiving ${value} newly minted FLUX tokens - ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+              confirmLabel: 'View on Basescan',
+              onConfirm: () => window.open(getBasescanUrl(tx.hash), '_blank'),
             });
           } else {
             showTransactionToast(txInfo, walletAddress);
@@ -483,7 +488,7 @@ async function monitorTransactionStatus(
             } else {
               notify.error({
                 title: 'Transaction Failed',
-                description: `${value} ${token}`,
+                description: `${value} ${token} - ${txHash.slice(0, 10)}...${txHash.slice(-8)}`,
                 confirmLabel: 'View on Basescan',
                 onConfirm: () => window.open(getBasescanUrl(txHash), '_blank'),
               });
@@ -503,7 +508,7 @@ async function monitorTransactionStatus(
             // Remove pending notification
             notify.error({
               title: 'Transaction Timeout',
-              description: 'Transaction confirmation timed out',
+              description: `Transaction confirmation timed out - ${txHash.slice(0, 10)}...${txHash.slice(-8)}`,
               confirmLabel: 'View on Basescan',
               onConfirm: () => window.open(getBasescanUrl(txHash), '_blank'),
             });
