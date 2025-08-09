@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alchemy, Network, AlchemySubscription } from 'alchemy-sdk';
-import { toast } from 'sonner';
+import { notify } from '@/lib/notify';
 import { VAULT_ADDRESS, FLUX_TOKEN_ADDRESS, USDC_ADDRESS, ALCHEMY_API_KEY, ALCHEMY_WS_URL } from '@/config/constants';
 
 const settings = {
@@ -81,29 +81,10 @@ function checkForRefund(userAddress: string, originalTx: PendingTransaction) {
         ? 'not buying at least 10 FLUX' 
         : 'transaction validation failed';
       
-      toast.error(
-        <div className="flex flex-col gap-1">
-          <div className="font-semibold">Transaction Failed</div>
-          <div className="text-sm opacity-80">
-            Failed due to {reason}
-          </div>
-          <div className="text-sm opacity-80">
-            {formatTokenAmount(originalTx.value, originalTx.token === 'USDC' ? 6 : 18)} {originalTx.token} returned
-          </div>
-          <a 
-            href={getBasescanUrl(originalTx.hash)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs opacity-60 font-mono hover:opacity-100 hover:text-red-400 transition-colors"
-          >
-            {originalTx.hash.slice(0, 10)}...{originalTx.hash.slice(-8)} ↗
-          </a>
-        </div>,
-        { 
-          id: `failed_${originalTx.hash}`,
-          duration: 7000 
-        }
-      );
+      notify.error({
+        title: 'Transaction Failed',
+        description: `Failed due to ${reason}. ${formatTokenAmount(originalTx.value, originalTx.token === 'USDC' ? 6 : 18)} ${originalTx.token} returned`,
+      });
       
       const failedTx: TransactionInfo = {
         hash: originalTx.hash,
@@ -131,7 +112,8 @@ function checkForRefund(userAddress: string, originalTx: PendingTransaction) {
 
 function showTransactionToast(tx: TransactionInfo, userAddress: string) {
   const isDeposit = tx.from.toLowerCase() === userAddress.toLowerCase();
-  const action = isDeposit ? 'Deposit' : 'Withdrawal';
+  const action = isDeposit ? 'Sending' : 'Receiving';
+  const direction = isDeposit ? 'to' : 'from';
   const basescanUrl = getBasescanUrl(tx.hash);
   
   if (refundedTransactions.has(tx.hash)) {
@@ -139,57 +121,22 @@ function showTransactionToast(tx: TransactionInfo, userAddress: string) {
   }
   
   if (tx.status === 'pending') {
-    toast.loading(
-      <div className="flex flex-col gap-1">
-        <div className="font-semibold">{action} Pending</div>
-        <div className="text-sm opacity-80">
-          {tx.value} {tx.token} {isDeposit ? 'sent to' : 'received from'} vault
-        </div>
-        <a 
-          href={basescanUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs opacity-60 font-mono hover:opacity-100 hover:text-blue-400 transition-colors"
-        >
-          {tx.hash.slice(0, 10)}...{tx.hash.slice(-8)} ↗
-        </a>
-      </div>,
-      { 
-        id: tx.hash,
-        duration: Infinity 
-      }
-    );
+    // Immediate notification when transaction is detected
+    notify.info({
+      title: `${action} ${tx.token}`,
+      description: `${tx.value} ${tx.token} ${direction} vault${isDeposit && tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''}`,
+    });
   } else if (tx.status === 'confirmed' && tx.type !== 'failed') {
-    const successAction = tx.type === 'deposit' ? 'Deposit' : 'Withdrawal';
+    const isDeposit = tx.type === 'deposit';
+    const successAction = isDeposit ? 'Sent' : 'Received';
+    const emoji = isDeposit ? '✅' : '💰';
     
-    toast.success(
-      <div className="flex flex-col gap-1">
-        <div className="font-semibold">Successful {successAction}</div>
-        <div className="text-sm opacity-80">
-          {tx.value} {tx.token}
-        </div>
-        {tx.fee !== '0' && (
-          <div className="text-xs opacity-60">
-            Fee: {tx.fee} {tx.token}
-          </div>
-        )}
-        <div className="flex items-center gap-2">
-          <span className="text-xs opacity-60">Block #{tx.blockNumber}</span>
-          <a 
-            href={basescanUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs opacity-60 hover:opacity-100 hover:text-blue-400 transition-colors"
-          >
-            View ↗
-          </a>
-        </div>
-      </div>,
-      { 
-        id: tx.hash,
-        duration: 5000 
-      }
-    );
+    notify.success({
+      title: `${successAction} ${tx.token}!`,
+      description: `${tx.value} ${tx.token} successfully ${successAction.toLowerCase()}${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''}`,
+      confirmLabel: 'View on Basescan',
+      onConfirm: () => window.open(basescanUrl, '_blank'),
+    });
   }
 }
 
@@ -215,6 +162,14 @@ export async function subscribeToWalletTransactions(
   }
   
   try {
+    console.log('🔌 Connecting to Alchemy WebSocket for wallet:', walletAddress);
+    
+    // Show connection toast
+    notify.info({
+      title: 'WebSocket Connected',
+      description: `Monitoring ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)} for USDC and FLUX transactions`,
+    });
+    
     const depositSub = alchemy.ws.on(
       {
         method: AlchemySubscription.PENDING_TRANSACTIONS,
@@ -222,6 +177,14 @@ export async function subscribeToWalletTransactions(
         toAddress: VAULT_ADDRESS,
       },
       async (tx) => {
+        console.log('📤 Detected outgoing transaction:', {
+          hash: tx.hash,
+          from: tx.from,
+          to: tx.to,
+          asset: tx.asset,
+          rawContract: tx.rawContract?.address
+        });
+        
         const tokenAddress = tx.asset || tx.rawContract?.address;
         const token = getTokenSymbol(tokenAddress);
         const decimals = token === 'USDC' ? 6 : 18;
@@ -269,6 +232,14 @@ export async function subscribeToWalletTransactions(
         toAddress: walletAddress,
       },
       async (tx) => {
+        console.log('📥 Detected incoming transaction from vault:', {
+          hash: tx.hash,
+          from: tx.from,
+          to: tx.to,
+          asset: tx.asset,
+          rawContract: tx.rawContract?.address
+        });
+        
         const tokenAddress = tx.asset || tx.rawContract?.address;
         const token = getTokenSymbol(tokenAddress);
         const decimals = token === 'USDC' ? 6 : 18;
@@ -304,12 +275,80 @@ export async function subscribeToWalletTransactions(
       }
     );
     
+    // Subscribe to ALL incoming FLUX transactions (including minted tokens)
+    const fluxIncomingSub = alchemy.ws.on(
+      {
+        method: AlchemySubscription.PENDING_TRANSACTIONS,
+        toAddress: walletAddress,
+      },
+      async (tx) => {
+        // Check if this is a FLUX token transaction
+        const tokenAddress = tx.asset || tx.rawContract?.address;
+        if (tokenAddress && tokenAddress.toLowerCase() === FLUX_TOKEN_ADDRESS.toLowerCase()) {
+          // Skip if already handled by vault withdrawal subscription
+          if (tx.from.toLowerCase() === VAULT_ADDRESS.toLowerCase()) {
+            return;
+          }
+          
+          console.log('🪙 Detected incoming FLUX transaction:', {
+            hash: tx.hash,
+            from: tx.from,
+            to: tx.to,
+            asset: tx.asset,
+            rawContract: tx.rawContract?.address,
+            isMinted: tx.from === '0x0000000000000000000000000000000000000000'
+          });
+          
+          const value = formatTokenAmount(tx.value?.toString() || '0', 18);
+          const isMinted = tx.from === '0x0000000000000000000000000000000000000000';
+          
+          const pendingTx: PendingTransaction = {
+            hash: tx.hash,
+            from: tx.from,
+            to: tx.to,
+            value: tx.value?.toString() || '0',
+            token: 'FLUX',
+            timestamp: Date.now(),
+          };
+          
+          pendingTransactions.set(tx.hash, pendingTx);
+          
+          const txInfo: TransactionInfo = {
+            hash: tx.hash,
+            from: tx.from,
+            to: tx.to,
+            value,
+            token: 'FLUX',
+            type: 'withdrawal',
+            status: 'pending',
+            fee: '0',
+            timestamp: new Date().toISOString(),
+          };
+          
+          // Show special notification for minted FLUX
+          if (isMinted) {
+            notify.success({
+              title: '🪙 FLUX Minted!',
+              description: `Receiving ${value} newly minted FLUX tokens`,
+            });
+          } else {
+            showTransactionToast(txInfo, walletAddress);
+          }
+          
+          transactionCallbacks.get(walletAddress)?.forEach(cb => cb(txInfo));
+          monitorTransactionStatus(tx.hash, walletAddress, 'withdrawal');
+        }
+      }
+    );
+    
+    // Subscribe to mined transactions for all relevant addresses
     const minedSub = alchemy.ws.on(
       {
         method: AlchemySubscription.MINED_TRANSACTIONS,
         addresses: [
           { from: walletAddress, to: VAULT_ADDRESS },
           { from: VAULT_ADDRESS, to: walletAddress },
+          { to: walletAddress }, // Catch all incoming transactions including minted FLUX
         ],
       },
       async (tx) => {
@@ -340,7 +379,7 @@ export async function subscribeToWalletTransactions(
         if (!pendingTransactions.has(tx.transaction.hash)) {
           showTransactionToast(txInfo, walletAddress);
         } else {
-          toast.dismiss(tx.transaction.hash);
+          // Transaction was pending, now confirmed
           showTransactionToast(txInfo, walletAddress);
           pendingTransactions.delete(tx.transaction.hash);
         }
@@ -349,7 +388,7 @@ export async function subscribeToWalletTransactions(
       }
     );
     
-    activeSubscriptions.set(subKey, { depositSub, withdrawalSub, minedSub });
+    activeSubscriptions.set(subKey, { depositSub, withdrawalSub, fluxIncomingSub, minedSub });
     
     if (!refundCheckInterval) {
       refundCheckInterval = setInterval(() => {
@@ -379,6 +418,7 @@ export async function subscribeToWalletTransactions(
         if (subs) {
           alchemy.ws.off(subs.depositSub);
           alchemy.ws.off(subs.withdrawalSub);
+          alchemy.ws.off(subs.fluxIncomingSub);
           alchemy.ws.off(subs.minedSub);
           activeSubscriptions.delete(subKey);
         }
@@ -436,31 +476,17 @@ async function monitorTransactionStatus(
               timestamp: new Date().toISOString(),
             };
             
-            toast.dismiss(txHash);
+            // Remove pending notification
             
             if (receipt.status === 1) {
               showTransactionToast(txInfo, walletAddress);
             } else {
-              toast.error(
-                <div className="flex flex-col gap-1">
-                  <div className="font-semibold">Transaction Failed</div>
-                  <div className="text-sm opacity-80">
-                    {value} {token}
-                  </div>
-                  <a 
-                    href={getBasescanUrl(txHash)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs opacity-60 font-mono hover:opacity-100 hover:text-red-400 transition-colors"
-                  >
-                    {txHash.slice(0, 10)}...{txHash.slice(-8)} ↗
-                  </a>
-                </div>,
-                { 
-                  id: `failed_${txHash}`,
-                  duration: 5000 
-                }
-              );
+              notify.error({
+                title: 'Transaction Failed',
+                description: `${value} ${token}`,
+                confirmLabel: 'View on Basescan',
+                onConfirm: () => window.open(getBasescanUrl(txHash), '_blank'),
+              });
             }
             
             transactionCallbacks.get(walletAddress)?.forEach(cb => cb(txInfo));
@@ -474,27 +500,13 @@ async function monitorTransactionStatus(
         } else if (attempts >= maxAttempts) {
           const pendingTx = pendingTransactions.get(txHash);
           if (pendingTx && !refundedTransactions.has(txHash)) {
-            toast.dismiss(txHash);
-            toast.error(
-              <div className="flex flex-col gap-1">
-                <div className="font-semibold">Transaction Timeout</div>
-                <div className="text-sm opacity-80">
-                  Transaction confirmation timed out
-                </div>
-                <a 
-                  href={getBasescanUrl(txHash)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs opacity-60 font-mono hover:opacity-100 hover:text-red-400 transition-colors"
-                >
-                  {txHash.slice(0, 10)}...{txHash.slice(-8)} ↗
-                </a>
-              </div>,
-              { 
-                id: `timeout_${txHash}`,
-                duration: 5000 
-              }
-            );
+            // Remove pending notification
+            notify.error({
+              title: 'Transaction Timeout',
+              description: 'Transaction confirmation timed out',
+              confirmLabel: 'View on Basescan',
+              onConfirm: () => window.open(getBasescanUrl(txHash), '_blank'),
+            });
             
             pendingTransactions.delete(txHash);
           }
@@ -517,6 +529,7 @@ export function unsubscribeAll() {
   activeSubscriptions.forEach((subs) => {
     if (subs.depositSub) alchemy.ws.off(subs.depositSub);
     if (subs.withdrawalSub) alchemy.ws.off(subs.withdrawalSub);
+    if (subs.fluxIncomingSub) alchemy.ws.off(subs.fluxIncomingSub);
     if (subs.minedSub) alchemy.ws.off(subs.minedSub);
   });
   
