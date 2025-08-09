@@ -160,7 +160,7 @@ function DropDownMenu({
 export const NavbarPill = () => {
   const pathname = usePathname()
   const router = useRouter()
-  const { isConnected, connect } = useWallet()
+  const { isConnected, connect, disconnect } = useWallet()
   // Initialize to true in order to dynamically get width of the cta button
   const [showButton, setShowButton] = useState(true)
   const [dropdownGap, setDropdownGap] = useState<number>(0)
