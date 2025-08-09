@@ -140,9 +140,16 @@ export async function subscribeToWalletTransactions(
     console.log('🔌 Connecting to Alchemy WebSocket for wallet:', walletAddress);
     console.log('🔧 Using API Key:', ALCHEMY_API_KEY);
     console.log('🔧 WebSocket URL:', ALCHEMY_WS_URL);
+    console.log('🔧 VAULT_ADDRESS:', VAULT_ADDRESS);
     
     // Connection notification removed - will be handled in WalletContext if needed
     
+    console.log('📋 Setting up deposit subscription:', {
+      method: AlchemySubscription.PENDING_TRANSACTIONS,
+      fromAddress: walletAddress,
+      toAddress: VAULT_ADDRESS,
+    });
+
     const depositSub = alchemy.ws.on(
       {
         method: AlchemySubscription.PENDING_TRANSACTIONS,
