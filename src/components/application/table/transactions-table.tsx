@@ -19,7 +19,7 @@ import '@/styles/animations.css'
 import { ChevronRightIcon } from '@heroicons/react/16/solid'
 import { useWallet } from '@/contexts/WalletContext'
 import { fetchVaultTransactions, getWalletTransactions, getNewTransactionsForWallet, type VaultTransaction } from '@/services/vaultTransactionServiceVercel'
-import { toast } from 'sonner'
+import { notify } from '@/lib/notify'
 
 const USDC = { src: 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/assets/usdc.avif' }
 const Flux = { src: 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/assets/flux.avif' }
@@ -132,6 +132,21 @@ export function TransactionsTable({
       for (const tx of newTxs) {
         const txDate = formatTransactionDate(tx.timestamp);
         const isDeposit = tx.type === 'incoming';
+        const isOutgoing = tx.type === 'outgoing';
+        
+        // Show pending notification for outgoing transactions
+        if (isOutgoing) {
+          console.log('⚠️ Table detected outgoing transaction, showing pending notification');
+          notify.warning({
+            title: `Sending ${tx.token}`,
+            description: `${parseFloat(tx.value).toFixed(2)} ${tx.token} to vault • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+            confirmLabel: 'View on Basescan',
+            onConfirm: () => {
+              const network = process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? 'sepolia.' : '';
+              window.open(`https://${network}basescan.org/tx/${tx.hash}`, '_blank');
+            }
+          });
+        }
         
         if (isDeposit && tx.token === 'USDC') {
           const nearbyFlux = sortedAllTxs.find(
@@ -140,37 +155,27 @@ export function TransactionsTable({
           );
           
           if (nearbyFlux) {
-            toast.success(
-              <div className="flex flex-col gap-1">
-                <span>Deposit Successful</span>
-                <span className="text-xs opacity-80">{parseFloat(tx.value).toFixed(2)} USDC • {txDate}</span>
-              </div>,
-              {
-                action: {
-                  label: 'View',
-                  onClick: () => {
-                    const network = process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? 'sepolia.' : '';
-                    window.open(`https://${network}basescan.org/tx/${tx.hash}`, '_blank');
-                  }
-                },
+            console.log('✅ Table detected successful USDC deposit, showing success notification');
+            notify.success({
+              title: 'Received USDC!',
+              description: `${parseFloat(tx.value).toFixed(2)} USDC successfully received • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+              confirmLabel: 'View on Basescan',
+              onConfirm: () => {
+                const network = process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? 'sepolia.' : '';
+                window.open(`https://${network}basescan.org/tx/${tx.hash}`, '_blank');
               }
-            );
+            });
           } else {
-            toast.error(
-              <div className="flex flex-col gap-1">
-                <span>Deposit Failed</span>
-                <span className="text-xs opacity-80">{parseFloat(tx.value).toFixed(2)} USDC returned • {txDate}</span>
-              </div>,
-              {
-                action: {
-                  label: 'View',
-                  onClick: () => {
-                    const network = process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? 'sepolia.' : '';
-                    window.open(`https://${network}basescan.org/tx/${tx.hash}`, '_blank');
-                  }
-                },
+            console.log('❌ Table detected failed USDC deposit, showing error notification');
+            notify.error({
+              title: 'Transaction Failed',
+              description: `10 FLUX minimum required. ${parseFloat(tx.value).toFixed(2)} USDC returned to wallet • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+              confirmLabel: 'View on Basescan',
+              onConfirm: () => {
+                const network = process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? 'sepolia.' : '';
+                window.open(`https://${network}basescan.org/tx/${tx.hash}`, '_blank');
               }
-            );
+            });
           }
         } else if (isDeposit && tx.token === 'FLUX') {
           const nearbyUsdc = sortedAllTxs.find(
@@ -179,37 +184,27 @@ export function TransactionsTable({
           );
           
           if (nearbyUsdc) {
-            toast.success(
-              <div className="flex flex-col gap-1">
-                <span>Withdrawal Successful</span>
-                <span className="text-xs opacity-80">{parseFloat(tx.value).toFixed(2)} FLUX • {txDate}</span>
-              </div>,
-              {
-                action: {
-                  label: 'View',
-                  onClick: () => {
-                    const network = process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? 'sepolia.' : '';
-                    window.open(`https://${network}basescan.org/tx/${tx.hash}`, '_blank');
-                  }
-                },
+            console.log('✅ Table detected successful FLUX withdrawal, showing success notification');
+            notify.success({
+              title: 'Received FLUX!',
+              description: `${parseFloat(tx.value).toFixed(2)} FLUX successfully received • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+              confirmLabel: 'View on Basescan',
+              onConfirm: () => {
+                const network = process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? 'sepolia.' : '';
+                window.open(`https://${network}basescan.org/tx/${tx.hash}`, '_blank');
               }
-            );
+            });
           } else {
-            toast.error(
-              <div className="flex flex-col gap-1">
-                <span>Withdrawal Failed</span>
-                <span className="text-xs opacity-80">{parseFloat(tx.value).toFixed(2)} FLUX returned • {txDate}</span>
-              </div>,
-              {
-                action: {
-                  label: 'View',
-                  onClick: () => {
-                    const network = process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? 'sepolia.' : '';
-                    window.open(`https://${network}basescan.org/tx/${tx.hash}`, '_blank');
-                  }
-                },
+            console.log('❌ Table detected failed FLUX withdrawal, showing error notification');
+            notify.error({
+              title: 'Transaction Failed',
+              description: `10 FLUX minimum required. ${parseFloat(tx.value).toFixed(2)} FLUX returned to wallet • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+              confirmLabel: 'View on Basescan',
+              onConfirm: () => {
+                const network = process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? 'sepolia.' : '';
+                window.open(`https://${network}basescan.org/tx/${tx.hash}`, '_blank');
               }
-            );
+            });
           }
         }
       }

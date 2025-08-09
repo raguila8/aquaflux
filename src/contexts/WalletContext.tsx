@@ -71,43 +71,9 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       
       const setupSubscriptions = async () => {
         console.log('🔧 Setting up WebSocket subscriptions for:', address);
-        unsubscribe = await subscribeToWalletTransactions(address, (tx: TransactionInfo) => {
-          console.log('🔔 Transaction callback received, calling notify directly like test:', tx);
-          const basescanUrl = `https://basescan.org/tx/${tx.hash}`;
-          
-          // EXACT same as test button - direct notify calls
-          if (tx.status === 'pending') {
-            console.log('⚠️ Calling notify.warning directly like test button');
-            notify.warning({
-              title: `Sending ${tx.token}`,
-              description: `${tx.value} ${tx.token} to vault${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
-              confirmLabel: 'View on Basescan',
-              onConfirm: () => window.open(basescanUrl, '_blank'),
-            });
-            setTimeout(refreshBalances, 1000);
-          } else if (tx.status === 'confirmed' && tx.type !== 'failed') {
-            console.log('✅ Calling notify.success directly like test button');
-            const isDeposit = tx.type === 'deposit';
-            const successAction = isDeposit ? 'Sent' : 'Received';
-            
-            notify.success({
-              title: `${successAction} ${tx.token}!`,
-              description: `${tx.value} ${tx.token} successfully ${successAction.toLowerCase()}${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
-              confirmLabel: 'View on Basescan',
-              onConfirm: () => window.open(basescanUrl, '_blank'),
-            });
-            refreshBalances();
-          } else if (tx.type === 'failed') {
-            console.log('❌ Calling notify.error directly like test button');
-            notify.error({
-              title: 'Transaction Failed',
-              description: `10 FLUX minimum required. ${tx.value} ${tx.token} returned to wallet • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
-              confirmLabel: 'View on Basescan',
-              onConfirm: () => window.open(basescanUrl, '_blank'),
-            });
-            refreshBalances();
-          }
-        });
+        // Disable WebSocket notifications - using table-based notifications instead
+        console.log('🔧 WebSocket monitoring disabled - using table data for notifications');
+        unsubscribe = () => {}; // No-op unsubscribe function
       };
       
       setupSubscriptions();
