@@ -7,7 +7,6 @@ import { NavbarPill } from '@/components/header/NavbarPill'
 import { Container } from '@/components/shared/Container'
 import { Button } from '@/components/shared/Button'
 import { useWallet } from '@/contexts/WalletContext'
-import { showTransactionSuccess } from '@/components/application/notifications/TransactionNotification'
 
 const logo = 'https://04mu1lnp8qyyyqvs.public.blob.vercel-storage.com/aquaflux-logo.avif'
 
@@ -19,12 +18,6 @@ export const Header = () => {
     if (isConnected) {
       router.push('/dashboard');
     } else {
-      // Test notification when clicking Sign In
-      showTransactionSuccess(
-        'Test Notification',
-        'Dark theme notification test from sign in button',
-        () => window.open('https://basescan.org', '_blank')
-      )
       connect();
     }
   };
