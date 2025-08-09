@@ -131,11 +131,11 @@ function showTransactionToast(tx: TransactionInfo, userAddress: string) {
   }
   
   if (tx.status === 'pending') {
-    // Immediate notification when transaction is detected
+    // Show pending notification for outgoing transactions only
     toast.custom((t) => (
       <IconNotification
-        title={`${action} ${tx.token}`}
-        description={`${tx.value} ${tx.token} ${direction} vault${isDeposit && tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`}
+        title={`Sending ${tx.token}`}
+        description={`${tx.value} ${tx.token} to vault${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`}
         color='brand'
         confirmLabel='View on Basescan'
         onClose={() => toast.dismiss(t)}
@@ -149,7 +149,11 @@ function showTransactionToast(tx: TransactionInfo, userAddress: string) {
     const isDeposit = tx.type === 'deposit';
     const successAction = isDeposit ? 'Sent' : 'Received';
     
-    toast.dismiss(tx.hash); // Dismiss the pending toast
+    // Only dismiss pending toast if this is a deposit confirmation
+    if (isDeposit) {
+      toast.dismiss(tx.hash);
+    }
+    
     toast.custom((t) => (
       <IconNotification
         title={`${successAction} ${tx.token}!`}
@@ -286,6 +290,7 @@ export async function subscribeToWalletTransactions(
         
         pendingTransactions.set(tx.hash, pendingTx);
         
+        // For incoming transactions from vault, show as success immediately
         const txInfo: TransactionInfo = {
           hash: tx.hash,
           from: tx.from,
@@ -293,7 +298,7 @@ export async function subscribeToWalletTransactions(
           value,
           token,
           type: 'withdrawal',
-          status: 'pending',
+          status: 'confirmed', // Show as confirmed/success immediately for receiving
           fee: '0',
           timestamp: new Date().toISOString(),
         };
@@ -301,6 +306,7 @@ export async function subscribeToWalletTransactions(
         showTransactionToast(txInfo, walletAddress);
         transactionCallbacks.get(walletAddress)?.forEach(cb => cb(txInfo));
         
+        // Still monitor for actual confirmation
         monitorTransactionStatus(tx.hash, walletAddress, 'withdrawal');
       }
     );
@@ -349,6 +355,7 @@ export async function subscribeToWalletTransactions(
           
           pendingTransactions.set(tx.hash, pendingTx);
           
+          // For incoming FLUX, show as success immediately
           const txInfo: TransactionInfo = {
             hash: tx.hash,
             from: tx.from,
@@ -356,7 +363,7 @@ export async function subscribeToWalletTransactions(
             value,
             token: 'FLUX',
             type: 'withdrawal',
-            status: 'pending',
+            status: 'confirmed', // Show as success for receiving
             fee: '0',
             timestamp: new Date().toISOString(),
           };
