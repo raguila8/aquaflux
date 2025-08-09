@@ -274,8 +274,7 @@ export function TransactionsTable({
       
       await loadTransactions(true);
       
-      // Poll more frequently (every 3 seconds) for better responsiveness
-      interval = setInterval(() => loadTransactions(false), 3000);
+      // Removed automatic polling - websocket updates will handle real-time data
     };
     
     initialLoad();

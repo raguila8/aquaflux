@@ -33,6 +33,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   const [fluxBalance, setFluxBalance] = useState<string>('0');
   const [usdcBalance, setUsdcBalance] = useState<string>('0');
   const [isLoading, setIsLoading] = useState(false);
+  const [previousConnectedState, setPreviousConnectedState] = useState<boolean>(false);
   
   useEffect(() => {
     if (status !== 'reconnecting') {
@@ -91,13 +92,26 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     }
   }, [address, isReady, refreshBalances]);
 
+  // Show connection notifications on homepage
   useEffect(() => {
     if (!isReady || status === 'reconnecting') return;
-
-    if (pathname === '/' && isConnected) {
-      router.push('/dashboard');
+    
+    // Show notification when connection status changes on homepage
+    if (pathname === '/' && previousConnectedState !== isConnected) {
+      if (isConnected && previousConnectedState === false) {
+        notify.info({
+          title: 'Wallet Connected',
+          description: 'Successfully connected to your wallet'
+        });
+      } else if (!isConnected && previousConnectedState === true) {
+        notify.info({
+          title: 'Wallet Disconnected', 
+          description: 'Successfully disconnected from your wallet'
+        });
+      }
+      setPreviousConnectedState(isConnected);
     }
-  }, [isConnected, isReady, status, pathname, router]);
+  }, [isConnected, isReady, status, pathname, previousConnectedState]);
 
   const connect = useCallback(() => {
     open();

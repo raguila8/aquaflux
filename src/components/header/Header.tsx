@@ -41,9 +41,20 @@ export const Header = () => {
 
           <div className='hidden items-center md:flex lg:space-x-3 xl:space-x-4'>
             {/* Call to action */}
-            <Button onClick={handleAuthClick} size='md'>
-              {isConnected ? 'Dashboard' : 'Sign in'}
-            </Button>
+            {isConnected ? (
+              <>
+                <Button onClick={() => router.push('/dashboard')} size='md'>
+                  Dashboard
+                </Button>
+                <Button onClick={disconnect} size='md' variant='secondary'>
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <Button onClick={connect} size='md'>
+                Sign in
+              </Button>
+            )}
           </div>
         </nav>
         <hr className='absolute inset-x-0 bottom-0 h-px border-0 bg-linear-to-r from-transparent via-violet-200/15 to-transparent' />

@@ -385,22 +385,44 @@ export const NavbarPill = () => {
             )}
 
             <div className='relative z-20 ml-1 flex items-center sm:ml-3 md:hidden'>
-              <Button
-                onClick={handleAuthClick}
-                variant='tertiary'
-                size='sm'
-                className='hidden overflow-hidden'
-              >
-                {isConnected ? 'Dashboard' : 'Sign in'}
-              </Button>
+              {isConnected ? (
+                <>
+                  <Button
+                    className='-mr-px rounded-full after:rounded-full'
+                    onClick={() => router.push('/dashboard')}
+                    size='sm'
+                  >
+                    Dashboard
+                  </Button>
+                  <Button
+                    className='ml-2 rounded-full after:rounded-full'
+                    onClick={disconnect}
+                    size='sm'
+                    variant='secondary'
+                  >
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    onClick={connect}
+                    variant='tertiary'
+                    size='sm'
+                    className='hidden overflow-hidden'
+                  >
+                    Sign in
+                  </Button>
 
-              <Button
-                className='-mr-px rounded-full after:rounded-full'
-                onClick={handleAuthClick}
-                size='sm'
-              >
-                {isConnected ? 'Dashboard' : 'Sign in'}
-              </Button>
+                  <Button
+                    className='-mr-px rounded-full after:rounded-full'
+                    onClick={connect}
+                    size='sm'
+                  >
+                    Sign in
+                  </Button>
+                </>
+              )}
 
               {hasLinks && <Hamburger />}
             </div>
@@ -415,7 +437,7 @@ export const NavbarPill = () => {
                   className={cn(
                     'z-20 -mr-px ml-3 rounded-full transition-all duration-500 after:rounded-full data-closed:translate-x-full data-closed:opacity-0 data-enter:ease-out data-leave:ease-in'
                   )}
-                  onClick={handleAuthClick}
+                  onClick={isConnected ? () => router.push('/dashboard') : connect}
                   size='sm'
                 >
                   {isConnected ? 'Dashboard' : 'Get started'}
