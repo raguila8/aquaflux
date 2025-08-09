@@ -17,6 +17,7 @@ export const notify = {
     confirmLabel,
     onConfirm,
   }: NotificationArgs) {
+    console.log('✅ notify.success called:', { title, description });
     return toast.custom((t) => (
       <IconNotification
         title={title}
@@ -65,6 +66,28 @@ export const notify = {
         description={description}
         {...(confirmLabel && { confirmLabel })}
         color='error'
+        onClose={() => toast.dismiss(t)}
+        onConfirm={() => {
+          onConfirm?.()
+          toast.dismiss(t)
+        }}
+      />
+    ))
+  },
+
+  warning({
+    title = 'Warning',
+    description = '',
+    confirmLabel,
+    onConfirm,
+  }: NotificationArgs) {
+    console.log('🔶 notify.warning called:', { title, description });
+    return toast.custom((t) => (
+      <IconNotification
+        title={title}
+        description={description}
+        {...(confirmLabel && { confirmLabel })}
+        color='warning'
         onClose={() => toast.dismiss(t)}
         onConfirm={() => {
           onConfirm?.()
