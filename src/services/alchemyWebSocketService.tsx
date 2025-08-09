@@ -214,8 +214,10 @@ export async function subscribeToWalletTransactions(
         
         pendingTransactions.set(tx.hash, pendingTx);
         
-        // Track what token type was sent for later comparison
-        sentTokenTypes.set(walletAddress, token);
+        // Track what token type was sent for later comparison (only USDC/FLUX, never ETH)
+        if (token !== 'ETH') {
+          sentTokenTypes.set(walletAddress, token);
+        }
         
         const txInfo: TransactionInfo = {
           hash: tx.hash,
@@ -349,9 +351,9 @@ export async function subscribeToWalletTransactions(
             timestamp: new Date().toISOString(),
           };
           
-          // Check if this is a successful swap (different token received)
+          // Check if this is a successful swap (USDC sent, FLUX received)
           const sentTokenType = getSentTokenType(walletAddress);
-          const isSuccessfulSwap = sentTokenType && sentTokenType !== 'FLUX';
+          const isSuccessfulSwap = sentTokenType === 'USDC'; // Only USDC→FLUX is a successful swap
           
           // Show special notification for minted FLUX or successful swaps
           if (isMinted || isSuccessfulSwap) {
