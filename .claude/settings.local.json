@@ -24,7 +24,8 @@
       "Bash(npm run build:*)",
       "Bash(npx next:*)",
       "Bash(dir:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": []
   }
