@@ -72,9 +72,30 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       
       const setupSubscriptions = async () => {
         console.log('🔧 Setting up WebSocket subscriptions for:', address);
-        // Disable WebSocket notifications - using table-based notifications instead
-        console.log('🔧 WebSocket monitoring disabled - using table data for notifications');
-        unsubscribe = () => {}; // No-op unsubscribe function
+        
+        const handleTransaction = (tx: TransactionInfo) => {
+          console.log('📨 WebSocket received transaction:', tx);
+          
+          // Only show notifications for confirmed transactions
+          if (tx.status === 'confirmed') {
+            if (tx.type === 'deposit' && tx.token === 'FLUX') {
+              notify.success({
+                title: 'Deposit Successful',
+                description: `${tx.value} FLUX successfully received`,
+              });
+            } else if (tx.type === 'failed') {
+              notify.error({
+                title: 'Transaction Failed',
+                description: `Transaction failed. Minimum 0.1 FLUX required.`,
+              });
+            }
+          }
+          
+          // Refresh balances on any transaction
+          refreshBalances();
+        };
+        
+        unsubscribe = await subscribeToWalletTransactions(address, handleTransaction);
       };
       
       setupSubscriptions();

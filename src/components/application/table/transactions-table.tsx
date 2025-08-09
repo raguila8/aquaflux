@@ -222,6 +222,7 @@ export function TransactionsTable({
     }
     
     let isMounted = true;
+    let interval: NodeJS.Timeout | undefined;
     
     const loadTransactions = async (isInitial = false) => {
       if (!isMounted) return;
@@ -273,13 +274,15 @@ export function TransactionsTable({
       
       await loadTransactions(true);
       
-      // Removed automatic polling - websocket updates will handle real-time data
+      // Poll every 10 seconds for updates (reduced from 3 seconds)
+      interval = setInterval(() => loadTransactions(false), 10000);
     };
     
     initialLoad();
     
     return () => {
       isMounted = false;
+      if (interval) clearInterval(interval);
     };
   }, [address, analyzeTransactionPattern]);
 
