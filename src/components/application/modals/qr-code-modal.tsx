@@ -140,14 +140,13 @@ export const QRCodeModal = ({
                   color='primary'
                   size='lg'
                   onClick={() => {
-                    // Test notification
+                    onOpenChange(false)
                     notify.success({
-                      title: 'Transaction Successful!',
-                      description: 'Your transaction has been confirmed on the blockchain • 0x1234...5678',
+                      title: successTitle,
+                      description: 'Your transaction has been confirmed on the blockchain successfully.',
                       confirmLabel: 'View on Basescan',
                       onConfirm: () => window.open('https://basescan.org', '_blank')
                     })
-                    onOpenChange(false)
                   }}
                 >
                   Done
