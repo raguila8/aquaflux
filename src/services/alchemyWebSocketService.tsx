@@ -125,19 +125,12 @@ function showTransactionToast(tx: TransactionInfo, userAddress: string) {
   
   if (tx.status === 'pending') {
     // Show pending notification for outgoing transactions only
-    const toastId = toast.custom((t) => (
-      <IconNotification
-        title={`Sending ${tx.token}`}
-        description={`${tx.value} ${tx.token} to vault${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`}
-        confirmLabel='View on Basescan'
-        color='brand'
-        onClose={() => toast.dismiss(t)}
-        onConfirm={() => {
-          window.open(basescanUrl, '_blank');
-          toast.dismiss(t);
-        }}
-      />
-    ));
+    const toastId = notify.info({
+      title: `Sending ${tx.token}`,
+      description: `${tx.value} ${tx.token} to vault${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+      confirmLabel: 'View on Basescan',
+      onConfirm: () => window.open(basescanUrl, '_blank'),
+    });
     // Store the toast ID for later dismissal
     (window as any)[`toast_${tx.hash}`] = toastId;
   } else if (tx.status === 'confirmed' && tx.type !== 'failed') {

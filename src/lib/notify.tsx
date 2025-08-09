@@ -17,7 +17,7 @@ export const notify = {
     confirmLabel,
     onConfirm,
   }: NotificationArgs) {
-    toast.custom((t) => (
+    return toast.custom((t) => (
       <IconNotification
         title={title}
         description={description}
@@ -38,7 +38,7 @@ export const notify = {
     confirmLabel,
     onConfirm,
   }: NotificationArgs) {
-    toast.custom((t) => (
+    return toast.custom((t) => (
       <IconNotification
         title={title}
         description={description}
@@ -59,7 +59,7 @@ export const notify = {
     confirmLabel,
     onConfirm,
   }: NotificationArgs) {
-    toast.custom((t) => (
+    return toast.custom((t) => (
       <IconNotification
         title={title}
         description={description}
