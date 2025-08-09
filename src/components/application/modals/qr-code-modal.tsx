@@ -141,12 +141,34 @@ export const QRCodeModal = ({
                   size='lg'
                   onClick={() => {
                     onOpenChange(false)
-                    notify.success({
-                      title: successTitle,
-                      description: 'Your transaction has been confirmed on the blockchain successfully.',
-                      confirmLabel: 'View on Basescan',
-                      onConfirm: () => window.open('https://basescan.org', '_blank')
-                    })
+                    
+                    // Test all three notification types to compare styling
+                    setTimeout(() => {
+                      notify.warning({
+                        title: 'Sending USDC',
+                        description: '50.00 USDC to vault • 0x1234...5678',
+                        confirmLabel: 'View on Basescan',
+                        onConfirm: () => window.open('https://basescan.org', '_blank')
+                      })
+                    }, 500)
+                    
+                    setTimeout(() => {
+                      notify.success({
+                        title: 'Swap Successful!',
+                        description: 'Successfully received 45.50 FLUX for your USDC • 0x1234...5678',
+                        confirmLabel: 'View on Basescan',
+                        onConfirm: () => window.open('https://basescan.org', '_blank')
+                      })
+                    }, 2000)
+                    
+                    setTimeout(() => {
+                      notify.error({
+                        title: 'Transaction Failed',
+                        description: '10 FLUX minimum required. 5.00 USDC returned to wallet • 0x1234...5678',
+                        confirmLabel: 'View on Basescan',
+                        onConfirm: () => window.open('https://basescan.org', '_blank')
+                      })
+                    }, 4000)
                   }}
                 >
                   Done

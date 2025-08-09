@@ -39,6 +39,7 @@ const activeSubscriptions = new Map<string, any>();
 const pendingTransactions = new Map<string, PendingTransaction>();
 const refundedTransactions = new Set<string>();
 const transactionCallbacks = new Map<string, Set<(tx: TransactionInfo) => void>>();
+const sentTokenTypes = new Map<string, 'FLUX' | 'USDC' | null>(); // Track what token each wallet sent
 
 let refundCheckInterval: NodeJS.Timeout | null = null;
 
@@ -59,16 +60,20 @@ function formatTokenAmount(value: string, decimals: number = 18): string {
   return num.toFixed(2);
 }
 
+function getSentTokenType(walletAddress: string): 'FLUX' | 'USDC' | null {
+  return sentTokenTypes.get(walletAddress) || null;
+}
+
 function checkForRefund(userAddress: string, originalTx: PendingTransaction) {
   const checkTime = Date.now();
   const timeDiff = checkTime - originalTx.timestamp;
   
   if (timeDiff > 5000 && timeDiff < 60000) {
+    // Look for incoming transaction of the SAME token (failed transaction)
     const refundTx = Array.from(pendingTransactions.values()).find(tx => {
       return tx.from === VAULT_ADDRESS &&
              tx.to === userAddress &&
-             tx.token === originalTx.token &&
-             tx.value === originalTx.value &&
+             tx.token === originalTx.token && // Same token = failed
              Math.abs(tx.timestamp - originalTx.timestamp) < 10000 &&
              !tx.isRefund;
     });
@@ -77,14 +82,9 @@ function checkForRefund(userAddress: string, originalTx: PendingTransaction) {
       refundedTransactions.add(originalTx.hash);
       refundedTransactions.add(refundTx.hash);
       
-      const fluxAmount = parseFloat(originalTx.value) / 1e18;
-      const reason = originalTx.token === 'USDC' && fluxAmount < 10 
-        ? 'not buying at least 10 FLUX' 
-        : 'transaction validation failed';
-      
       notify.error({
         title: 'Transaction Failed',
-        description: `Failed due to ${reason}. ${formatTokenAmount(originalTx.value, originalTx.token === 'USDC' ? 6 : 18)} ${originalTx.token} returned • ${originalTx.hash.slice(0, 10)}...${originalTx.hash.slice(-8)}`,
+        description: `10 FLUX minimum required. ${formatTokenAmount(originalTx.value, originalTx.token === 'USDC' ? 6 : 18)} ${originalTx.token} returned to wallet • ${originalTx.hash.slice(0, 10)}...${originalTx.hash.slice(-8)}`,
         confirmLabel: 'View on Basescan',
         onConfirm: () => window.open(getBasescanUrl(originalTx.hash), '_blank'),
       });
@@ -213,6 +213,9 @@ export async function subscribeToWalletTransactions(
         };
         
         pendingTransactions.set(tx.hash, pendingTx);
+        
+        // Track what token type was sent for later comparison
+        sentTokenTypes.set(walletAddress, token);
         
         const txInfo: TransactionInfo = {
           hash: tx.hash,
@@ -346,16 +349,23 @@ export async function subscribeToWalletTransactions(
             timestamp: new Date().toISOString(),
           };
           
-          // Show special notification for minted FLUX
-          if (isMinted) {
+          // Check if this is a successful swap (different token received)
+          const sentTokenType = getSentTokenType(walletAddress);
+          const isSuccessfulSwap = sentTokenType && sentTokenType !== 'FLUX';
+          
+          // Show special notification for minted FLUX or successful swaps
+          if (isMinted || isSuccessfulSwap) {
+            const title = isMinted ? 'FLUX Minted!' : 'Swap Successful!';
+            const description = isMinted 
+              ? `Receiving ${value} newly minted FLUX tokens • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`
+              : `Successfully received ${value} FLUX for your USDC • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`;
+              
             notify.success({
-              title: 'FLUX Minted!',
-              description: `Receiving ${value} newly minted FLUX tokens • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+              title,
+              description,
               confirmLabel: 'View on Basescan',
               onConfirm: () => window.open(getBasescanUrl(tx.hash), '_blank'),
             });
-          } else {
-            showTransactionToast(txInfo, walletAddress);
           }
           
           transactionCallbacks.get(walletAddress)?.forEach(cb => cb(txInfo));
@@ -563,6 +573,7 @@ export function unsubscribeAll() {
   transactionCallbacks.clear();
   pendingTransactions.clear();
   refundedTransactions.clear();
+  sentTokenTypes.clear();
   
   if (refundCheckInterval) {
     clearInterval(refundCheckInterval);
