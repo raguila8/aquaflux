@@ -408,94 +408,6 @@ export async function subscribeToWalletTransactions(
       }
     );
     
-    // Also subscribe to FLUX token transfers specifically using logs
-    // This ensures we catch ALL FLUX transfers including those not visible in PENDING_TRANSACTIONS
-    const fluxTransferSub = alchemy.ws.on(
-      {
-        method: AlchemySubscription.LOGS,
-        address: FLUX_TOKEN_ADDRESS,
-        topics: [
-          '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', // Transfer event signature
-          null, // from (any)
-          `0x000000000000000000000000${walletAddress.slice(2).toLowerCase()}` // to (our wallet)
-        ]
-      },
-      async (log) => {
-        // Decode the transfer event
-        const from = '0x' + log.topics[1].slice(26);
-        const to = '0x' + log.topics[2].slice(26);
-        const value = BigInt(log.data).toString();
-        
-        // Skip if from vault (already handled)
-        if (from.toLowerCase() === VAULT_ADDRESS.toLowerCase()) {
-          return;
-        }
-        
-        console.log('📊 FLUX Transfer Event detected:', {
-          hash: log.transactionHash,
-          from,
-          to,
-          value: formatTokenAmount(value, 18),
-          blockNumber: log.blockNumber
-        });
-        
-        const isMinted = from === '0x0000000000000000000000000000000000000000';
-        const formattedValue = formatTokenAmount(value, 18);
-        
-        const txInfo: TransactionInfo = {
-          hash: log.transactionHash,
-          from,
-          to,
-          value: formattedValue,
-          token: 'FLUX',
-          type: 'withdrawal',
-          status: 'pending',
-          fee: '0',
-          timestamp: new Date().toISOString(),
-        };
-        
-        if (isMinted) {
-          toast.success(
-            <div className="flex flex-col gap-1">
-              <span>FLUX Minted!</span>
-              <span className="text-xs opacity-80">
-                Receiving {formattedValue} newly minted FLUX tokens
-              </span>
-              <span className="text-xs opacity-60 font-mono">
-                {log.transactionHash.slice(0, 10)}...{log.transactionHash.slice(-8)}
-              </span>
-            </div>,
-            {
-              action: {
-                label: 'View',
-                onClick: () => window.open(getBasescanUrl(log.transactionHash), '_blank')
-              }
-            }
-          );
-        } else {
-          toast.info(
-            <div className="flex flex-col gap-1">
-              <span>Receiving FLUX</span>
-              <span className="text-xs opacity-80">
-                {formattedValue} FLUX from {from.slice(0, 6)}...{from.slice(-4)}
-              </span>
-              <span className="text-xs opacity-60 font-mono">
-                {log.transactionHash.slice(0, 10)}...{log.transactionHash.slice(-8)}
-              </span>
-            </div>,
-            {
-              action: {
-                label: 'View',
-                onClick: () => window.open(getBasescanUrl(log.transactionHash), '_blank')
-              }
-            }
-          );
-        }
-        
-        transactionCallbacks.get(walletAddress)?.forEach(cb => cb(txInfo));
-      }
-    );
-    
     // Subscribe to mined transactions for all relevant addresses
     const minedSub = alchemy.ws.on(
       {
@@ -542,7 +454,7 @@ export async function subscribeToWalletTransactions(
       }
     );
     
-    activeSubscriptions.set(subKey, { depositSub, withdrawalSub, fluxIncomingSub, fluxTransferSub, minedSub });
+    activeSubscriptions.set(subKey, { depositSub, withdrawalSub, fluxIncomingSub, minedSub });
     
     if (!refundCheckInterval) {
       refundCheckInterval = setInterval(() => {
@@ -573,7 +485,6 @@ export async function subscribeToWalletTransactions(
           alchemy.ws.off(subs.depositSub);
           alchemy.ws.off(subs.withdrawalSub);
           alchemy.ws.off(subs.fluxIncomingSub);
-          alchemy.ws.off(subs.fluxTransferSub);
           alchemy.ws.off(subs.minedSub);
           activeSubscriptions.delete(subKey);
         }
@@ -704,7 +615,6 @@ export function unsubscribeAll() {
     if (subs.depositSub) alchemy.ws.off(subs.depositSub);
     if (subs.withdrawalSub) alchemy.ws.off(subs.withdrawalSub);
     if (subs.fluxIncomingSub) alchemy.ws.off(subs.fluxIncomingSub);
-    if (subs.fluxTransferSub) alchemy.ws.off(subs.fluxTransferSub);
     if (subs.minedSub) alchemy.ws.off(subs.minedSub);
   });
   
