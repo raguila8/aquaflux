@@ -1,7 +1,7 @@
 'use client'
 
 import { Tooltip, TooltipTrigger } from '@/components/base/tooltip/tooltip'
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import type { Key } from 'react-aria-components'
 import { Table, TableCard } from '@/components/application/table/table'
 import { PaginationPageMinimalCenter } from '@/components/application/pagination/pagination'
@@ -15,6 +15,7 @@ import { TabList, Tabs } from '@/components/application/tabs/tabs'
 import { Button } from '@/components/base/buttons/button'
 import { Avatar } from '@/components/base/avatar/avatar'
 import { cn, truncateHash } from '@/lib/utils'
+import '@/styles/animations.css'
 import { ChevronRightIcon } from '@heroicons/react/16/solid'
 import { useWallet } from '@/contexts/WalletContext'
 import { fetchVaultTransactions, getWalletTransactions, getNewTransactionsForWallet, type VaultTransaction } from '@/services/vaultTransactionServiceVercel'
@@ -105,6 +106,8 @@ export function TransactionsTable({
   const [selectedTabIndex, setSelectedTabIndex] = useState<Key>('all')
   const previousTxIds = useRef<Set<string>>(new Set());
   const isFirstLoad = useRef(true);
+  const [newTransactionIds, setNewTransactionIds] = useState<Set<string>>(new Set());
+  const lastFetchTime = useRef<number>(0);
   // Pagination state
   const itemsPerPage = 10
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -226,7 +229,7 @@ export function TransactionsTable({
     let isMounted = true;
     let interval: NodeJS.Timeout;
     
-    const loadTransactions = async () => {
+    const loadTransactions = async (isInitial = false) => {
       if (!isMounted) return;
       
       await fetchVaultTransactions();
@@ -236,17 +239,48 @@ export function TransactionsTable({
       const walletTxs = await getWalletTransactions(address);
       analyzeTransactionPattern(walletTxs);
       const formattedTxs = walletTxs.map(formatTransactionData);
-      setTransactions(formattedTxs);
-      setIsLoading(false);
+      
+      if (isInitial) {
+        // Initial load - just set all transactions
+        setTransactions(formattedTxs);
+        setIsLoading(false);
+        lastFetchTime.current = Date.now();
+      } else {
+        // Subsequent loads - intelligently merge new transactions
+        setTransactions(prevTxs => {
+          const existingIds = new Set(prevTxs.map(tx => tx.transactionHash));
+          const newTxs = formattedTxs.filter(tx => !existingIds.has(tx.transactionHash));
+          
+          if (newTxs.length > 0) {
+            // Mark new transactions for animation
+            const newIds = new Set(newTxs.map(tx => tx.transactionHash));
+            setNewTransactionIds(newIds);
+            
+            // Clear animation markers after animation completes
+            setTimeout(() => {
+              setNewTransactionIds(new Set());
+            }, 1000);
+            
+            // Merge and sort by date
+            const merged = [...newTxs, ...prevTxs];
+            return merged.sort((a, b) => 
+              new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()
+            );
+          }
+          
+          return prevTxs;
+        });
+      }
     };
     
     const initialLoad = async () => {
       setIsLoading(true);
       isFirstLoad.current = true;
       
-      await loadTransactions();
+      await loadTransactions(true);
       
-      interval = setInterval(loadTransactions, 10000);
+      // Poll more frequently (every 3 seconds) for better responsiveness
+      interval = setInterval(() => loadTransactions(false), 3000);
     };
     
     initialLoad();
@@ -313,13 +347,15 @@ export function TransactionsTable({
 
   // Determine which transactions to show based on the title / current page
   const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage)
-  const displayedTransactions =
-    displayTitle.toLowerCase() === 'recent transactions'
-      ? transactions.slice(0, itemsPerPage)
-      : filteredTransactions.slice(
-          (currentPage - 1) * itemsPerPage,
-          currentPage * itemsPerPage
-        )
+  const displayedTransactions = useMemo(() => {
+    if (displayTitle.toLowerCase() === 'recent transactions') {
+      return transactions.slice(0, itemsPerPage);
+    }
+    return filteredTransactions.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    );
+  }, [transactions, filteredTransactions, displayTitle, currentPage, itemsPerPage])
 
   // Determine count to show in badge
   const badgeCount = isLoading ? 0 :
@@ -448,7 +484,7 @@ export function TransactionsTable({
               <div className='text-tertiary text-sm'>No transactions found</div>
             </div>
           ) : (
-          <Table aria-label='Transactions'>
+          <Table aria-label='Transactions' className='transition-all duration-300'>
             <Table.Header className='bg-transparent'>
               <Table.Head
                 id='transaction'
@@ -475,7 +511,12 @@ export function TransactionsTable({
                 const meta = assetDetails[item.asset]
 
                 return (
-                  <Table.Row id={item.transactionHash}>
+                  <Table.Row 
+                    id={item.transactionHash}
+                    className={cn(
+                      newTransactionIds.has(item.transactionHash) && 'animate-fadeIn'
+                    )}
+                  >
                     <Table.Cell className='text-nowrap'>
                       <div className='flex w-max items-center gap-3'>
                         <Avatar

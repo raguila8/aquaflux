@@ -63,6 +63,15 @@ export const Toaster = () => (
     <>
         <SonnerToaster
             position={DEFAULT_TOAST_POSITION}
+            theme="dark"
+            toastOptions={{
+                unstyled: true,
+                classNames: {
+                    toast: 'bg-transparent p-0 shadow-none border-0',
+                    title: 'hidden',
+                    description: 'hidden',
+                },
+            }}
             style={
                 {
                     "--width": "400px",

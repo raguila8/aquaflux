@@ -167,6 +167,27 @@ export async function getWalletTransactions(walletAddress: string): Promise<Vaul
     const withdrawalsData = await withdrawalsResponse.json();
     const withdrawals: AlchemyResponse = withdrawalsData.result;
     
+    // Fetch ALL incoming FLUX to wallet (including minted from 0x0)
+    const incomingFluxResponse = await fetch(alchemyUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'alchemy_getAssetTransfers',
+        params: [{
+          toAddress: walletAddress.toLowerCase(),
+          contractAddresses: [FLUX_TOKEN_ADDRESS.toLowerCase()],
+          category: ['erc20'],
+          withMetadata: true,
+          order: 'desc'
+        }]
+      })
+    });
+    
+    const incomingFluxData = await incomingFluxResponse.json();
+    const incomingFlux: AlchemyResponse = incomingFluxData.result;
+    
     // Process deposits (wallet sending to vault)
     if (deposits?.transfers) {
       deposits.transfers.forEach(transfer => {
@@ -180,6 +201,21 @@ export async function getWalletTransactions(walletAddress: string): Promise<Vaul
       withdrawals.transfers.forEach(transfer => {
         const tx = formatTransferToTransaction(transfer, 'incoming', walletAddress);
         if (tx) transactions.push(tx);
+      });
+    }
+    
+    // Process ALL incoming FLUX (including minted from 0x0)
+    if (incomingFlux?.transfers) {
+      incomingFlux.transfers.forEach(transfer => {
+        // Skip if already processed (from vault)
+        if (transfer.from.toLowerCase() === VAULT_ADDRESS.toLowerCase()) {
+          return;
+        }
+        
+        const tx = formatTransferToTransaction(transfer, 'incoming', walletAddress);
+        if (tx) {
+          transactions.push(tx);
+        }
       });
     }
     
