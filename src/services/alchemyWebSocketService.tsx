@@ -114,7 +114,6 @@ function checkForRefund(userAddress: string, originalTx: PendingTransaction) {
 }
 
 function showTransactionToast(tx: TransactionInfo, userAddress: string) {
-  console.log('📱 showTransactionToast called:', { tx, userAddress });
   const isDeposit = tx.from.toLowerCase() === userAddress.toLowerCase();
   const action = isDeposit ? 'Sending' : 'Receiving';
   const direction = isDeposit ? 'to' : 'from';
@@ -126,19 +125,14 @@ function showTransactionToast(tx: TransactionInfo, userAddress: string) {
   
   if (tx.status === 'pending') {
     // Show pending notification with warning icon for outgoing transactions
-    try {
-      const toastId = notify.warning({
-        title: `Sending ${tx.token}`,
-        description: `${tx.value} ${tx.token} to vault${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
-        confirmLabel: 'View on Basescan',
-        onConfirm: () => window.open(basescanUrl, '_blank'),
-      });
-      // Store the toast ID for later dismissal
-      (window as any)[`toast_${tx.hash}`] = toastId;
-      console.log('✅ Pending notification shown successfully');
-    } catch (error) {
-      console.error('❌ Error showing pending notification:', error);
-    }
+    const toastId = notify.warning({
+      title: `Sending ${tx.token}`,
+      description: `${tx.value} ${tx.token} to vault${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+      confirmLabel: 'View on Basescan',
+      onConfirm: () => window.open(basescanUrl, '_blank'),
+    });
+    // Store the toast ID for later dismissal
+    (window as any)[`toast_${tx.hash}`] = toastId;
   } else if (tx.status === 'confirmed' && tx.type !== 'failed') {
     const isDeposit = tx.type === 'deposit';
     const successAction = isDeposit ? 'Sent' : 'Received';
@@ -149,17 +143,12 @@ function showTransactionToast(tx: TransactionInfo, userAddress: string) {
       delete (window as any)[`toast_${tx.hash}`];
     }
     
-    try {
-      notify.success({
-        title: `${successAction} ${tx.token}!`,
-        description: `${tx.value} ${tx.token} successfully ${successAction.toLowerCase()}${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
-        confirmLabel: 'View on Basescan',
-        onConfirm: () => window.open(basescanUrl, '_blank'),
-      });
-      console.log('✅ Success notification shown successfully');
-    } catch (error) {
-      console.error('❌ Error showing success notification:', error);
-    }
+    notify.success({
+      title: `${successAction} ${tx.token}!`,
+      description: `${tx.value} ${tx.token} successfully ${successAction.toLowerCase()}${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+      confirmLabel: 'View on Basescan',
+      onConfirm: () => window.open(basescanUrl, '_blank'),
+    });
   }
 }
 
@@ -187,18 +176,11 @@ export async function subscribeToWalletTransactions(
   try {
     console.log('🔌 Connecting to Alchemy WebSocket for wallet:', walletAddress);
     
-    // Show connection toast with delay to ensure Toaster is ready
-    setTimeout(() => {
-      try {
-        notify.info({
-          title: 'WebSocket Connected',
-          description: `Monitoring ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)} for USDC and FLUX transactions`,
-        });
-        console.log('✅ WebSocket connection notification shown');
-      } catch (error) {
-        console.error('❌ Error showing WebSocket connection notification:', error);
-      }
-    }, 1000);
+    // Show connection toast
+    notify.info({
+      title: 'WebSocket Connected',
+      description: `Monitoring ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)} for USDC and FLUX transactions`,
+    });
     
     const depositSub = alchemy.ws.on(
       {

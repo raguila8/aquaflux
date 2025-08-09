@@ -17,7 +17,6 @@ export const notify = {
     confirmLabel,
     onConfirm,
   }: NotificationArgs) {
-    console.log('✅ notify.success called:', { title, description });
     return toast.custom((t) => (
       <IconNotification
         title={title}
@@ -81,7 +80,6 @@ export const notify = {
     confirmLabel,
     onConfirm,
   }: NotificationArgs) {
-    console.log('🔶 notify.warning called:', { title, description });
     return toast.custom((t) => (
       <IconNotification
         title={title}
