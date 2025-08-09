@@ -138,6 +138,8 @@ export async function subscribeToWalletTransactions(
   
   try {
     console.log('🔌 Connecting to Alchemy WebSocket for wallet:', walletAddress);
+    console.log('🔧 Using API Key:', ALCHEMY_API_KEY);
+    console.log('🔧 WebSocket URL:', ALCHEMY_WS_URL);
     
     // Connection notification removed - will be handled in WalletContext if needed
     

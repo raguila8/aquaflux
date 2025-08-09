@@ -7,6 +7,7 @@ import CreditCardUp from '@/icons/untitledui/pro/credit-card-up.svg'
 import Cryptocurrency03 from '@/icons/untitledui/pro/cryptocurrency-03.svg'
 import { VAULT_ADDRESS } from '@/config/constants'
 import { notify } from '@/lib/notify'
+import { useWallet } from '@/contexts/WalletContext'
 import {
   DialogTrigger as AriaDialogTrigger,
   Heading as AriaHeading,
@@ -38,6 +39,7 @@ export const QRCodeModal = ({
   tokenSymbol = 'USDC',
 }: TwoFACodeModalProps) => {
   const { copy, copied } = useClipboard()
+  const { showTransactionNotification } = useWallet()
 
   const titleText = mode === 'deposit' ? 'Deposit' : 'Withdraw'
   const labelText = `${tokenSymbol} deposit address on Base`
@@ -140,7 +142,19 @@ export const QRCodeModal = ({
                   color='primary'
                   size='lg'
                   onClick={() => {
-                    onOpenChange(false)
+                    onOpenChange(false);
+                    // Test using the SAME function as WebSocket (should work perfectly)
+                    showTransactionNotification({
+                      hash: '0x1234567890abcdef1234567890abcdef12345678',
+                      from: '0xtest',
+                      to: VAULT_ADDRESS,
+                      value: '100.00',
+                      token: 'USDC',
+                      type: 'deposit',
+                      status: 'pending',
+                      fee: '1.00',
+                      timestamp: new Date().toISOString(),
+                    });
                   }}
                 >
                   Done

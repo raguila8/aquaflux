@@ -68,6 +68,11 @@ export const Toaster = () => (
                     "--width": "400px",
                 } as React.CSSProperties
             }
+            toastOptions={{
+                unstyled: true,
+                style: {},
+                className: '',
+            }}
         />
         <ToastsOverlay />
     </>

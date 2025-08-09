@@ -18,6 +18,7 @@ interface WalletContextType {
   isLoading: boolean;
   isReady: boolean;
   refreshBalances: () => Promise<void>;
+  showTransactionNotification: (tx: TransactionInfo) => void;
 }
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
@@ -62,6 +63,45 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     }
   }, [address]);
 
+  // React component function to show notifications (called from React context)
+  const showTransactionNotification = useCallback((tx: TransactionInfo) => {
+    const basescanUrl = `https://basescan.org/tx/${tx.hash}`;
+    
+    console.log('🔔 Showing notification from React context (just like test):', tx);
+    
+    if (tx.status === 'pending') {
+      console.log('⚠️ Showing pending notification in React context:', tx);
+      notify.warning({
+        title: `Sending ${tx.token}`,
+        description: `${tx.value} ${tx.token} to vault${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+        confirmLabel: 'View on Basescan',
+        onConfirm: () => window.open(basescanUrl, '_blank'),
+      });
+      setTimeout(refreshBalances, 1000);
+    } else if (tx.status === 'confirmed' && tx.type !== 'failed') {
+      console.log('✅ Showing success notification in React context:', tx);
+      const isDeposit = tx.type === 'deposit';
+      const successAction = isDeposit ? 'Sent' : 'Received';
+      
+      notify.success({
+        title: `${successAction} ${tx.token}!`,
+        description: `${tx.value} ${tx.token} successfully ${successAction.toLowerCase()}${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+        confirmLabel: 'View on Basescan',
+        onConfirm: () => window.open(basescanUrl, '_blank'),
+      });
+      refreshBalances();
+    } else if (tx.type === 'failed') {
+      console.log('❌ Showing error notification in React context:', tx);
+      notify.error({
+        title: 'Transaction Failed',
+        description: `10 FLUX minimum required. ${tx.value} ${tx.token} returned to wallet • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+        confirmLabel: 'View on Basescan',
+        onConfirm: () => window.open(basescanUrl, '_blank'),
+      });
+      refreshBalances();
+    }
+  }, [refreshBalances]);
+
   useEffect(() => {
     if (address && isReady) {
       refreshBalances();
@@ -69,41 +109,11 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       let unsubscribe: (() => void) | undefined;
       
       const setupSubscriptions = async () => {
+        console.log('🔧 Setting up WebSocket subscriptions for:', address);
         unsubscribe = await subscribeToWalletTransactions(address, (tx: TransactionInfo) => {
-          // Handle notifications in React context where Toaster is available
-          const basescanUrl = `https://basescan.org/tx/${tx.hash}`;
-          
-          if (tx.status === 'pending') {
-            // Show yellow warning for outgoing transactions
-            notify.warning({
-              title: `Sending ${tx.token}`,
-              description: `${tx.value} ${tx.token} to vault${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
-              confirmLabel: 'View on Basescan',
-              onConfirm: () => window.open(basescanUrl, '_blank'),
-            });
-            setTimeout(refreshBalances, 1000);
-          } else if (tx.status === 'confirmed' && tx.type !== 'failed') {
-            const isDeposit = tx.type === 'deposit';
-            const successAction = isDeposit ? 'Sent' : 'Received';
-            
-            // Show green success for confirmed transactions
-            notify.success({
-              title: `${successAction} ${tx.token}!`,
-              description: `${tx.value} ${tx.token} successfully ${successAction.toLowerCase()}${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
-              confirmLabel: 'View on Basescan',
-              onConfirm: () => window.open(basescanUrl, '_blank'),
-            });
-            refreshBalances();
-          } else if (tx.type === 'failed') {
-            // Show red error for failed transactions
-            notify.error({
-              title: 'Transaction Failed',
-              description: `10 FLUX minimum required. ${tx.value} ${tx.token} returned to wallet • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
-              confirmLabel: 'View on Basescan',
-              onConfirm: () => window.open(basescanUrl, '_blank'),
-            });
-            refreshBalances();
-          }
+          console.log('🔔 Transaction callback received, calling React component function:', tx);
+          // Call the React component function directly (same as test button)
+          showTransactionNotification(tx);
         });
       };
       
@@ -120,7 +130,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       setUsdcBalance('0');
       unsubscribeAll();
     }
-  }, [address, isReady, refreshBalances]);
+  }, [address, isReady, refreshBalances, showTransactionNotification]);
 
   useEffect(() => {
     if (!isReady || status === 'reconnecting') return;
@@ -159,6 +169,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
         isLoading: isLoading || isConnecting,
         isReady,
         refreshBalances,
+        showTransactionNotification,
       }}
     >
       {children}
