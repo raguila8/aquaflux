@@ -279,26 +279,32 @@ export async function subscribeToWalletTransactions(
     );
     
     // Subscribe to ALL incoming FLUX transactions (including minted tokens)
+    // Using PENDING_TRANSACTIONS to catch all transactions to the wallet
     const fluxIncomingSub = alchemy.ws.on(
       {
         method: AlchemySubscription.PENDING_TRANSACTIONS,
         toAddress: walletAddress,
       },
       async (tx) => {
-        // Check if this is a FLUX token transaction
-        const tokenAddress = tx.asset || tx.rawContract?.address;
-        if (tokenAddress && tokenAddress.toLowerCase() === FLUX_TOKEN_ADDRESS.toLowerCase()) {
+        // Check if this is a FLUX token transaction by examining the contract address
+        const tokenAddress = tx.asset || tx.rawContract?.address || (tx.rawContract?.rawData ? tx.rawContract.rawData.to : null);
+        
+        // Also check if it's a FLUX transfer by looking at the 'to' field in rawContract
+        const isFluxTransfer = tokenAddress && tokenAddress.toLowerCase() === FLUX_TOKEN_ADDRESS.toLowerCase();
+        
+        if (isFluxTransfer) {
           // Skip if already handled by vault withdrawal subscription
           if (tx.from.toLowerCase() === VAULT_ADDRESS.toLowerCase()) {
             return;
           }
           
-          console.log('🪙 Detected incoming FLUX transaction:', {
+          console.log('💰 Detected incoming FLUX transaction:', {
             hash: tx.hash,
             from: tx.from,
             to: tx.to,
             asset: tx.asset,
-            rawContract: tx.rawContract?.address,
+            rawContract: tx.rawContract,
+            tokenAddress: tokenAddress,
             isMinted: tx.from === '0x0000000000000000000000000000000000000000'
           });
           
@@ -346,6 +352,72 @@ export async function subscribeToWalletTransactions(
       }
     );
     
+    // Also subscribe to FLUX token transfers specifically using logs
+    // This ensures we catch ALL FLUX transfers including those not visible in PENDING_TRANSACTIONS
+    const fluxTransferSub = alchemy.ws.on(
+      {
+        method: AlchemySubscription.LOGS,
+        address: FLUX_TOKEN_ADDRESS,
+        topics: [
+          '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', // Transfer event signature
+          null, // from (any)
+          `0x000000000000000000000000${walletAddress.slice(2).toLowerCase()}` // to (our wallet)
+        ]
+      },
+      async (log) => {
+        // Decode the transfer event
+        const from = '0x' + log.topics[1].slice(26);
+        const to = '0x' + log.topics[2].slice(26);
+        const value = BigInt(log.data).toString();
+        
+        // Skip if from vault (already handled)
+        if (from.toLowerCase() === VAULT_ADDRESS.toLowerCase()) {
+          return;
+        }
+        
+        console.log('📊 FLUX Transfer Event detected:', {
+          hash: log.transactionHash,
+          from,
+          to,
+          value: formatTokenAmount(value, 18),
+          blockNumber: log.blockNumber
+        });
+        
+        const isMinted = from === '0x0000000000000000000000000000000000000000';
+        const formattedValue = formatTokenAmount(value, 18);
+        
+        const txInfo: TransactionInfo = {
+          hash: log.transactionHash,
+          from,
+          to,
+          value: formattedValue,
+          token: 'FLUX',
+          type: 'withdrawal',
+          status: 'pending',
+          fee: '0',
+          timestamp: new Date().toISOString(),
+        };
+        
+        if (isMinted) {
+          notify.success({
+            title: 'FLUX Minted!',
+            description: `Receiving ${formattedValue} newly minted FLUX tokens - ${log.transactionHash.slice(0, 10)}...${log.transactionHash.slice(-8)}`,
+            confirmLabel: 'View on Basescan',
+            onConfirm: () => window.open(getBasescanUrl(log.transactionHash), '_blank'),
+          });
+        } else {
+          notify.info({
+            title: 'Receiving FLUX',
+            description: `${formattedValue} FLUX from ${from.slice(0, 6)}...${from.slice(-4)} - ${log.transactionHash.slice(0, 10)}...${log.transactionHash.slice(-8)}`,
+            confirmLabel: 'View on Basescan',
+            onConfirm: () => window.open(getBasescanUrl(log.transactionHash), '_blank'),
+          });
+        }
+        
+        transactionCallbacks.get(walletAddress)?.forEach(cb => cb(txInfo));
+      }
+    );
+    
     // Subscribe to mined transactions for all relevant addresses
     const minedSub = alchemy.ws.on(
       {
@@ -353,7 +425,6 @@ export async function subscribeToWalletTransactions(
         addresses: [
           { from: walletAddress, to: VAULT_ADDRESS },
           { from: VAULT_ADDRESS, to: walletAddress },
-          { to: walletAddress }, // Catch all incoming transactions including minted FLUX
         ],
       },
       async (tx) => {
@@ -393,7 +464,7 @@ export async function subscribeToWalletTransactions(
       }
     );
     
-    activeSubscriptions.set(subKey, { depositSub, withdrawalSub, fluxIncomingSub, minedSub });
+    activeSubscriptions.set(subKey, { depositSub, withdrawalSub, fluxIncomingSub, fluxTransferSub, minedSub });
     
     if (!refundCheckInterval) {
       refundCheckInterval = setInterval(() => {
@@ -424,6 +495,7 @@ export async function subscribeToWalletTransactions(
           alchemy.ws.off(subs.depositSub);
           alchemy.ws.off(subs.withdrawalSub);
           alchemy.ws.off(subs.fluxIncomingSub);
+          alchemy.ws.off(subs.fluxTransferSub);
           alchemy.ws.off(subs.minedSub);
           activeSubscriptions.delete(subKey);
         }
@@ -535,6 +607,7 @@ export function unsubscribeAll() {
     if (subs.depositSub) alchemy.ws.off(subs.depositSub);
     if (subs.withdrawalSub) alchemy.ws.off(subs.withdrawalSub);
     if (subs.fluxIncomingSub) alchemy.ws.off(subs.fluxIncomingSub);
+    if (subs.fluxTransferSub) alchemy.ws.off(subs.fluxTransferSub);
     if (subs.minedSub) alchemy.ws.off(subs.minedSub);
   });
   
