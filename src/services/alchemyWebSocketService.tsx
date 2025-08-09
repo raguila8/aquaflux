@@ -1,6 +1,7 @@
 import React from 'react';
 import { Alchemy, Network, AlchemySubscription } from 'alchemy-sdk';
 import { toast } from 'sonner';
+import { IconNotification } from '@/components/application/notifications/notifications';
 import { VAULT_ADDRESS, FLUX_TOKEN_ADDRESS, USDC_ADDRESS, ALCHEMY_API_KEY, ALCHEMY_WS_URL } from '@/config/constants';
 
 const settings = {
@@ -81,23 +82,19 @@ function checkForRefund(userAddress: string, originalTx: PendingTransaction) {
         ? 'not buying at least 10 FLUX' 
         : 'transaction validation failed';
       
-      toast.error(
-        <div className="flex flex-col gap-1">
-          <span>Transaction Failed</span>
-          <span className="text-xs opacity-80">
-            Failed due to {reason}. {formatTokenAmount(originalTx.value, originalTx.token === 'USDC' ? 6 : 18)} {originalTx.token} returned
-          </span>
-          <span className="text-xs opacity-60 font-mono">
-            {originalTx.hash.slice(0, 10)}...{originalTx.hash.slice(-8)}
-          </span>
-        </div>,
-        {
-          action: {
-            label: 'View',
-            onClick: () => window.open(getBasescanUrl(originalTx.hash), '_blank')
-          }
-        }
-      );
+      toast.custom((t) => (
+        <IconNotification
+          title='Transaction Failed'
+          description={`Failed due to ${reason}. ${formatTokenAmount(originalTx.value, originalTx.token === 'USDC' ? 6 : 18)} ${originalTx.token} returned • ${originalTx.hash.slice(0, 10)}...${originalTx.hash.slice(-8)}`}
+          color='error'
+          confirmLabel='View on Basescan'
+          onClose={() => toast.dismiss(t)}
+          onConfirm={() => {
+            window.open(getBasescanUrl(originalTx.hash), '_blank');
+            toast.dismiss(t);
+          }}
+        />
+      ));
       
       const failedTx: TransactionInfo = {
         hash: originalTx.hash,
@@ -135,46 +132,37 @@ function showTransactionToast(tx: TransactionInfo, userAddress: string) {
   
   if (tx.status === 'pending') {
     // Immediate notification when transaction is detected
-    toast.loading(
-      <div className="flex flex-col gap-1">
-        <span>{action} {tx.token}</span>
-        <span className="text-xs opacity-80">
-          {tx.value} {tx.token} {direction} vault{isDeposit && tx.fee !== '0' ? ` (Fee: ${tx.fee} {tx.token})` : ''}
-        </span>
-        <span className="text-xs opacity-60 font-mono">
-          {tx.hash.slice(0, 10)}...{tx.hash.slice(-8)}
-        </span>
-      </div>,
-      {
-        id: tx.hash,
-        action: {
-          label: 'View',
-          onClick: () => window.open(basescanUrl, '_blank')
-        }
-      }
-    );
+    toast.custom((t) => (
+      <IconNotification
+        title={`${action} ${tx.token}`}
+        description={`${tx.value} ${tx.token} ${direction} vault${isDeposit && tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`}
+        color='brand'
+        confirmLabel='View on Basescan'
+        onClose={() => toast.dismiss(t)}
+        onConfirm={() => {
+          window.open(basescanUrl, '_blank');
+          toast.dismiss(t);
+        }}
+      />
+    ), { id: tx.hash });
   } else if (tx.status === 'confirmed' && tx.type !== 'failed') {
     const isDeposit = tx.type === 'deposit';
     const successAction = isDeposit ? 'Sent' : 'Received';
     
-    toast.dismiss(tx.hash); // Dismiss the loading toast
-    toast.success(
-      <div className="flex flex-col gap-1">
-        <span>{successAction} {tx.token}!</span>
-        <span className="text-xs opacity-80">
-          {tx.value} {tx.token} successfully {successAction.toLowerCase()}{tx.fee !== '0' ? ` (Fee: ${tx.fee} {tx.token})` : ''}
-        </span>
-        <span className="text-xs opacity-60 font-mono">
-          {tx.hash.slice(0, 10)}...{tx.hash.slice(-8)}
-        </span>
-      </div>,
-      {
-        action: {
-          label: 'View',
-          onClick: () => window.open(basescanUrl, '_blank')
-        }
-      }
-    );
+    toast.dismiss(tx.hash); // Dismiss the pending toast
+    toast.custom((t) => (
+      <IconNotification
+        title={`${successAction} ${tx.token}!`}
+        description={`${tx.value} ${tx.token} successfully ${successAction.toLowerCase()}${tx.fee !== '0' ? ` (Fee: ${tx.fee} ${tx.token})` : ''} • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`}
+        color='success'
+        confirmLabel='View on Basescan'
+        onClose={() => toast.dismiss(t)}
+        onConfirm={() => {
+          window.open(basescanUrl, '_blank');
+          toast.dismiss(t);
+        }}
+      />
+    ));
   }
 }
 
@@ -203,20 +191,14 @@ export async function subscribeToWalletTransactions(
     console.log('🔌 Connecting to Alchemy WebSocket for wallet:', walletAddress);
     
     // Show connection toast
-    toast.info(
-      <div className="flex flex-col gap-1">
-        <span>WebSocket Connected</span>
-        <span className="text-xs opacity-80">
-          Monitoring {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
-        </span>
-        <span className="text-xs opacity-60">
-          Tracking USDC and FLUX transactions
-        </span>
-      </div>,
-      {
-        duration: 3000
-      }
-    );
+    toast.custom((t) => (
+      <IconNotification
+        title='WebSocket Connected'
+        description={`Monitoring ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)} for USDC and FLUX transactions`}
+        color='brand'
+        onClose={() => toast.dismiss(t)}
+      />
+    ), { duration: 3000 });
     
     const depositSub = alchemy.ws.on(
       {
@@ -381,23 +363,19 @@ export async function subscribeToWalletTransactions(
           
           // Show special notification for minted FLUX
           if (isMinted) {
-            toast.success(
-              <div className="flex flex-col gap-1">
-                <span>FLUX Minted!</span>
-                <span className="text-xs opacity-80">
-                  Receiving {value} newly minted FLUX tokens
-                </span>
-                <span className="text-xs opacity-60 font-mono">
-                  {tx.hash.slice(0, 10)}...{tx.hash.slice(-8)}
-                </span>
-              </div>,
-              {
-                action: {
-                  label: 'View',
-                  onClick: () => window.open(getBasescanUrl(tx.hash), '_blank')
-                }
-              }
-            );
+            toast.custom((t) => (
+              <IconNotification
+                title='FLUX Minted!'
+                description={`Receiving ${value} newly minted FLUX tokens • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`}
+                color='success'
+                confirmLabel='View on Basescan'
+                onClose={() => toast.dismiss(t)}
+                onConfirm={() => {
+                  window.open(getBasescanUrl(tx.hash), '_blank');
+                  toast.dismiss(t);
+                }}
+              />
+            ));
           } else {
             showTransactionToast(txInfo, walletAddress);
           }
@@ -547,21 +525,19 @@ async function monitorTransactionStatus(
             if (receipt.status === 1) {
               showTransactionToast(txInfo, walletAddress);
             } else {
-              toast.error(
-                <div className="flex flex-col gap-1">
-                  <span>Transaction Failed</span>
-                  <span className="text-xs opacity-80">{value} {token}</span>
-                  <span className="text-xs opacity-60 font-mono">
-                    {txHash.slice(0, 10)}...{txHash.slice(-8)}
-                  </span>
-                </div>,
-                {
-                  action: {
-                    label: 'View',
-                    onClick: () => window.open(getBasescanUrl(txHash), '_blank')
-                  }
-                }
-              );
+              toast.custom((t) => (
+                <IconNotification
+                  title='Transaction Failed'
+                  description={`${value} ${token} • ${txHash.slice(0, 10)}...${txHash.slice(-8)}`}
+                  color='error'
+                  confirmLabel='View on Basescan'
+                  onClose={() => toast.dismiss(t)}
+                  onConfirm={() => {
+                    window.open(getBasescanUrl(txHash), '_blank');
+                    toast.dismiss(t);
+                  }}
+                />
+              ));
             }
             
             transactionCallbacks.get(walletAddress)?.forEach(cb => cb(txInfo));
@@ -577,21 +553,19 @@ async function monitorTransactionStatus(
           if (pendingTx && !refundedTransactions.has(txHash)) {
             // Remove pending notification
             toast.dismiss(txHash);
-            toast.error(
-              <div className="flex flex-col gap-1">
-                <span>Transaction Timeout</span>
-                <span className="text-xs opacity-80">Transaction confirmation timed out</span>
-                <span className="text-xs opacity-60 font-mono">
-                  {txHash.slice(0, 10)}...{txHash.slice(-8)}
-                </span>
-              </div>,
-              {
-                action: {
-                  label: 'View',
-                  onClick: () => window.open(getBasescanUrl(txHash), '_blank')
-                }
-              }
-            );
+            toast.custom((t) => (
+              <IconNotification
+                title='Transaction Timeout'
+                description={`Transaction confirmation timed out • ${txHash.slice(0, 10)}...${txHash.slice(-8)}`}
+                color='error'
+                confirmLabel='View on Basescan'
+                onClose={() => toast.dismiss(t)}
+                onConfirm={() => {
+                  window.open(getBasescanUrl(txHash), '_blank');
+                  toast.dismiss(t);
+                }}
+              />
+            ));
             
             pendingTransactions.delete(txHash);
           }
