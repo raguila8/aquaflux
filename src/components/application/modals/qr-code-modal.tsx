@@ -6,7 +6,6 @@ import { Copy01, Check } from '@untitledui/icons'
 import CreditCardUp from '@/icons/untitledui/pro/credit-card-up.svg'
 import Cryptocurrency03 from '@/icons/untitledui/pro/cryptocurrency-03.svg'
 import { VAULT_ADDRESS } from '@/config/constants'
-import { notify } from '@/lib/notify'
 import {
   DialogTrigger as AriaDialogTrigger,
   Heading as AriaHeading,
@@ -81,7 +80,11 @@ export const QRCodeModal = ({
                     {titleText}
                   </AriaHeading>
                   <p className='text-tertiary text-sm'>
-                    Scan the QR or copy the address to your wallet.
+                    Scan the QR or copy the address to your wallet. {mode === 'deposit' ? (
+                      <span><strong>Minimum 10 FLUX</strong></span>
+                    ) : (
+                      <span><strong>Minimum 0.1 FLUX</strong></span>
+                    )}
                   </p>
                 </div>
               </div>
@@ -139,16 +142,7 @@ export const QRCodeModal = ({
                 <Button
                   color='primary'
                   size='lg'
-                  onClick={() => {
-                    onOpenChange(false);
-                    // EXACT copy of the working test
-                    notify.warning({
-                      title: 'Sending USDC',
-                      description: '100.00 USDC to vault (Fee: 1.00 USDC) • 0x12345...78',
-                      confirmLabel: 'View on Basescan',
-                      onConfirm: () => window.open('https://basescan.org/tx/0x123', '_blank'),
-                    });
-                  }}
+                  onClick={() => onOpenChange(false)}
                 >
                   Done
                 </Button>

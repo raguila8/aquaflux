@@ -169,7 +169,7 @@ export function TransactionsTable({
             console.log('❌ Table detected failed USDC deposit, showing error notification');
             notify.error({
               title: 'Transaction Failed',
-              description: `10 FLUX minimum required. ${parseFloat(tx.value).toFixed(2)} USDC returned to wallet • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+              description: `10 FLUX minimum required. ${parseFloat(tx.value).toFixed(2)} USDC returned to wallet • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}. **Minimum 10 FLUX**`,
               confirmLabel: 'View on Basescan',
               onConfirm: () => {
                 const network = process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? 'sepolia.' : '';
@@ -198,7 +198,7 @@ export function TransactionsTable({
             console.log('❌ Table detected failed FLUX withdrawal, showing error notification');
             notify.error({
               title: 'Transaction Failed',
-              description: `10 FLUX minimum required. ${parseFloat(tx.value).toFixed(2)} FLUX returned to wallet • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`,
+              description: `0.1 FLUX minimum required. ${parseFloat(tx.value).toFixed(2)} FLUX returned to wallet • ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}. **Minimum 0.1 FLUX**`,
               confirmLabel: 'View on Basescan',
               onConfirm: () => {
                 const network = process.env.NEXT_PUBLIC_NETWORK === 'base-sepolia' ? 'sepolia.' : '';
