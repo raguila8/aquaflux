@@ -6,6 +6,7 @@ import { Copy01, Check } from '@untitledui/icons'
 import CreditCardUp from '@/icons/untitledui/pro/credit-card-up.svg'
 import Cryptocurrency03 from '@/icons/untitledui/pro/cryptocurrency-03.svg'
 import { VAULT_ADDRESS } from '@/config/constants'
+import { showTransactionSuccess } from '@/components/application/notifications/TransactionNotification'
 import {
   DialogTrigger as AriaDialogTrigger,
   Heading as AriaHeading,
@@ -139,6 +140,12 @@ export const QRCodeModal = ({
                   color='primary'
                   size='lg'
                   onClick={() => {
+                    // Test notification when clicking Done
+                    showTransactionSuccess(
+                      'Test Transaction Success',
+                      'This is a test notification to verify dark theme styling',
+                      () => window.open('https://basescan.org', '_blank')
+                    )
                     onOpenChange(false)
                   }}
                 >
