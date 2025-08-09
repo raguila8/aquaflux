@@ -1,5 +1,4 @@
 import { Alchemy, Network, AlchemySubscription } from 'alchemy-sdk';
-import { toast } from 'sonner';
 import { VAULT_ADDRESS, FLUX_TOKEN_ADDRESS, USDC_ADDRESS, ALCHEMY_API_KEY, ALCHEMY_WS_URL } from '@/config/constants';
 
 const settings = {
@@ -476,17 +475,7 @@ async function monitorTransactionStatus(
         } else if (attempts >= maxAttempts) {
           const pendingTx = pendingTransactions.get(txHash);
           if (pendingTx && !refundedTransactions.has(txHash)) {
-            // Remove pending notification
-            if ((window as any)[`toast_${txHash}`]) {
-              toast.dismiss((window as any)[`toast_${txHash}`]);
-              delete (window as any)[`toast_${txHash}`];
-            }
-            notify.error({
-              title: 'Transaction Timeout',
-              description: `Transaction confirmation timed out • ${txHash.slice(0, 10)}...${txHash.slice(-8)}`,
-              confirmLabel: 'View on Basescan',
-              onConfirm: () => window.open(getBasescanUrl(txHash), '_blank'),
-            });
+            // Transaction timeout - notification will be handled in WalletContext if needed
             
             pendingTransactions.delete(txHash);
           }
